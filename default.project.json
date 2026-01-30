@@ -1,0 +1,43 @@
+{
+  "name": "Open-a-Lucky-Block",
+  "servePlaceIds": [139326423426587],
+  "emitLegacyScripts": false,
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": {
+        "ModelStreamingBehavior": "Improved",
+        "StreamingEnabled": true,
+        "StreamingIntegrityMode": "Default",
+        "StreamingMinRadius": 64,
+        "StreamingTargetRadius": 1024,
+        "StreamOutBehavior": "Opportunistic"
+      }
+    },
+    "ReplicatedStorage": {
+      "Common": {
+        "$path": "src/Common"
+      },
+      "Packages": {
+        "$path": "Packages"
+      }
+    },
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/Server"
+      },
+      "Network": {
+        "$path": "network/Server.luau"
+      }
+    },
+    "ReplicatedFirst": {
+      "Client": {
+        "$path": "src/Client"
+      },
+      "Network": {
+        "$path": "network/Client.luau"
+      }
+    }
+  }
+}

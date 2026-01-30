@@ -1,0 +1,38 @@
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+local ContentProvider = game:GetService("ContentProvider")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterGui = game:GetService("StarterGui")
+
+local Log = require(ReplicatedStorage.Common.Log)
+local Start = require(ReplicatedStorage.Common.Start)
+
+local Systems = script.Parent.Systems
+
+task.spawn(function()
+    local Assets = game:GetDescendants()
+
+    for _, Asset in Assets do
+        ContentProvider:PreloadAsync({ Asset })
+    end
+
+    Log.Info(`{#Assets} Assets preloaded`)
+end)
+
+repeat
+    local Success = pcall(function()
+        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+        StarterGui:SetCore("ResetButtonCallback", false)
+        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true)
+        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, true)
+    end)
+    task.wait(1)
+until Success == true
+
+Start({
+    require(Systems.Init_Local_Entity),
+})
+
+require(game:GetService("ReplicatedFirst").Network).ClientLoaded.Fire()

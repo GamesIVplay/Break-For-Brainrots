@@ -1,0 +1,4 @@
+type Entity = f64
+type Id = f64
+
+type Cash = f64
