@@ -17,8 +17,11 @@ local Components: {
     Singletons: {},
     Tags: {
         Networked: Types.Entity,
+        Plot: Types.Entity,
     },
     Relationships: {
+        Owner: Types.Entity,
+        Plot: Types.Entity,
         Previous: Types.Entity,
     },
 } =
@@ -34,8 +37,13 @@ local Components: {
         Gamepasses = World:component(),
 
         Singletons = {},
-        Tags = { Networked = World:component() },
+        Tags = {
+            Networked = World:component(),
+            Plot = World:component(),
+        },
         Relationships = {
+            Owner = World:component(),
+            Plot = World:component(),
             Previous = World:component(),
         },
     }

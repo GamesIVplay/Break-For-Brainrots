@@ -27,12 +27,16 @@ repeat
         StarterGui:SetCore("ResetButtonCallback", false)
         StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true)
         StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, true)
+        StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
     end)
     task.wait(1)
 until Success == true
 
 Start({
     require(Systems.Init_Local_Entity),
+    require(Systems.Map_Setup),
+    require(Systems.User_Interface),
+    require(Systems.Data_Receiver),
 })
 
 require(game:GetService("ReplicatedFirst").Network).ClientLoaded.Fire()

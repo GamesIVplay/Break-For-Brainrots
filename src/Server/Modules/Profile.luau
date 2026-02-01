@@ -5,6 +5,7 @@ local Log = require(ReplicatedStorage.Common.Log)
 
 export type ProfileData = {
     Cash: number,
+    Gamepasses: { string },
 }
 
 local ProfileStore = require(ReplicatedStorage.Packages.ProfileStore)
@@ -12,6 +13,7 @@ type Profile = ProfileStore.Profile<ProfileData>
 
 local PLAYER_DATA_TEMPLATE: ProfileData = {
     Cash = 600,
+    Gamepasses = {},
 }
 
 local PlayerProfileStore = ProfileStore.New("Main", PLAYER_DATA_TEMPLATE)

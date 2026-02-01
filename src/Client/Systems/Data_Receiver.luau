@@ -20,6 +20,12 @@ local function Handle_Cash_Changes(Local_Entity: Types.Entity)
     end
 end
 
+local function Handle_Gamepass_Changes(Local_Entity: Types.Entity)
+    for _, Value in Network.DataChanged.Gamepasses.Iter() do
+        World:set(Local_Entity, Components.Gamepasses, Value)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.First,
@@ -27,6 +33,8 @@ return {
         local Local_Entity = Registry.Get("Players", "Local")
 
         Handle_Cash_Changes(Local_Entity)
+
+        Handle_Gamepass_Changes(Local_Entity)
     end,
     runConditions = {},
 }

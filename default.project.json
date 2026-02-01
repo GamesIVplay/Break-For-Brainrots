@@ -7,12 +7,7 @@
     "Workspace": {
       "$className": "Workspace",
       "$properties": {
-        "ModelStreamingBehavior": "Improved",
-        "StreamingEnabled": true,
-        "StreamingIntegrityMode": "Default",
-        "StreamingMinRadius": 64,
-        "StreamingTargetRadius": 1024,
-        "StreamOutBehavior": "Opportunistic"
+        "StreamingEnabled": false
       }
     },
     "ReplicatedStorage": {

@@ -1,14 +1,14 @@
 option ClientOutput = "../../network/Client.luau"
 option ServerOutput = "../../network/Server.luau"
 option Casing = Pascal
-option UsePolling = true
 
 import "./Types.blink" as Types
 
 event ClientLoaded {
     From: Client,
     Type: Reliable,
-    Call: SingleSync
+    Call: SingleSync,
+	Poll: true
 }
 
 scope DataChanged {
@@ -16,6 +16,24 @@ scope DataChanged {
         From: Server,
         Type: Reliable,
         Call: SingleSync, 
+		Poll: true,
         Data: Types.Cash
     }
+
+    event Gamepasses {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: string[]
+    }
+
+
+	event Plot_Assigned { 
+		From: Server,
+		Type: Reliable,
+		Call: SingleSync,
+		Poll: false,
+		Data: Instance(Model)
+	}
 }

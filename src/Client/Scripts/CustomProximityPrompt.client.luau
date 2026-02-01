@@ -171,9 +171,6 @@ local function createPrompt(prompt, inputType, gui)
     table.insert(tweensForFadeOut, TweenService:Create(uiStroke, tweenInfoFast, { Transparency = 1 }))
     table.insert(tweensForFadeIn, TweenService:Create(uiStroke, tweenInfoFast, { Transparency = 0 }))
 
-    local roundedCorner = Instance.new("UICorner")
-    roundedCorner.Parent = frame
-
     local inputFrame = Instance.new("Frame")
     inputFrame.Name = "InputFrame"
     inputFrame.Size = UDim2.fromScale(1, 1)
@@ -364,6 +361,10 @@ local function createPrompt(prompt, inputType, gui)
             --    buttonText.Font = Enum.Font.FredokaOne
             buttonText.FontFace = MontserratBold
             buttonText.TextSize = 14
+            if string.len(buttonTextString) > 2 then
+                --buttonText.TextSize = 12
+            end
+            buttonText.BackgroundTransparency = 1
             buttonText.TextTransparency = 1
             buttonText.TextColor3 = Color3.new(1, 1, 1)
             buttonText.TextXAlignment = Enum.TextXAlignment.Center
