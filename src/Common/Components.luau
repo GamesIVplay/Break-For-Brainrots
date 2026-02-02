@@ -11,8 +11,12 @@ local Components: {
     Name: Types.Id<string>,
 
     Cash: Types.Id<number>,
+    Pickaxe: Types.Id<string>,
+    Owned_Pickaxes: Types.Id<{ string }>,
     Opens: Types.Id<number>,
     Gamepasses: Types.Id<{ string }>,
+
+    Plot_Model: Types.Id<Model>,
 
     Singletons: {},
     Tags: {
@@ -33,8 +37,12 @@ local Components: {
         Name = World:component(),
 
         Cash = World:component(),
+        Pickaxe = World:component(),
+        Owned_Pickaxes = World:component(),
         Opens = World:component(),
         Gamepasses = World:component(),
+
+        Plot_Model = World:component(),
 
         Singletons = {},
         Tags = {

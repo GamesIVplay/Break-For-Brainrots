@@ -84,6 +84,9 @@ local function Handle_New_Player(Player: Player)
         end
     end
 
+    World:set(Player_Entity, Components.Cash, Profile_Data.Cash)
+    World:set(Player_Entity, Components.Pickaxe, Profile_Data.Pickaxe)
+    World:set(Player_Entity, Components.Owned_Pickaxes, Profile_Data.Owned_Pickaxes)
     World:set(Player_Entity, Components.Gamepasses, Profile_Data.Gamepasses)
     World:set(Player_Entity, Components.Cleanup, function()
         Profile.Unload(Player)
@@ -95,6 +98,8 @@ local function Handle_New_Player(Player: Player)
 
     Player_Profile.OnSave:Connect(function()
         Profile_Data.Cash = World:get(Player_Entity, Components.Cash)
+        Profile_Data.Pickaxe = World:get(Player_Entity, Components.Pickaxe)
+        Profile_Data.Owned_Pickaxes = World:get(Player_Entity, Components.Owned_Pickaxes)
         Profile_Data.Gamepasses = World:get(Player_Entity, Components.Gamepasses)
     end)
 

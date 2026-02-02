@@ -20,6 +20,22 @@ scope DataChanged {
         Data: Types.Cash
     }
 
+	event Pickaxe {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: string
+    }
+
+  	event Owned_Pickaxes {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: string[]
+    }
+
     event Gamepasses {
         From: Server,
         Type: Reliable,

@@ -14,9 +14,7 @@ export type AnimationInfo = {
     Stack: boolean?,
 }
 
-export type Rarity = "Common" | "Uncommon" | "Rare" | "Legendary" | "Mythical"
-
-export type Difficulty = "Easy" | "Normal" | "Hard" | "Insane"
+export type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Mythical" | "Secret"
 
 export type NotificationType = "Success" | "Info" | "Warning" | "Error" | "Reward"
 

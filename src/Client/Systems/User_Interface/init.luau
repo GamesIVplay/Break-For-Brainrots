@@ -1,17 +1,16 @@
 local Lighting = game:GetService("Lighting")
+local MarketplaceService = game:GetService("MarketplaceService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
-local Camera = workspace.CurrentCamera
 
+local Camera = workspace.CurrentCamera
 local Map = workspace:WaitForChild("Map")
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 
-local Modules = Assets:WaitForChild("Modules") :: Folder
-local Zone = require(Modules:WaitForChild("Zone")) :: any
-
 local UISounds = Assets:WaitForChild("Sounds"):WaitForChild("UI")
+local CashChange = UISounds:WaitForChild("CashChange") :: Sound
 local Activate = UISounds:WaitForChild("Activate") :: Sound
 local Hover = UISounds:WaitForChild("Hover") :: Sound
 
@@ -20,19 +19,19 @@ local Children = Fusion.Children
 local OnEvent = Fusion.OnEvent
 local Peek = Fusion.peek
 
-local TopbarPlus = require(ReplicatedStorage.Packages.TopbarPlus)
-
 local Components = require(ReplicatedStorage.Common.Components)
+local Log = require(ReplicatedStorage.Common.Log)
 local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
+local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
+
+local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
+local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
+local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 local Teleport_Character = require(ReplicatedFirst.Client.Modules.Teleport_Character)
-
-local Log = require(ReplicatedStorage.Common.Log)
-
-local Types = require(ReplicatedStorage.Common.Types)
 
 local DEFAULT_SIZE_MULTIPLIER = 1
 local HOVER_SIZE_MULTIPLIER = 1.05
@@ -79,7 +78,7 @@ local function Add_Blur(Size: number)
     BlurEffect = BlurEffectInstance
 end
 
-local function Open_Screen(Screen: string)
+local function Toggle_Screen(Screen: string)
     if Peek(Fusion_Values.Screen) == Screen then
         Fusion_Values.Screen:set("HUD")
     else
@@ -137,14 +136,30 @@ local function Hydrate_Button(GuiButton: GuiButton, OnActivate: () -> ())
     })
 end
 
-local function Setup_HUD_Top_Buttons(_LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+local function Setup_Close_Button(ImageButton: ImageButton)
+    Hydrate_Button(ImageButton, function()
+        Fusion_Values.Screen:set("HUD")
+    end)
+end
+
+local function Setup_HUD_Top_Buttons(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
     local Top = Main:WaitForChild("Top") :: Frame
 
     local Home = Top:WaitForChild("Home") :: ImageButton
     local Shops = Top:WaitForChild("Shops") :: ImageButton
 
-    Hydrate_Button(Home, function() end)
+    Hydrate_Button(Home, function()
+        local Plot_Model = World:get(LocalEntity, Components.Plot_Model)
+
+        if not Plot_Model then
+            return
+        end
+
+        local Spawn = Plot_Model:WaitForChild("Spawn") :: Part
+
+        Teleport_Character(Spawn.CFrame)
+    end)
 
     Hydrate_Button(Shops, function()
         local Shop_Spawn = Map:WaitForChild("Shops"):WaitForChild("Spawn") :: Part
@@ -153,47 +168,134 @@ local function Setup_HUD_Top_Buttons(_LocalEntity: Types.Entity, PlayerGui: Play
     end)
 end
 
-local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
-    Setup_HUD_Top_Buttons(LocalEntity, PlayerGui)
+local function Setup_HUD_Left_Buttons(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    local Local_Player = World:get(LocalEntity, Components.Player)
+
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Left = Main:WaitForChild("Left") :: Frame
+
+    local RobuxShop = Left:WaitForChild("RobuxShop") :: ImageButton
+    local Index = Left:WaitForChild("Index") :: ImageButton
+    local Rebirth = Left:WaitForChild("Rebirth") :: ImageButton
+    local VIP = Left:WaitForChild("VIP") :: ImageButton
+
+    Hydrate_Button(RobuxShop, function()
+        Toggle_Screen("RobuxShop")
+    end)
+
+    Hydrate_Button(Index, function()
+        Toggle_Screen("Index")
+    end)
+
+    Hydrate_Button(Rebirth, function()
+        Toggle_Screen("Rebirth")
+    end)
+
+    Hydrate_Button(VIP, function()
+        MarketplaceService:PromptGamePassPurchase(Local_Player, Gamepasses["VIP"])
+    end)
 end
 
-local function Setup_Topbar()
-    local Settings = TopbarPlus.new()
-        :setImage("rbxassetid://126487825375209")
-        :setImageScale(0.8)
-        :oneClick(true)
-        :align("Right")
-        :setCaption("Settings")
-        :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+local function Setup_HUD_Cash(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
 
-    Settings.selected:Connect(function()
-        Activate:Play()
+    local Corner = Main:WaitForChild("Corner") :: Frame
+    local Cash = Corner:WaitForChild("Cash") :: TextLabel
 
-        Open_Screen("Settings")
+    local MoneySizeMultiplierSpring = Scope:Spring(Scope:Value(1), 17, 0.5)
+    local OldCash = Peek(Fusion_Values.Cash)
+
+    Scope:Observer(Fusion_Values.Cash):onBind(function()
+        local NewCash = Peek(Fusion_Values.Cash)
+
+        local Difference = math.round(math.abs(NewCash - OldCash))
+
+        if Difference == 0 then
+            return
+        end
+
+        CashChange:Play()
+
+        OldCash = NewCash
+
+        MoneySizeMultiplierSpring:addVelocity(ACTIVATE_VELOCITY)
     end)
 
-    Settings.viewingStarted:Connect(function()
-        Hover:Play()
-    end)
+    Scope:Hydrate(Cash)({
+        Text = Scope:Computed(function(Use)
+            return `${Util.Format_Number_With_Commas(Use(Fusion_Values.Cash))}`
+        end),
+        [Children] = {
+            Scope:New("UIScale")({
+                Scale = MoneySizeMultiplierSpring,
+            }),
+        },
+    })
+end
 
-    local Daily_Rewards = TopbarPlus.new()
-        :setImage("rbxassetid://83312608302744")
-        :setImageScale(0.8)
-        :oneClick(true)
-        :align("Right")
-        :setLabel("Daily Rewards")
-        :setCaption("Daily Rewards")
-        :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    Setup_HUD_Top_Buttons(LocalEntity, PlayerGui)
 
-    Daily_Rewards.selected:Connect(function()
-        Activate:Play()
+    Setup_HUD_Left_Buttons(LocalEntity, PlayerGui)
 
-        Open_Screen("Daily Rewards")
-    end)
+    Setup_HUD_Cash(PlayerGui)
+end
 
-    Daily_Rewards.viewingStarted:Connect(function()
-        Hover:Play()
-    end)
+local function Setup_Robux_Shop_Visibility(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+
+    Scope:Hydrate(RobuxShop)({
+        Visible = Scope:Computed(function(Use)
+            return Use(Fusion_Values.Screen) == "RobuxShop"
+        end),
+    })
+
+    Setup_Close_Button(RobuxShop:WaitForChild("Close"))
+end
+
+local function Setup_Robux_Shop(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    Setup_Robux_Shop_Visibility(PlayerGui)
+end
+
+local function Setup_Index_Visibility(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Index = Frames:WaitForChild("Index") :: ImageLabel
+
+    Scope:Hydrate(Index)({
+        Visible = Scope:Computed(function(Use)
+            return Use(Fusion_Values.Screen) == "Index"
+        end),
+    })
+
+    Setup_Close_Button(Index:WaitForChild("Close"))
+end
+
+local function Setup_Index(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    Setup_Index_Visibility(PlayerGui)
+end
+
+local function Setup_Rebirth_Visibility(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Rebirth = Frames:WaitForChild("Rebirth") :: ImageLabel
+
+    Scope:Hydrate(Rebirth)({
+        Visible = Scope:Computed(function(Use)
+            return Use(Fusion_Values.Screen) == "Rebirth"
+        end),
+    })
+
+    Setup_Close_Button(Rebirth:WaitForChild("Close"))
+end
+
+local function Setup_Rebirth(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    Setup_Rebirth_Visibility(PlayerGui)
 end
 
 local function Setup_Stroke_Fixer(PlayerGui: PlayerGui)
@@ -246,8 +348,9 @@ return {
             local PlayerGui = Local_Player.PlayerGui
 
             Setup_HUD(Local_Entity, PlayerGui)
-
-            Setup_Topbar()
+            Setup_Robux_Shop(Local_Entity, PlayerGui)
+            Setup_Index(Local_Entity, PlayerGui)
+            Setup_Rebirth(Local_Entity, PlayerGui)
 
             Setup_Stroke_Fixer(PlayerGui)
 

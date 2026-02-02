@@ -1,0 +1,134 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Assets = ReplicatedStorage:WaitForChild("Assets")
+local Pickaxe_Tools = Assets:WaitForChild("Pickaxes")
+
+local Types = require(ReplicatedStorage.Common.Types)
+
+type Pickaxe = {
+    Rarity: Types.Rarity,
+    Price: number?,
+    Power: number,
+    Image: string,
+    Tool: Tool,
+}
+
+local Pickaxes: { [string]: Pickaxe } = {
+    -- Common
+    ["Starter"] = {
+        Rarity = "Common",
+        Price = 0,
+        Power = 1,
+        Image = "rbxassetid://102455470086563",
+        Tool = Pickaxe_Tools:WaitForChild("Starter"),
+    },
+    ["Stone"] = {
+        Rarity = "Common",
+        Price = 1_000,
+        Power = 2,
+        Image = "rbxassetid://99837424509453",
+        Tool = Pickaxe_Tools:WaitForChild("Stone"),
+    },
+
+    -- Rare
+    ["Iron"] = {
+        Rarity = "Rare",
+        Price = 3_000,
+        Power = 4,
+        Image = "rbxassetid://81526194453089",
+        Tool = Pickaxe_Tools:WaitForChild("Iron"),
+    },
+    ["Gold"] = {
+        Rarity = "Rare",
+        Price = 10_000,
+        Power = 6,
+        Image = "rbxassetid://85995206766563",
+        Tool = Pickaxe_Tools:WaitForChild("Gold"),
+    },
+
+    -- Epic
+    ["Candy"] = {
+        Rarity = "Epic",
+        Price = 25_000,
+        Power = 12,
+        Image = "rbxassetid://126085895816695",
+        Tool = Pickaxe_Tools:WaitForChild("Candy"),
+    },
+    ["Toxic"] = {
+        Rarity = "Epic",
+        Price = 40_000,
+        Power = 16,
+        Image = "rbxassetid://127007778356683",
+        Tool = Pickaxe_Tools:WaitForChild("Toxic"),
+    },
+
+    -- Legendary
+    ["Lava"] = {
+        Rarity = "Legendary",
+        Price = 80_000,
+        Power = 22,
+        Image = "rbxassetid://95702708325404",
+        Tool = Pickaxe_Tools:WaitForChild("Lava"),
+    },
+    ["Ice"] = {
+        Rarity = "Legendary",
+        Price = 150_000,
+        Power = 30,
+        Image = "rbxassetid://91474283800298",
+        Tool = Pickaxe_Tools:WaitForChild("Ice"),
+    },
+    ["Glitch"] = {
+        Rarity = "Legendary",
+        Price = 300_000,
+        Power = 42,
+        Image = "rbxassetid://112421977124033",
+        Tool = Pickaxe_Tools:WaitForChild("Glitch"),
+    },
+
+    -- Mythical
+    ["67"] = {
+        Rarity = "Mythical",
+        Price = 700_000,
+        Power = 67,
+        Image = "rbxassetid://77223024075900",
+        Tool = Pickaxe_Tools:WaitForChild("67"),
+    },
+    ["UFO"] = {
+        Rarity = "Mythical",
+        Price = 1_500_000,
+        Power = 88,
+        Image = "rbxassetid://77362587488589",
+        Tool = Pickaxe_Tools:WaitForChild("UFO"),
+    },
+    ["Electro"] = {
+        Rarity = "Mythical",
+        Price = 3_000_000,
+        Power = 98,
+        Image = "rbxassetid://81403123319089",
+        Tool = Pickaxe_Tools:WaitForChild("Electro"),
+    },
+
+    -- Secret
+    ["Angel"] = {
+        Rarity = "Secret",
+        Price = 7_000_000,
+        Power = 126,
+        Image = "rbxassetid://103777101628861",
+        Tool = Pickaxe_Tools:WaitForChild("Angel"),
+    },
+}
+
+local function Setup_Tools()
+    for Name, Data in Pickaxes do
+        local Tool = Data.Tool
+
+        Tool.ToolTip = `{Name} Pickaxe`
+        Tool.CanBeDropped = false
+        Tool.TextureId = Data.Image
+        Tool:AddTag("Pickaxe")
+    end
+end
+
+Setup_Tools()
+
+return table.freeze(Pickaxes)
