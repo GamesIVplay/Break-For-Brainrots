@@ -23,7 +23,7 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rebirth = 0,
         Power = 1,
         Image = "rbxassetid://102455470086563",
-        Developer_Product = 0,
+        Developer_Product = 3529458977,
         Tool = Pickaxe_Tools:WaitForChild("Starter"),
     },
     ["Stone"] = {
@@ -43,6 +43,7 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rebirth = 0,
         Power = 4,
         Image = "rbxassetid://81526194453089",
+        Developer_Product = 3529456216,
         Tool = Pickaxe_Tools:WaitForChild("Iron"),
     },
     ["Gold"] = {
@@ -51,6 +52,7 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rebirth = 0,
         Power = 6,
         Image = "rbxassetid://85995206766563",
+        Developer_Product = 3529456554,
         Tool = Pickaxe_Tools:WaitForChild("Gold"),
     },
 
@@ -61,6 +63,7 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rebirth = 0,
         Power = 12,
         Image = "rbxassetid://126085895816695",
+        Developer_Product = 3529456696,
         Tool = Pickaxe_Tools:WaitForChild("Candy"),
     },
     ["Toxic"] = {
@@ -69,6 +72,7 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rebirth = 0,
         Power = 16,
         Image = "rbxassetid://127007778356683",
+        Developer_Product = 3529456796,
         Tool = Pickaxe_Tools:WaitForChild("Toxic"),
     },
 
@@ -79,6 +83,7 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rebirth = 0,
         Power = 22,
         Image = "rbxassetid://95702708325404",
+        Developer_Product = 3529456895,
         Tool = Pickaxe_Tools:WaitForChild("Lava"),
     },
     ["Ice"] = {
@@ -87,6 +92,7 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rebirth = 1,
         Power = 30,
         Image = "rbxassetid://91474283800298",
+        Developer_Product = 3529457012,
         Tool = Pickaxe_Tools:WaitForChild("Ice"),
     },
     ["Glitch"] = {
@@ -95,6 +101,7 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rebirth = 1,
         Power = 42,
         Image = "rbxassetid://112421977124033",
+        Developer_Product = 3529457124,
         Tool = Pickaxe_Tools:WaitForChild("Glitch"),
     },
 
@@ -105,6 +112,7 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rebirth = 2,
         Power = 67,
         Image = "rbxassetid://77223024075900",
+        Developer_Product = 3529457220,
         Tool = Pickaxe_Tools:WaitForChild("67"),
     },
     ["UFO"] = {
@@ -113,6 +121,7 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rebirth = 2,
         Power = 88,
         Image = "rbxassetid://77362587488589",
+        Developer_Product = 3529457345,
         Tool = Pickaxe_Tools:WaitForChild("UFO"),
     },
     ["Electro"] = {
@@ -121,6 +130,7 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rebirth = 3,
         Power = 98,
         Image = "rbxassetid://81403123319089",
+        Developer_Product = 3529457437,
         Tool = Pickaxe_Tools:WaitForChild("Electro"),
     },
 
@@ -131,6 +141,7 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rebirth = 3,
         Power = 126,
         Image = "rbxassetid://103777101628861",
+        Developer_Product = 3529457565,
         Tool = Pickaxe_Tools:WaitForChild("Angel"),
     },
 }

@@ -28,6 +28,7 @@ local World = require(ReplicatedStorage.Common.World)
 
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
+local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
@@ -88,19 +89,35 @@ local function Toggle_Screen(Screen: string)
     end
 end
 
-local function Hydrate_Button(GuiButton: GuiButton, OnActivate: () -> ())
-    local SizeMultiplier = Scope:Value(DEFAULT_SIZE_MULTIPLIER)
+type HydrateButtonOptions = {
+    DefaultSizeMultiplier: number?,
+    HoverSizeMultiplier: number?,
+    PressDownSizeMultiplier: number?,
+    SpringSpeed: number?,
+    SpringDamping: number?,
+}
+
+local function Hydrate_Button(GuiButton: GuiButton, OnActivate: () -> (), Options: HydrateButtonOptions?)
+    Options = Options or {}
+
+    local DEFAULT = Options.DefaultSizeMultiplier or DEFAULT_SIZE_MULTIPLIER
+    local HOVER = Options.HoverSizeMultiplier or HOVER_SIZE_MULTIPLIER
+    local PRESS = Options.PressDownSizeMultiplier or PRESS_DOWN_SIZE_MULTIPLIER
+    local SPRING_SPEED = Options.SpringSpeed or 17
+    local SPRING_DAMPING = Options.SpringDamping or 0.5
+
+    local SizeMultiplier = Scope:Value(DEFAULT)
     local Hovering = Scope:Value(false)
     local Pressing_Down = Scope:Value(false)
-    local SizeMultiplierSpring = Scope:Spring(SizeMultiplier, 17, 0.5)
+    local SizeMultiplierSpring = Scope:Spring(SizeMultiplier, SPRING_SPEED, SPRING_DAMPING)
 
     local function Update_Size_Multiplier()
         if Peek(Pressing_Down) then
-            SizeMultiplier:set(PRESS_DOWN_SIZE_MULTIPLIER)
+            SizeMultiplier:set(PRESS)
         elseif Peek(Hovering) then
-            SizeMultiplier:set(HOVER_SIZE_MULTIPLIER)
+            SizeMultiplier:set(HOVER)
         else
-            SizeMultiplier:set(DEFAULT_SIZE_MULTIPLIER)
+            SizeMultiplier:set(DEFAULT)
         end
     end
 
@@ -112,7 +129,6 @@ local function Hydrate_Button(GuiButton: GuiButton, OnActivate: () -> ())
             if Peek(DeviceType) ~= "Mobile" then
                 Hover:Play()
             end
-
             Hovering:set(true)
         end,
         [OnEvent("MouseLeave")] = function()
@@ -126,11 +142,9 @@ local function Hydrate_Button(GuiButton: GuiButton, OnActivate: () -> ())
             if not Peek(Pressing_Down) then
                 return
             end
-
             Pressing_Down:set(false)
             Activate:Play()
             ActivateHaptic:Play()
-
             OnActivate()
         end,
         [Children] = {
@@ -145,6 +159,29 @@ local function Setup_Close_Button(ImageButton: ImageButton)
     Hydrate_Button(ImageButton, function()
         Fusion_Values.Screen:set("HUD")
     end)
+end
+
+local function Setup_HUD_Visibility(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Top = Main:WaitForChild("Top") :: Frame
+    local Left = Main:WaitForChild("Left") :: Frame
+    local Offers = Main:WaitForChild("Offers") :: Frame
+
+    local Visible_Computed = Scope:Computed(function(Use)
+        return Use(Fusion_Values.Screen) == "HUD"
+    end)
+
+    Scope:Hydrate(Top)({
+        Visible = Visible_Computed,
+    })
+
+    Scope:Hydrate(Left)({
+        Visible = Visible_Computed,
+    })
+
+    Scope:Hydrate(Offers)({
+        Visible = Visible_Computed,
+    })
 end
 
 local function Setup_HUD_Top_Buttons(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
@@ -239,6 +276,8 @@ local function Setup_HUD_Cash(PlayerGui: PlayerGui)
 end
 
 local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    Setup_HUD_Visibility(PlayerGui)
+
     Setup_HUD_Top_Buttons(LocalEntity, PlayerGui)
 
     Setup_HUD_Left_Buttons(LocalEntity, PlayerGui)
@@ -332,6 +371,11 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
         ImageLabel.LayoutOrder = Data.Power
         ImageLabel.Parent = Template.Parent
 
+        Hydrate_Button(ImageLabel, function() end, {
+            HoverSizeMultiplier = 1.015,
+            PressDownSizeMultiplier = 0.96,
+        })
+
         local Title = ImageLabel:WaitForChild("Title") :: TextLabel
         Title.Text = Name
 
@@ -348,10 +392,24 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
         local Price = Buy:WaitForChild("Price") :: TextLabel
         Price.Text = `${Util.Format_Number_With_Commas(Data.Price, 2)}`
 
+        Hydrate_Button(Buy, function() end)
+
         local Equip = ImageLabel:WaitForChild("Equip")
+
+        Hydrate_Button(Equip, function() end)
 
         local RobuxBuy = ImageLabel:WaitForChild("RobuxBuy")
         local RobuxBuy_Price = RobuxBuy:WaitForChild("Price") :: TextLabel
+
+        task.spawn(function()
+            local Product_Info = Util.Get_Product_Info(Data.Developer_Product)
+
+            if Product_Info then
+                RobuxBuy_Price.Text = `{Unicode_Characters.Robux}{Product_Info.PriceInRobux}`
+            end
+        end)
+
+        Hydrate_Button(RobuxBuy, function() end)
 
         local Rebirth_Requirement = ImageLabel:WaitForChild("Rebirth_Requirement") :: Frame
         local Rebirth_Requirement_Title = Rebirth_Requirement:WaitForChild("Title") :: TextLabel
