@@ -355,8 +355,6 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
 
         local Rebirth_Requirement = ImageLabel:WaitForChild("Rebirth_Requirement") :: Frame
         local Rebirth_Requirement_Title = Rebirth_Requirement:WaitForChild("Title") :: TextLabel
-
-        local No_Stock = ImageLabel:WaitForChild("No_Stock") :: Frame
     end
 
     Template.Visible = false
