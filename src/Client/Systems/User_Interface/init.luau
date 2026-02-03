@@ -40,6 +40,8 @@ local ACTIVATE_VELOCITY = 2
 
 local Scope = Fusion.scoped(Fusion)
 
+local DeviceType = require(script.Components.DeviceType)(Scope)
+
 local ActivateHaptic = Instance.new("HapticEffect")
 ActivateHaptic.Position = Vector3.new(0, 0, 0)
 ActivateHaptic.Radius = 1
@@ -107,7 +109,10 @@ local function Hydrate_Button(GuiButton: GuiButton, OnActivate: () -> ())
 
     Scope:Hydrate(GuiButton)({
         [OnEvent("MouseEnter")] = function()
-            Hover:Play()
+            if Peek(DeviceType) ~= "Mobile" then
+                Hover:Play()
+            end
+
             Hovering:set(true)
         end,
         [OnEvent("MouseLeave")] = function()
@@ -298,6 +303,71 @@ local function Setup_Rebirth(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Rebirth_Visibility(PlayerGui)
 end
 
+local function Setup_Pickaxes_Visibility(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Pickaxes = Frames:WaitForChild("Pickaxes") :: ImageLabel
+
+    Scope:Hydrate(Pickaxes)({
+        Visible = Scope:Computed(function(Use)
+            return Use(Fusion_Values.Screen) == "Pickaxes"
+        end),
+    })
+
+    Setup_Close_Button(Pickaxes:WaitForChild("Close"))
+end
+
+local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+    local Pickaxes_Frame = Frames:WaitForChild("Pickaxes")
+
+    local Contents = Pickaxes_Frame:WaitForChild("Contents")
+    local Template = Contents:WaitForChild("Template") :: ImageLabel
+
+    for Name, Data in Pickaxes do
+        local ImageLabel = Template:Clone()
+        ImageLabel.Name = Name
+        ImageLabel.LayoutOrder = Data.Power
+        ImageLabel.Parent = Template.Parent
+
+        local Title = ImageLabel:WaitForChild("Title") :: TextLabel
+        Title.Text = Name
+
+        local Rarity = ImageLabel:WaitForChild("Rarity") :: TextLabel
+        Rarity.Text = Data.Rarity
+
+        local Power = ImageLabel:WaitForChild("Power") :: TextLabel
+        Power.Text = `📊 {Util.Abbreviate_Number(Data.Power)} Power`
+
+        local Icon = ImageLabel:WaitForChild("Icon") :: ImageLabel
+        Icon.Image = Data.Image
+
+        local Buy = ImageLabel:WaitForChild("Buy") :: ImageButton
+        local Price = Buy:WaitForChild("Price") :: TextLabel
+        Price.Text = `${Util.Format_Number_With_Commas(Data.Price, 2)}`
+
+        local Equip = ImageLabel:WaitForChild("Equip")
+
+        local RobuxBuy = ImageLabel:WaitForChild("RobuxBuy")
+        local RobuxBuy_Price = RobuxBuy:WaitForChild("Price") :: TextLabel
+
+        local Rebirth_Requirement = ImageLabel:WaitForChild("Rebirth_Requirement") :: Frame
+        local Rebirth_Requirement_Title = Rebirth_Requirement:WaitForChild("Title") :: TextLabel
+
+        local No_Stock = ImageLabel:WaitForChild("No_Stock") :: Frame
+    end
+
+    Template.Visible = false
+end
+
+local function Setup_Pickaxes(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    Setup_Pickaxes_Visibility(PlayerGui)
+
+    Setup_Pickaxes_Content(LocalEntity, PlayerGui)
+end
+
 local function Setup_Stroke_Fixer(PlayerGui: PlayerGui)
     local Reference_Height = 1080
 
@@ -351,6 +421,7 @@ return {
             Setup_Robux_Shop(Local_Entity, PlayerGui)
             Setup_Index(Local_Entity, PlayerGui)
             Setup_Rebirth(Local_Entity, PlayerGui)
+            Setup_Pickaxes(Local_Entity, PlayerGui)
 
             Setup_Stroke_Fixer(PlayerGui)
 

@@ -30,24 +30,6 @@ local Proximity = require(ReplicatedStorage.Common.Modules.Proximity)
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 
---[[
-Zone Usage Example
-	
-local function Setup_Zone(Part: Part, Screen: string)
-    local New_Zone = Zone.fromParts({ Part })
-    New_Zone:BindToHeartbeat()
-
-    New_Zone:ListenTo("Player", "Entered", function(_Target_Player: Player)
-   		
-    end)
-
-    New_Zone:ListenTo("Player", "Exited", function(_Target_Player: Player)
-      
-    end)
-end
-
-]]
-
 local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
     World:set(Local_Entity, Components.Plot_Model, Plot_Model)
 
