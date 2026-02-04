@@ -38,6 +38,8 @@ local DEFAULT_SIZE_MULTIPLIER = 1
 local HOVER_SIZE_MULTIPLIER = 1.05
 local PRESS_DOWN_SIZE_MULTIPLIER = 0.9
 local ACTIVATE_VELOCITY = 2
+local EQUIPPED_IMAGE_ID = "rbxassetid://105827258558873"
+local UNEQUIPPED_IMAGE_ID = "rbxassetid://119691695893621"
 
 local Scope = Fusion.scoped(Fusion)
 
@@ -358,6 +360,8 @@ local function Setup_Pickaxes_Visibility(PlayerGui: PlayerGui)
 end
 
 local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    local Local_Player = World:get(LocalEntity, Components.Player)
+
     local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
     local Frames = Main:WaitForChild("Frames") :: Frame
     local Pickaxes_Frame = Frames:WaitForChild("Pickaxes")
@@ -366,6 +370,26 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
     local Template = Contents:WaitForChild("Template") :: ImageLabel
 
     for Name, Data in Pickaxes do
+        local Equiped_Computed = Scope:Computed(function(Use)
+            return Use(Fusion_Values.Pickaxe) == Name
+        end)
+
+        local Has_Rebirth_Required_Computed = Scope:Computed(function(Use)
+            return Use(Fusion_Values.Rebirth) >= Data.Rebirth
+        end)
+
+        local Owned_Computed = Scope:Computed(function(Use)
+            if table.find(Use(Fusion_Values.Owned_Pickaxes), Name) then
+                return true
+            end
+
+            return false
+        end)
+
+        local Not_Owned_Computed = Scope:Computed(function(Use)
+            return not Use(Owned_Computed)
+        end)
+
         local ImageLabel = Template:Clone()
         ImageLabel.Name = Name
         ImageLabel.LayoutOrder = Data.Power
@@ -374,6 +398,12 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
         Hydrate_Button(ImageLabel, function() end, {
             HoverSizeMultiplier = 1.015,
             PressDownSizeMultiplier = 0.96,
+        })
+
+        Scope:Hydrate(ImageLabel)({
+            Visible = Data.Price == nil and Owned_Computed or true,
+            Active = Has_Rebirth_Required_Computed,
+            Interactable = Has_Rebirth_Required_Computed,
         })
 
         local Title = ImageLabel:WaitForChild("Title") :: TextLabel
@@ -389,30 +419,90 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
         Icon.Image = Data.Image
 
         local Buy = ImageLabel:WaitForChild("Buy") :: ImageButton
-        local Price = Buy:WaitForChild("Price") :: TextLabel
-        Price.Text = `${Util.Format_Number_With_Commas(Data.Price, 2)}`
 
-        Hydrate_Button(Buy, function() end)
+        if Data.Price then
+            local Price = Buy:WaitForChild("Price") :: TextLabel
+            Price.Text = `${Util.Format_Number_With_Commas(Data.Price, 2)}`
 
-        local Equip = ImageLabel:WaitForChild("Equip")
+            Scope:Hydrate(Buy)({
+                Visible = Not_Owned_Computed,
+                Active = Has_Rebirth_Required_Computed,
+                Interactable = Has_Rebirth_Required_Computed,
+            })
+
+            Hydrate_Button(Buy, function() end)
+        else
+            Buy.Visible = false
+        end
+
+        local RobuxBuy = ImageLabel:WaitForChild("RobuxBuy") :: ImageButton
+
+        if Data.Price then
+            task.spawn(function()
+                local RobuxBuy_Price = RobuxBuy:WaitForChild("Price") :: TextLabel
+                local Product_Info = Util.Get_Product_Info(Data.Developer_Product)
+
+                if Product_Info then
+                    RobuxBuy_Price.Text =
+                        `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+                else
+                    RobuxBuy_Price.Text = "Buy"
+                end
+            end)
+
+            Scope:Hydrate(RobuxBuy)({
+                Visible = Not_Owned_Computed,
+                Active = Has_Rebirth_Required_Computed,
+                Interactable = Has_Rebirth_Required_Computed,
+            })
+
+            Hydrate_Button(RobuxBuy, function()
+                MarketplaceService:PromptProductPurchase(Local_Player, Data.Developer_Product)
+            end)
+        else
+            RobuxBuy.Visible = false
+        end
+
+        local Equip = ImageLabel:WaitForChild("Equip") :: ImageButton
+        local Equip_Title = Equip:WaitForChild("Title") :: TextLabel
+
+        Scope:Hydrate(Equip)({
+            Visible = Owned_Computed,
+            Image = Scope:Computed(function(Use)
+                if Use(Equiped_Computed) then
+                    return EQUIPPED_IMAGE_ID
+                end
+
+                return UNEQUIPPED_IMAGE_ID
+            end),
+        })
+
+        Scope:Hydrate(Equip_Title)({
+            Text = Scope:Computed(function(Use)
+                if Use(Equiped_Computed) then
+                    return "Equipped"
+                end
+
+                return "Equip"
+            end),
+        })
 
         Hydrate_Button(Equip, function() end)
 
-        local RobuxBuy = ImageLabel:WaitForChild("RobuxBuy")
-        local RobuxBuy_Price = RobuxBuy:WaitForChild("Price") :: TextLabel
-
-        task.spawn(function()
-            local Product_Info = Util.Get_Product_Info(Data.Developer_Product)
-
-            if Product_Info then
-                RobuxBuy_Price.Text = `{Unicode_Characters.Robux}{Product_Info.PriceInRobux}`
-            end
-        end)
-
-        Hydrate_Button(RobuxBuy, function() end)
-
         local Rebirth_Requirement = ImageLabel:WaitForChild("Rebirth_Requirement") :: Frame
         local Rebirth_Requirement_Title = Rebirth_Requirement:WaitForChild("Title") :: TextLabel
+
+        Scope:Hydrate(Rebirth_Requirement)({
+            Visible = Scope:Computed(function(Use)
+                if Use(Owned_Computed) == true then
+                    return false
+                end
+
+                return not Use(Has_Rebirth_Required_Computed)
+            end),
+        })
+
+        Rebirth_Requirement_Title.Text = `Requires Rebirth {Data.Rebirth}`
     end
 
     Template.Visible = false

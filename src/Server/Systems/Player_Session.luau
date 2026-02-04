@@ -75,14 +75,14 @@ local function Handle_New_Player(Player: Player)
     World:set(Player_Entity, Components.Player, Player)
     World:set(Player_Entity, Components.Name, Player.Name)
 
-    for Name, Id in Gamepasses do
+    --[[for Name, Id in Gamepasses do
         if
             not table.find(Profile_Data.Gamepasses, Name)
             and MarketplaceService:UserOwnsGamePassAsync(Player.UserId, Id)
         then
             table.insert(Profile_Data.Gamepasses, Name)
         end
-    end
+    end]]
 
     World:set(Player_Entity, Components.Cash, Profile_Data.Cash)
     World:set(Player_Entity, Components.Pickaxe, Profile_Data.Pickaxe)
