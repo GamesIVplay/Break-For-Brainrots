@@ -32,6 +32,8 @@ local Registry = require(ReplicatedStorage.Common.Registry)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
+local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
+local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
 local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
@@ -580,14 +582,95 @@ local function Setup_Blocks_Visibility(PlayerGui: PlayerGui)
     local Frames = Main:WaitForChild("Frames") :: Frame
 
     local Blocks_Frame = Frames:WaitForChild("Blocks") :: ImageLabel
+    local Contents = Blocks_Frame:WaitForChild("Contents") :: ScrollingFrame
 
-    Hydrate_Frame_Visibility(Blocks_Frame, "Blocks")
+    Hydrate_Frame_Visibility(Blocks_Frame, "Blocks", function()
+        Contents.CanvasPosition = Vector2.zero
+    end)
 
     Setup_Close_Button(Blocks_Frame:WaitForChild("Close"))
 end
 
+local function Setup_Blocks_Restock(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    local Local_Player = World:get(LocalEntity, Components.Player)
+
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Blocks_Frame = Frames:WaitForChild("Blocks") :: ImageLabel
+
+    Hydrate_Button(Blocks_Frame:WaitForChild("Restock"), function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products.Restock)
+    end)
+end
+
+local function Setup_Blocks_Content(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    local Local_Player = World:get(LocalEntity, Components.Player)
+
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+    local Blocks_Frame = Frames:WaitForChild("Blocks")
+
+    local Contents = Blocks_Frame:WaitForChild("Contents") :: ScrollingFrame
+    local Template = Contents:WaitForChild("Template") :: ImageLabel
+
+    for Name, Data in Blocks do
+        if not Data.Price then
+            continue
+        end
+
+        local ImageLabel = Template:Clone()
+        ImageLabel.Name = Name
+        ImageLabel.LayoutOrder = Data.Price
+        ImageLabel.Parent = Template.Parent
+
+        local Title = ImageLabel:WaitForChild("Title") :: TextLabel
+        Title.Text = Name
+
+        local Rarity_Gradient = UIGradients:FindFirstChild(Data.Rarity)
+
+        if Rarity_Gradient then
+            Rarity_Gradient:Clone().Parent = Title
+        end
+
+        local Icon = ImageLabel:WaitForChild("Icon") :: ImageLabel
+        Icon.Image = Data.Image
+
+        local Buy = ImageLabel:WaitForChild("Buy") :: ImageButton
+
+        local Price = Buy:WaitForChild("Price") :: TextLabel
+        Price.Text = `${Util.Format_Number_With_Commas(Data.Price, 2)}`
+
+        Hydrate_Button(Buy, function() end)
+
+        local RobuxBuy = ImageLabel:WaitForChild("RobuxBuy") :: ImageButton
+
+        task.spawn(function()
+            local RobuxBuy_Price = RobuxBuy:WaitForChild("Price") :: TextLabel
+            local Product_Info = Util.Get_Product_Info(Data.Developer_Product)
+
+            if Product_Info then
+                RobuxBuy_Price.Text =
+                    `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+            else
+                RobuxBuy_Price.Text = "Buy"
+            end
+        end)
+
+        Hydrate_Button(RobuxBuy, function()
+            MarketplaceService:PromptProductPurchase(Local_Player, Data.Developer_Product)
+        end)
+    end
+
+    Template.Visible = false
+end
+
 local function Setup_Blocks(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Blocks_Visibility(PlayerGui)
+
+    Setup_Blocks_Restock(LocalEntity, PlayerGui)
+
+    Setup_Blocks_Content(LocalEntity, PlayerGui)
 end
 
 local function Setup_Upgrades_Visibility(PlayerGui: PlayerGui)
