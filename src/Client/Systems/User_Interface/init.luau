@@ -9,10 +9,16 @@ local Map = workspace:WaitForChild("Map")
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 
+local UIGradients = Assets:WaitForChild("UIGradients") :: Folder
+
 local UISounds = Assets:WaitForChild("Sounds"):WaitForChild("UI")
+local Shop_Open = UISounds:WaitForChild("Shop_Open") :: Sound
 local CashChange = UISounds:WaitForChild("CashChange") :: Sound
 local Activate = UISounds:WaitForChild("Activate") :: Sound
 local Hover = UISounds:WaitForChild("Hover") :: Sound
+local Frame_Open = UISounds:WaitForChild("Frame_Open") :: Sound
+
+local Network = require(ReplicatedFirst.Network)
 
 local Fusion = require(ReplicatedStorage.Packages.Fusion)
 local Children = Fusion.Children
@@ -98,6 +104,36 @@ type HydrateButtonOptions = {
     SpringSpeed: number?,
     SpringDamping: number?,
 }
+
+local function Hydrate_Frame_Visibility(Frame: ImageLabel, Screen_Name: string, Callback: (() -> ())?)
+    local Visible = Scope:Value(false)
+    local SizeMultiplierSpring = Scope:Spring(Scope:Value(DEFAULT_SIZE_MULTIPLIER), 17, 0.5)
+
+    Scope:Hydrate(Frame)({
+        Visible = Scope:Computed(function(Use)
+            return Use(Visible)
+        end),
+        [Children] = {
+            Scope:New("UIScale")({
+                Scale = SizeMultiplierSpring,
+            }),
+        },
+    })
+
+    Scope:Observer(Fusion_Values.Screen):onBind(function()
+        if Peek(Fusion_Values.Screen) == Screen_Name then
+            Visible:set(true)
+
+            SizeMultiplierSpring:addVelocity(-10)
+
+            if Callback then
+                Callback()
+            end
+        else
+            Visible:set(false)
+        end
+    end)
+end
 
 local function Hydrate_Button(GuiButton: GuiButton, OnActivate: () -> (), Options: HydrateButtonOptions?)
     Options = Options or {}
@@ -293,11 +329,9 @@ local function Setup_Robux_Shop_Visibility(PlayerGui: PlayerGui)
 
     local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
 
-    Scope:Hydrate(RobuxShop)({
-        Visible = Scope:Computed(function(Use)
-            return Use(Fusion_Values.Screen) == "RobuxShop"
-        end),
-    })
+    Hydrate_Frame_Visibility(RobuxShop, "RobuxShop", function()
+        Shop_Open:Play()
+    end)
 
     Setup_Close_Button(RobuxShop:WaitForChild("Close"))
 end
@@ -312,11 +346,7 @@ local function Setup_Index_Visibility(PlayerGui: PlayerGui)
 
     local Index = Frames:WaitForChild("Index") :: ImageLabel
 
-    Scope:Hydrate(Index)({
-        Visible = Scope:Computed(function(Use)
-            return Use(Fusion_Values.Screen) == "Index"
-        end),
-    })
+    Hydrate_Frame_Visibility(Index, "Index")
 
     Setup_Close_Button(Index:WaitForChild("Close"))
 end
@@ -331,11 +361,7 @@ local function Setup_Rebirth_Visibility(PlayerGui: PlayerGui)
 
     local Rebirth = Frames:WaitForChild("Rebirth") :: ImageLabel
 
-    Scope:Hydrate(Rebirth)({
-        Visible = Scope:Computed(function(Use)
-            return Use(Fusion_Values.Screen) == "Rebirth"
-        end),
-    })
+    Hydrate_Frame_Visibility(Rebirth, "Rebirth")
 
     Setup_Close_Button(Rebirth:WaitForChild("Close"))
 end
@@ -348,15 +374,41 @@ local function Setup_Pickaxes_Visibility(PlayerGui: PlayerGui)
     local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
     local Frames = Main:WaitForChild("Frames") :: Frame
 
-    local Pickaxes = Frames:WaitForChild("Pickaxes") :: ImageLabel
+    local Pickaxes_Frame = Frames:WaitForChild("Pickaxes") :: ImageLabel
+    local Contents = Pickaxes_Frame:WaitForChild("Contents") :: ScrollingFrame
 
-    Scope:Hydrate(Pickaxes)({
-        Visible = Scope:Computed(function(Use)
-            return Use(Fusion_Values.Screen) == "Pickaxes"
-        end),
-    })
+    Hydrate_Frame_Visibility(Pickaxes_Frame, "Pickaxes", function()
+        local Current_Pickaxe = Peek(Fusion_Values.Pickaxe)
 
-    Setup_Close_Button(Pickaxes:WaitForChild("Close"))
+        if not Current_Pickaxe then
+            return
+        end
+
+        local TargetFrame = Contents:FindFirstChild(Current_Pickaxe)
+        if not TargetFrame then
+            return
+        end
+
+        local Layout = Contents:FindFirstChildOfClass("UIListLayout")
+        if not Layout then
+            return
+        end
+
+        local PaddingPx = Layout.Padding.Offset + Layout.Padding.Scale * Contents.AbsoluteSize.Y
+        local FrameHeightPx = TargetFrame.Size.Y.Offset + TargetFrame.Size.Y.Scale * Contents.AbsoluteSize.Y
+
+        local Count_Above = 0
+        for _, Frame in Contents:GetChildren() do
+            if Frame:IsA("GuiObject") and Frame.Visible and Frame.LayoutOrder < TargetFrame.LayoutOrder then
+                Count_Above += 1
+            end
+        end
+
+        local TargetY = (FrameHeightPx + PaddingPx) * Count_Above
+        Contents.CanvasPosition = Vector2.new(0, TargetY)
+    end)
+
+    Setup_Close_Button(Pickaxes_Frame:WaitForChild("Close"))
 end
 
 local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
@@ -366,7 +418,7 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
     local Frames = Main:WaitForChild("Frames") :: Frame
     local Pickaxes_Frame = Frames:WaitForChild("Pickaxes")
 
-    local Contents = Pickaxes_Frame:WaitForChild("Contents")
+    local Contents = Pickaxes_Frame:WaitForChild("Contents") :: ScrollingFrame
     local Template = Contents:WaitForChild("Template") :: ImageLabel
 
     for Name, Data in Pickaxes do
@@ -395,11 +447,6 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
         ImageLabel.LayoutOrder = Data.Power
         ImageLabel.Parent = Template.Parent
 
-        Hydrate_Button(ImageLabel, function() end, {
-            HoverSizeMultiplier = 1.015,
-            PressDownSizeMultiplier = 0.96,
-        })
-
         Scope:Hydrate(ImageLabel)({
             Visible = Data.Price == nil and Owned_Computed or true,
             Active = Has_Rebirth_Required_Computed,
@@ -411,6 +458,12 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
 
         local Rarity = ImageLabel:WaitForChild("Rarity") :: TextLabel
         Rarity.Text = Data.Rarity
+
+        local Rarity_Gradient = UIGradients:FindFirstChild(Data.Rarity)
+
+        if Rarity_Gradient then
+            Rarity_Gradient:Clone().Parent = Rarity
+        end
 
         local Power = ImageLabel:WaitForChild("Power") :: TextLabel
         Power.Text = `📊 {Util.Abbreviate_Number(Data.Power)} Power`
@@ -430,7 +483,9 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
                 Interactable = Has_Rebirth_Required_Computed,
             })
 
-            Hydrate_Button(Buy, function() end)
+            Hydrate_Button(Buy, function()
+                Network.Requests.Buy_Pickaxe.Fire(Name)
+            end)
         else
             Buy.Visible = false
         end
@@ -487,7 +542,13 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
             end),
         })
 
-        Hydrate_Button(Equip, function() end)
+        Hydrate_Button(Equip, function()
+            if Peek(Fusion_Values.Pickaxe) == Name then
+                return
+            end
+
+            Network.Requests.Equip_Pickaxe.Fire(Name)
+        end)
 
         local Rebirth_Requirement = ImageLabel:WaitForChild("Rebirth_Requirement") :: Frame
         local Rebirth_Requirement_Title = Rebirth_Requirement:WaitForChild("Title") :: TextLabel
@@ -512,6 +573,36 @@ local function Setup_Pickaxes(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Pickaxes_Visibility(PlayerGui)
 
     Setup_Pickaxes_Content(LocalEntity, PlayerGui)
+end
+
+local function Setup_Blocks_Visibility(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Blocks_Frame = Frames:WaitForChild("Blocks") :: ImageLabel
+
+    Hydrate_Frame_Visibility(Blocks_Frame, "Blocks")
+
+    Setup_Close_Button(Blocks_Frame:WaitForChild("Close"))
+end
+
+local function Setup_Blocks(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    Setup_Blocks_Visibility(PlayerGui)
+end
+
+local function Setup_Upgrades_Visibility(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Upgrades_Frame = Frames:WaitForChild("Upgrades") :: ImageLabel
+
+    Hydrate_Frame_Visibility(Upgrades_Frame, "Upgrades")
+
+    Setup_Close_Button(Upgrades_Frame:WaitForChild("Close"))
+end
+
+local function Setup_Upgrades(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    Setup_Upgrades_Visibility(PlayerGui)
 end
 
 local function Setup_Stroke_Fixer(PlayerGui: PlayerGui)
@@ -568,6 +659,8 @@ return {
             Setup_Index(Local_Entity, PlayerGui)
             Setup_Rebirth(Local_Entity, PlayerGui)
             Setup_Pickaxes(Local_Entity, PlayerGui)
+            Setup_Blocks(Local_Entity, PlayerGui)
+            Setup_Upgrades(Local_Entity, PlayerGui)
 
             Setup_Stroke_Fixer(PlayerGui)
 
@@ -576,6 +669,8 @@ return {
                     TweenFov(0.15, 70)
                     Remove_Blur()
                 else
+                    Frame_Open:Play()
+
                     TweenFov(0.15, 50)
                     Add_Blur(30)
                 end

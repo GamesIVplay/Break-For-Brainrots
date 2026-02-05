@@ -9,4 +9,6 @@ return table.freeze({
     Rebirth = Scope:Value(0),
     Pickaxe = Scope:Value(nil),
     Owned_Pickaxes = Scope:Value({}),
+    Opens = Scope:Value(0),
+    Gamepasses = Scope:Value({}),
 })

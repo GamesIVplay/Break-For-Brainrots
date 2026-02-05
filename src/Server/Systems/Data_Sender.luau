@@ -67,6 +67,19 @@ local function Replicate_Cash(Player: Player, Entity: Types.Entity)
     end
 end
 
+local function Replicate_Rebirth(Player: Player, Entity: Types.Entity)
+    local Rebirth = World:get(Entity, Components.Rebirth)
+    local Previous_Rebirth = World:get(Entity, Pair(Components.Relationships.Previous, Components.Rebirth))
+
+    if Rebirth ~= Previous_Rebirth then
+        Network.DataChanged.Rebirth.Fire(Player, Rebirth)
+
+        World:set(Entity, Pair(Components.Relationships.Previous, Components.Rebirth), Rebirth)
+
+        Log.Info(`{Player.Name}'s rebirth was changed to {Rebirth}`)
+    end
+end
+
 local function Replicate_Pickaxe(Player: Player, Entity: Types.Entity)
     local Character = World:get(Entity, Components.Renderable)
 
@@ -107,6 +120,19 @@ local function Replicate_Owned_Pickaxes(Player: Player, Entity: Types.Entity)
     end
 end
 
+local function Replicate_Opens(Player: Player, Entity: Types.Entity)
+    local Opens = World:get(Entity, Components.Opens)
+    local Previous_Opens = World:get(Entity, Pair(Components.Relationships.Previous, Components.Opens))
+
+    if Opens ~= Previous_Opens then
+        Network.DataChanged.Opens.Fire(Player, Opens)
+
+        World:set(Entity, Pair(Components.Relationships.Previous, Components.Opens), Opens)
+
+        Log.Info(`{Player.Name}'s opens was changed to {Opens}`)
+    end
+end
+
 local function Replicate_Gamepasses(Player: Player, Entity: Types.Entity)
     local Gamepasses = World:get(Entity, Components.Gamepasses)
     local Previous_Gamepasses = World:get(Entity, Pair(Components.Relationships.Previous, Components.Gamepasses))
@@ -131,9 +157,13 @@ return {
         for Entity, Player in Player_Entities:iter() do
             Replicate_Cash(Player, Entity)
 
+            Replicate_Rebirth(Player, Entity)
+
             Replicate_Pickaxe(Player, Entity)
 
             Replicate_Owned_Pickaxes(Player, Entity)
+
+            Replicate_Opens(Player, Entity)
 
             Replicate_Gamepasses(Player, Entity)
         end

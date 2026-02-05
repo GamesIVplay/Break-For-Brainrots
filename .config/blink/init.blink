@@ -11,6 +11,46 @@ event ClientLoaded {
 	Poll: true
 }
 
+event Notification {
+    From: Server,
+    Type: Reliable,
+    Call: SingleSync,
+	Poll: true,
+    Data: struct {
+        Text: string,
+        Duration: u8?,
+        Type: Types.NotificationType
+    }
+}
+
+scope VFX { 
+	event Buy {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync,
+		Poll: true,
+        Data: Instance(Model) 
+    }
+}
+
+scope Requests {
+	event Buy_Pickaxe {
+        From: Client,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: string 
+    }
+
+	event Equip_Pickaxe {
+        From: Client,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: string 
+    }
+}
+
 scope DataChanged {
 	event Cash {
         From: Server,
@@ -18,6 +58,14 @@ scope DataChanged {
         Call: SingleSync, 
 		Poll: true,
         Data: Types.Cash
+    }
+
+	event Rebirth {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: Types.Rebirth
     }
 
 	event Pickaxe {
@@ -34,6 +82,14 @@ scope DataChanged {
         Call: SingleSync, 
 		Poll: true,
         Data: string[]
+    }
+
+	event Opens {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: Types.Opens
     }
 
     event Gamepasses {

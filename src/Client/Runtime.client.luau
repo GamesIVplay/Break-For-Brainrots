@@ -29,13 +29,17 @@ repeat
         StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, true)
         StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
     end)
-    task.wait(1)
+
+    if not Success then
+        task.wait(1)
+    end
 until Success == true
 
 Start({
     require(Systems.Init_Local_Entity),
     require(Systems.Map_Setup),
     require(Systems.User_Interface),
+    require(Systems.Notification),
     require(Systems.Data_Receiver),
 })
 

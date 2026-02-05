@@ -11,6 +11,7 @@ local Components: {
     Name: Types.Id<string>,
 
     Cash: Types.Id<number>,
+    Rebirth: Types.Id<number>,
     Pickaxe: Types.Id<string>,
     Owned_Pickaxes: Types.Id<{ string }>,
     Opens: Types.Id<number>,
@@ -18,10 +19,16 @@ local Components: {
 
     Plot_Model: Types.Id<Model>,
 
+    Text: Types.Id<string>,
+    Duration: Types.Id<number>,
+
+    NotificationType: Types.Id<Types.NotificationType>,
+
     Singletons: {},
     Tags: {
         Networked: Types.Entity,
         Plot: Types.Entity,
+        Notification: Types.Entity,
     },
     Relationships: {
         Owner: Types.Entity,
@@ -37,6 +44,7 @@ local Components: {
         Name = World:component(),
 
         Cash = World:component(),
+        Rebirth = World:component(),
         Pickaxe = World:component(),
         Owned_Pickaxes = World:component(),
         Opens = World:component(),
@@ -44,10 +52,16 @@ local Components: {
 
         Plot_Model = World:component(),
 
+        Text = World:component(),
+        Duration = World:component(),
+
+        NotificationType = World:component(),
+
         Singletons = {},
         Tags = {
             Networked = World:component(),
             Plot = World:component(),
+            Notification = World:component(),
         },
         Relationships = {
             Owner = World:component(),

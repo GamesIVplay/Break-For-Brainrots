@@ -8,5 +8,8 @@ Start({
     require(Systems.Create_Folders),
     require(Systems.Player_Session),
     require(Systems.Plot),
+    require(Systems.Purchase_Pickaxe),
+    require(Systems.Equip_Pickaxe),
     require(Systems.Data_Sender),
+    require(Systems.Leaderstats),
 })

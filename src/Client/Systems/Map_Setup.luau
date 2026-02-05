@@ -64,6 +64,10 @@ local function Setup_Shops(Local_Player: Player)
                 return
             end
 
+            if Peek(Fusion_Values.Screen) == Inst.Name then
+                return
+            end
+
             Fusion_Values.Screen:set(Inst.Name)
         end)
 

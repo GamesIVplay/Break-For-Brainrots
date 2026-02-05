@@ -75,18 +75,20 @@ local function Handle_New_Player(Player: Player)
     World:set(Player_Entity, Components.Player, Player)
     World:set(Player_Entity, Components.Name, Player.Name)
 
-    --[[for Name, Id in Gamepasses do
+    for Name, Id in Gamepasses do
         if
             not table.find(Profile_Data.Gamepasses, Name)
             and MarketplaceService:UserOwnsGamePassAsync(Player.UserId, Id)
         then
             table.insert(Profile_Data.Gamepasses, Name)
         end
-    end]]
+    end
 
     World:set(Player_Entity, Components.Cash, Profile_Data.Cash)
+    World:set(Player_Entity, Components.Rebirth, Profile_Data.Rebirth)
     World:set(Player_Entity, Components.Pickaxe, Profile_Data.Pickaxe)
     World:set(Player_Entity, Components.Owned_Pickaxes, Profile_Data.Owned_Pickaxes)
+    World:set(Player_Entity, Components.Opens, Profile_Data.Opens)
     World:set(Player_Entity, Components.Gamepasses, Profile_Data.Gamepasses)
     World:set(Player_Entity, Components.Cleanup, function()
         Profile.Unload(Player)
@@ -98,8 +100,10 @@ local function Handle_New_Player(Player: Player)
 
     Player_Profile.OnSave:Connect(function()
         Profile_Data.Cash = World:get(Player_Entity, Components.Cash)
+        Profile_Data.Rebirth = World:get(Player_Entity, Components.Rebirth)
         Profile_Data.Pickaxe = World:get(Player_Entity, Components.Pickaxe)
         Profile_Data.Owned_Pickaxes = World:get(Player_Entity, Components.Owned_Pickaxes)
+        Profile_Data.Opens = World:get(Player_Entity, Components.Opens)
         Profile_Data.Gamepasses = World:get(Player_Entity, Components.Gamepasses)
     end)
 
