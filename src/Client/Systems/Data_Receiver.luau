@@ -71,10 +71,10 @@ local function Handle_Stock_Changes(Local_Entity: Types.Entity)
 end
 
 local function Handle_Last_Restock_Changes(Local_Entity: Types.Entity)
-    for _, Value in Network.DataChanged.Stock.Iter() do
-        World:set(Local_Entity, Components.Stock, Value)
+    for _, Value in Network.DataChanged.Last_Restock.Iter() do
+        World:set(Local_Entity, Components.Last_Restock, Value)
 
-        Fusion_Values.Stock:set(Value)
+        Fusion_Values.Last_Restock:set(Value)
     end
 end
 
@@ -105,6 +105,10 @@ return {
         Handle_Opens_Changes(Local_Entity)
 
         Handle_Gamepass_Changes(Local_Entity)
+
+        Handle_Stock_Changes(Local_Entity)
+
+        Handle_Last_Restock_Changes(Local_Entity)
 
         Handle_Buy_VFX()
     end,

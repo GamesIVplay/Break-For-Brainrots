@@ -12,6 +12,7 @@ export type ProfileData = {
     Gamepasses: { string },
     Stock: { [string]: number },
     Last_Restock: number,
+    Block_Queue: { string },
 }
 
 local ProfileStore = require(ReplicatedStorage.Packages.ProfileStore)
@@ -25,7 +26,8 @@ local PLAYER_DATA_TEMPLATE: ProfileData = {
     Opens = 0,
     Gamepasses = {},
     Stock = {},
-    Last_Restock = 0,
+    Last_Restock = os.time(),
+    Block_Queue = {},
 }
 
 local PlayerProfileStore = ProfileStore.New("Main", PLAYER_DATA_TEMPLATE)

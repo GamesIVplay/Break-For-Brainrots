@@ -34,6 +34,8 @@ return {
         World:set(Local_Entity, Components.Cash, 0)
         World:set(Local_Entity, Components.Opens, 0)
         World:set(Local_Entity, Components.Gamepasses, {})
+        World:set(Local_Entity, Components.Stock, {})
+        World:set(Local_Entity, Components.Last_Restock, 0)
 
         if Local_Player.Character then
             Setup_Character(Local_Entity, Local_Player.Character)

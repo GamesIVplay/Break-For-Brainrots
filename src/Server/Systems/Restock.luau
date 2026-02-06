@@ -12,7 +12,7 @@ local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
 
 local Restock_Query = World:query(Components.Player, Components.Last_Restock, Components.Stock):cached()
 
-local RESTOCK_TIME = 60 * 5 -- 5 Minutes
+local Config = require(ReplicatedStorage.Common.Config)
 
 return {
     name = script.Name,
@@ -21,7 +21,7 @@ return {
         for Player_Entity: Types.Entity, Player: Player, Last_Restock: number, Stock: { [string]: number } in
             Restock_Query:iter()
         do
-            if os.time() - Last_Restock >= RESTOCK_TIME then
+            if os.time() - Last_Restock >= Config.RESTOCK_TIME then
                 table.clear(Stock)
 
                 World:set(Player_Entity, Components.Last_Restock, os.time())

@@ -25,19 +25,21 @@ local Children = Fusion.Children
 local OnEvent = Fusion.OnEvent
 local Peek = Fusion.peek
 
-local Components = require(ReplicatedStorage.Common.Components)
-local Log = require(ReplicatedStorage.Common.Log)
-local Phases = require(ReplicatedStorage.Common.Phases)
-local Registry = require(ReplicatedStorage.Common.Registry)
-local Types = require(ReplicatedStorage.Common.Types)
-local World = require(ReplicatedStorage.Common.World)
+local Clock = require(ReplicatedStorage.Packages.Clock)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
+local Components = require(ReplicatedStorage.Common.Components)
+local Config = require(ReplicatedStorage.Common.Config)
 local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
+local Log = require(ReplicatedStorage.Common.Log)
+local Phases = require(ReplicatedStorage.Common.Phases)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
+local Registry = require(ReplicatedStorage.Common.Registry)
+local Types = require(ReplicatedStorage.Common.Types)
 local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
+local World = require(ReplicatedStorage.Common.World)
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 local Teleport_Character = require(ReplicatedFirst.Client.Modules.Teleport_Character)
@@ -611,13 +613,44 @@ local function Setup_Blocks_Content(LocalEntity: Types.Entity, PlayerGui: Player
     local Frames = Main:WaitForChild("Frames") :: Frame
     local Blocks_Frame = Frames:WaitForChild("Blocks")
 
+    local Time = Blocks_Frame:WaitForChild("Time") :: TextLabel
+
     local Contents = Blocks_Frame:WaitForChild("Contents") :: ScrollingFrame
     local Template = Contents:WaitForChild("Template") :: ImageLabel
+
+    Clock(0.1, function()
+        local Last_Restock = World:get(LocalEntity, Components.Last_Restock)
+        local Next_Restock = Last_Restock + Config.RESTOCK_TIME
+
+        local Remaining = math.max(0, Next_Restock - os.time())
+
+        local T = Util.BreakdownTime(Remaining)
+
+        Time.Text = `New blocks in {T.Minutes}m {T.Seconds}s`
+    end)
 
     for Name, Data in Blocks do
         if not Data.Price then
             continue
         end
+
+        local Stock_Computed = Scope:Computed(function(Use)
+            local Current_Stock = Use(Fusion_Values.Stock)
+
+            if Current_Stock[Name] ~= nil then
+                return Current_Stock[Name]
+            end
+
+            return 0
+        end)
+
+        local Can_Buy_Computed = Scope:Computed(function(Use)
+            if Use(Stock_Computed) > 0 then
+                return true
+            end
+
+            return false
+        end)
 
         local ImageLabel = Template:Clone()
         ImageLabel.Name = Name
@@ -636,12 +669,33 @@ local function Setup_Blocks_Content(LocalEntity: Types.Entity, PlayerGui: Player
         local Icon = ImageLabel:WaitForChild("Icon") :: ImageLabel
         Icon.Image = Data.Image
 
+        local Stock = ImageLabel:WaitForChild("Stock") :: TextLabel
+        Scope:Hydrate(Stock)({
+            Text = Scope:Computed(function(Use)
+                return `x{Use(Stock_Computed)} Stock`
+            end),
+        })
+
+        local NoStock = ImageLabel:WaitForChild("NoStock") :: Frame
+        Scope:Hydrate(NoStock)({
+            Visible = Scope:Computed(function(Use)
+                return Use(Stock_Computed) == 0
+            end),
+        })
+
         local Buy = ImageLabel:WaitForChild("Buy") :: ImageButton
+
+        Scope:Hydrate(Buy)({
+            Active = Can_Buy_Computed,
+            Interactable = Can_Buy_Computed,
+        })
 
         local Price = Buy:WaitForChild("Price") :: TextLabel
         Price.Text = `${Util.Format_Number_With_Commas(Data.Price, 2)}`
 
-        Hydrate_Button(Buy, function() end)
+        Hydrate_Button(Buy, function()
+            Network.Requests.Buy_Block.Fire(Name)
+        end)
 
         local RobuxBuy = ImageLabel:WaitForChild("RobuxBuy") :: ImageButton
 

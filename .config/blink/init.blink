@@ -49,6 +49,14 @@ scope Requests {
 		Poll: true,
         Data: string 
     }
+
+	event Buy_Block {
+        From: Client,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: string 
+    }
 }
 
 scope DataChanged {

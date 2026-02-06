@@ -18,6 +18,7 @@ local Components: {
     Gamepasses: Types.Id<{ string }>,
     Stock: Types.Id<{ [string]: number }>,
     Last_Restock: number,
+    Block_Queue: { string },
 
     Plot_Model: Types.Id<Model>,
 
@@ -53,6 +54,7 @@ local Components: {
         Gamepasses = World:component(),
         Stock = World:component(),
         Last_Restock = World:component(),
+        Block_Queue = World:component(),
 
         Plot_Model = World:component(),
 
