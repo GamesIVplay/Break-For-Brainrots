@@ -11,4 +11,6 @@ return table.freeze({
     Owned_Pickaxes = Scope:Value({}),
     Opens = Scope:Value(0),
     Gamepasses = Scope:Value({}),
+    Stock = Scope:Value({}),
+    Last_Restock = Scope:Value(0),
 })

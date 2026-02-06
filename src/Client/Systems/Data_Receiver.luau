@@ -62,6 +62,22 @@ local function Handle_Gamepass_Changes(Local_Entity: Types.Entity)
     end
 end
 
+local function Handle_Stock_Changes(Local_Entity: Types.Entity)
+    for _, Value in Network.DataChanged.Stock.Iter() do
+        World:set(Local_Entity, Components.Stock, Value)
+
+        Fusion_Values.Stock:set(Value)
+    end
+end
+
+local function Handle_Last_Restock_Changes(Local_Entity: Types.Entity)
+    for _, Value in Network.DataChanged.Stock.Iter() do
+        World:set(Local_Entity, Components.Stock, Value)
+
+        Fusion_Values.Stock:set(Value)
+    end
+end
+
 local function Handle_Buy_VFX()
     for _, Model: Model in Network.VFX.Buy.Iter() do
         if not Model:IsDescendantOf(game.Workspace) then

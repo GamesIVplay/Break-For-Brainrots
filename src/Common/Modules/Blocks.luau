@@ -9,6 +9,7 @@ type Block = {
     Health: number,
     Rarity: Types.Rarity,
     Price: number?,
+    Restock_Chance: number,
     Minimum_Stock: number,
     Maximum_Stock: number,
     Image: string,
@@ -20,7 +21,8 @@ local Blocks: { [string]: Block } = {
     ["Common"] = {
         Health = 6,
         Rarity = "Common",
-        Price = 1,
+        Price = 100,
+        Restock_Chance = 1,
         Minimum_Stock = 6,
         Maximum_Stock = 8,
         Image = "rbxassetid://79213647551491",
@@ -30,7 +32,8 @@ local Blocks: { [string]: Block } = {
     ["Rare"] = {
         Health = 30,
         Rarity = "Rare",
-        Price = 2,
+        Price = 1000,
+        Restock_Chance = 1,
         Minimum_Stock = 6,
         Maximum_Stock = 8,
         Image = "rbxassetid://93587961651208",
@@ -40,7 +43,8 @@ local Blocks: { [string]: Block } = {
     ["Epic"] = {
         Health = 250,
         Rarity = "Epic",
-        Price = 3,
+        Price = 10_000,
+        Restock_Chance = 1,
         Minimum_Stock = 6,
         Maximum_Stock = 8,
         Image = "rbxassetid://97817682630959",
@@ -50,7 +54,8 @@ local Blocks: { [string]: Block } = {
     ["Legendary"] = {
         Health = 600,
         Rarity = "Legendary",
-        Price = 4,
+        Price = 100_000,
+        Restock_Chance = 3 / 10,
         Minimum_Stock = 6,
         Maximum_Stock = 8,
         Image = "rbxassetid://72423874015250",
@@ -60,7 +65,8 @@ local Blocks: { [string]: Block } = {
     ["Mythical"] = {
         Health = 1250,
         Rarity = "Mythical",
-        Price = 5,
+        Price = 250_000,
+        Restock_Chance = 2 / 10,
         Minimum_Stock = 6,
         Maximum_Stock = 8,
         Image = "rbxassetid://89867971269576",
@@ -70,7 +76,8 @@ local Blocks: { [string]: Block } = {
     ["Secret"] = {
         Health = 2500,
         Rarity = "Secret",
-        Price = 6,
+        Price = 500_000,
+        Restock_Chance = 1 / 10,
         Minimum_Stock = 6,
         Maximum_Stock = 8,
         Image = "rbxassetid://110996944104233",

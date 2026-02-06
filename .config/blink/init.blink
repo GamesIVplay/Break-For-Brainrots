@@ -100,6 +100,21 @@ scope DataChanged {
         Data: string[]
     }
 
+	event Stock {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: map { [string]: f64 }
+    }
+
+	event Last_Restock {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: f64
+    }
 
 	event Plot_Assigned { 
 		From: Server,

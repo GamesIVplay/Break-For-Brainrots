@@ -150,6 +150,32 @@ local function Replicate_Gamepasses(Player: Player, Entity: Types.Entity)
     end
 end
 
+local function Replicate_Stock(Player: Player, Entity: Types.Entity)
+    local Stock = World:get(Entity, Components.Stock)
+    local Previous_Stock = World:get(Entity, Pair(Components.Relationships.Previous, Components.Stock))
+
+    if not Util.TablesAreEqual(Stock, Previous_Stock) then
+        Network.DataChanged.Stock.Fire(Player, Stock)
+
+        World:set(Entity, Pair(Components.Relationships.Previous, Components.Stock), Util.CopyTable(Stock, true))
+
+        Log.Info(`{Player.Name}'s stock was changed`)
+    end
+end
+
+local function Replicate_Last_Restock(Player: Player, Entity: Types.Entity)
+    local Last_Restock = World:get(Entity, Components.Last_Restock)
+    local Previous_Last_Restock = World:get(Entity, Pair(Components.Relationships.Previous, Components.Last_Restock))
+
+    if Last_Restock ~= Previous_Last_Restock then
+        Network.DataChanged.Last_Restock.Fire(Player, Last_Restock)
+
+        World:set(Entity, Pair(Components.Relationships.Previous, Components.Last_Restock), Last_Restock)
+
+        Log.Info(`{Player.Name}'s last restock was changed`)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.PostUpdate,
@@ -166,6 +192,10 @@ return {
             Replicate_Opens(Player, Entity)
 
             Replicate_Gamepasses(Player, Entity)
+
+            Replicate_Stock(Player, Entity)
+
+            Replicate_Last_Restock(Player, Entity)
         end
     end,
     runConditions = {},

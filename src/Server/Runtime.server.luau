@@ -10,6 +10,7 @@ Start({
     require(Systems.Plot),
     require(Systems.Purchase_Pickaxe),
     require(Systems.Equip_Pickaxe),
+    require(Systems.Restock),
     require(Systems.Data_Sender),
     require(Systems.Leaderstats),
 })

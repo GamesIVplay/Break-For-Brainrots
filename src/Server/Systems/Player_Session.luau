@@ -90,6 +90,8 @@ local function Handle_New_Player(Player: Player)
     World:set(Player_Entity, Components.Owned_Pickaxes, Profile_Data.Owned_Pickaxes)
     World:set(Player_Entity, Components.Opens, Profile_Data.Opens)
     World:set(Player_Entity, Components.Gamepasses, Profile_Data.Gamepasses)
+    World:set(Player_Entity, Components.Stock, Profile_Data.Stock)
+    World:set(Player_Entity, Components.Last_Restock, Profile_Data.Last_Restock)
     World:set(Player_Entity, Components.Cleanup, function()
         Profile.Unload(Player)
 
@@ -105,6 +107,8 @@ local function Handle_New_Player(Player: Player)
         Profile_Data.Owned_Pickaxes = World:get(Player_Entity, Components.Owned_Pickaxes)
         Profile_Data.Opens = World:get(Player_Entity, Components.Opens)
         Profile_Data.Gamepasses = World:get(Player_Entity, Components.Gamepasses)
+        Profile_Data.Stock = World:get(Player_Entity, Components.Stock)
+        Profile_Data.Last_Restock = World:get(Player_Entity, Components.Last_Restock)
     end)
 
     if Player.Character then

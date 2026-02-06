@@ -16,6 +16,8 @@ local Components: {
     Owned_Pickaxes: Types.Id<{ string }>,
     Opens: Types.Id<number>,
     Gamepasses: Types.Id<{ string }>,
+    Stock: Types.Id<{ [string]: number }>,
+    Last_Restock: number,
 
     Plot_Model: Types.Id<Model>,
 
@@ -49,6 +51,8 @@ local Components: {
         Owned_Pickaxes = World:component(),
         Opens = World:component(),
         Gamepasses = World:component(),
+        Stock = World:component(),
+        Last_Restock = World:component(),
 
         Plot_Model = World:component(),
 

@@ -10,6 +10,8 @@ export type ProfileData = {
     Owned_Pickaxes: { string },
     Opens: number,
     Gamepasses: { string },
+    Stock: { [string]: number },
+    Last_Restock: number,
 }
 
 local ProfileStore = require(ReplicatedStorage.Packages.ProfileStore)
@@ -22,6 +24,8 @@ local PLAYER_DATA_TEMPLATE: ProfileData = {
     Owned_Pickaxes = { "Starter" },
     Opens = 0,
     Gamepasses = {},
+    Stock = {},
+    Last_Restock = 0,
 }
 
 local PlayerProfileStore = ProfileStore.New("Main", PLAYER_DATA_TEMPLATE)
