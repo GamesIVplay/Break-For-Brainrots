@@ -26,6 +26,7 @@ local World = require(ReplicatedStorage.Common.World)
 
 local AnimPlayer = require(ReplicatedStorage.Common.Modules.AnimPlayer)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
+local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 
 local PlayersRemoving = Collect(Players.PlayerRemoving)
 
@@ -84,6 +85,20 @@ local function Handle_New_Player(Player: Player)
         end
     end
 
+    for Name, Data in Upgrades do
+        local Current_Upgrades = Profile_Data.Upgrades
+
+        if not Current_Upgrades[Name] then
+            Current_Upgrades[Name] = 1
+        end
+
+        local Max_Level = #Data.Levels
+
+        if Current_Upgrades[Name] > Max_Level then
+            Current_Upgrades[Name] = Max_Level
+        end
+    end
+
     World:set(Player_Entity, Components.Cash, Profile_Data.Cash)
     World:set(Player_Entity, Components.Rebirth, Profile_Data.Rebirth)
     World:set(Player_Entity, Components.Pickaxe, Profile_Data.Pickaxe)
@@ -93,6 +108,7 @@ local function Handle_New_Player(Player: Player)
     World:set(Player_Entity, Components.Stock, Profile_Data.Stock)
     World:set(Player_Entity, Components.Last_Restock, Profile_Data.Last_Restock)
     World:set(Player_Entity, Components.Block_Queue, Profile_Data.Block_Queue)
+    World:set(Player_Entity, Components.Upgrades, Profile_Data.Upgrades)
     World:set(Player_Entity, Components.Cleanup, function()
         Profile.Unload(Player)
 
@@ -111,6 +127,7 @@ local function Handle_New_Player(Player: Player)
         Profile_Data.Stock = World:get(Player_Entity, Components.Stock)
         Profile_Data.Last_Restock = World:get(Player_Entity, Components.Last_Restock)
         Profile_Data.Block_Queue = World:get(Player_Entity, Components.Block_Queue)
+        Profile_Data.Upgrades = World:get(Player_Entity, Components.Upgrades)
     end)
 
     if Player.Character then

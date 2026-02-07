@@ -13,4 +13,5 @@ return table.freeze({
     Gamepasses = Scope:Value({}),
     Stock = Scope:Value({}),
     Last_Restock = Scope:Value(0),
+    Upgrades = Scope:Value({}),
 })

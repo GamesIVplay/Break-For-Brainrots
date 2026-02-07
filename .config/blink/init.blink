@@ -124,6 +124,14 @@ scope DataChanged {
         Data: f64
     }
 
+	event Upgrades {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: map { [string]: u8 }
+    }
+
 	event Plot_Assigned { 
 		From: Server,
 		Type: Reliable,

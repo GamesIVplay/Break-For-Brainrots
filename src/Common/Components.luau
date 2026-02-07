@@ -19,6 +19,7 @@ local Components: {
     Stock: Types.Id<{ [string]: number }>,
     Last_Restock: number,
     Block_Queue: { string },
+    Upgrades: { [string]: number },
 
     Plot_Model: Types.Id<Model>,
 
@@ -55,6 +56,7 @@ local Components: {
         Stock = World:component(),
         Last_Restock = World:component(),
         Block_Queue = World:component(),
+        Upgrades = World:component(),
 
         Plot_Model = World:component(),
 

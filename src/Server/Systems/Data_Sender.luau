@@ -176,6 +176,19 @@ local function Replicate_Last_Restock(Player: Player, Entity: Types.Entity)
     end
 end
 
+local function Replicate_Upgrades(Player: Player, Entity: Types.Entity)
+    local Upgrades = World:get(Entity, Components.Upgrades)
+    local Previous_Upgrades = World:get(Entity, Pair(Components.Relationships.Previous, Components.Upgrades))
+
+    if not Util.TablesAreEqual(Previous_Upgrades, Upgrades) then
+        Network.DataChanged.Upgrades.Fire(Player, Upgrades)
+
+        World:set(Entity, Pair(Components.Relationships.Previous, Components.Upgrades), Util.CopyTable(Upgrades, true))
+
+        Log.Info(`{Player.Name}'s upgrades were changed`)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.PostUpdate,
@@ -196,6 +209,8 @@ return {
             Replicate_Stock(Player, Entity)
 
             Replicate_Last_Restock(Player, Entity)
+
+            Replicate_Upgrades(Player, Entity)
         end
     end,
     runConditions = {},

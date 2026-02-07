@@ -38,6 +38,7 @@ local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
 local Registry = require(ReplicatedStorage.Common.Registry)
 local Types = require(ReplicatedStorage.Common.Types)
 local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
+local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 local World = require(ReplicatedStorage.Common.World)
 
@@ -732,14 +733,125 @@ local function Setup_Upgrades_Visibility(PlayerGui: PlayerGui)
     local Frames = Main:WaitForChild("Frames") :: Frame
 
     local Upgrades_Frame = Frames:WaitForChild("Upgrades") :: ImageLabel
+    local Contents = Upgrades_Frame:WaitForChild("Contents") :: ScrollingFrame
 
-    Hydrate_Frame_Visibility(Upgrades_Frame, "Upgrades")
+    Hydrate_Frame_Visibility(Upgrades_Frame, "Upgrades", function()
+        Contents.CanvasPosition = Vector2.zero
+    end)
 
     Setup_Close_Button(Upgrades_Frame:WaitForChild("Close"))
 end
 
+local function Setup_Upgrades_Content(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    local Local_Player = World:get(LocalEntity, Components.Player)
+
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+    local Upgrades_Frame = Frames:WaitForChild("Upgrades")
+
+    local Contents = Upgrades_Frame:WaitForChild("Contents") :: ScrollingFrame
+    local Template = Contents:WaitForChild("Template") :: ImageLabel
+
+    for Name, Data in Upgrades do
+        local Level_Computed = Scope:Computed(function(Use)
+            return Use(Fusion_Values.Upgrades)[Name] or 1
+        end)
+
+        local Has_Rebirth_Required_Computed = Scope:Computed(function(Use)
+            return Use(Fusion_Values.Rebirth) >= Data.Rebirth
+        end)
+
+        local ImageLabel = Template:Clone()
+        ImageLabel.Name = Name
+        ImageLabel.LayoutOrder = Data.Index
+        ImageLabel.Parent = Template.Parent
+
+        local Title = ImageLabel:WaitForChild("Title") :: TextLabel
+        Title.Text = Name
+
+        local Icon = ImageLabel:WaitForChild("Icon") :: ImageLabel
+        Icon.Image = Data.Image
+        Icon.Size = Data.Image_Size
+
+        local Original_Text_Label = ImageLabel:WaitForChild("Original") :: TextLabel
+        local New_Text_Label = ImageLabel:WaitForChild("New") :: TextLabel
+
+        Scope:Hydrate(Original_Text_Label)({
+            Text = Scope:Computed(function(Use)
+                return Data.Levels[Use(Level_Computed)].Multiplier
+            end),
+        })
+
+        Scope:Hydrate(New_Text_Label)({
+            Text = Scope:Computed(function(Use)
+                local Next_Data = Data.Levels[Use(Level_Computed) + 1]
+
+                if Next_Data then
+                    return Next_Data.Multiplier
+                end
+
+                return ""
+            end),
+        })
+
+        local Buy = ImageLabel:WaitForChild("Buy") :: ImageButton
+
+        Scope:Hydrate(Buy)({
+            Active = Has_Rebirth_Required_Computed,
+            Interactable = Has_Rebirth_Required_Computed,
+        })
+
+        local Price = Buy:WaitForChild("Price") :: TextLabel
+        Scope:Hydrate(Price)({
+            Text = Scope:Computed(function(Use)
+                return `${Util.Format_Number_With_Commas(Data.Levels[Use(Level_Computed)].Price, 2)}`
+            end),
+        })
+
+        Hydrate_Button(Buy, function() end)
+
+        local RobuxBuy = ImageLabel:WaitForChild("RobuxBuy") :: ImageButton
+
+        task.spawn(function()
+            local RobuxBuy_Price = RobuxBuy:WaitForChild("Price") :: TextLabel
+            local Product_Info = Util.Get_Product_Info(Data.Developer_Product)
+
+            if Product_Info then
+                RobuxBuy_Price.Text =
+                    `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+            else
+                RobuxBuy_Price.Text = "Buy"
+            end
+        end)
+
+        Scope:Hydrate(RobuxBuy)({
+            Active = Has_Rebirth_Required_Computed,
+            Interactable = Has_Rebirth_Required_Computed,
+        })
+
+        Hydrate_Button(RobuxBuy, function()
+            MarketplaceService:PromptProductPurchase(Local_Player, Data.Developer_Product)
+        end)
+
+        local Rebirth_Requirement = ImageLabel:WaitForChild("Rebirth_Requirement")
+        local Rebirth_Requirement_Title = Rebirth_Requirement:WaitForChild("Title") :: TextLabel
+
+        Scope:Hydrate(Rebirth_Requirement)({
+            Visible = Scope:Computed(function(Use)
+                return not Use(Has_Rebirth_Required_Computed)
+            end),
+        })
+
+        Rebirth_Requirement_Title.Text = `Requires Rebirth {Data.Rebirth}`
+    end
+
+    Template.Visible = false
+end
+
 local function Setup_Upgrades(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Upgrades_Visibility(PlayerGui)
+
+    Setup_Upgrades_Content(LocalEntity, PlayerGui)
 end
 
 local function Setup_Stroke_Fixer(PlayerGui: PlayerGui)

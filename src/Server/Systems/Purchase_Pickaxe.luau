@@ -34,6 +34,16 @@ local function Handle_Pickaxe_Purchase_Requests()
             continue
         end
 
+        local Rebirth = World:get(Player_Entity, Components.Rebirth)
+
+        if Rebirth < Pickaxe_Data.Rebirth then
+            Network.Notification.Fire(Player, {
+                Text = "You don't have the required rebirth",
+                Type = "Error",
+            })
+            continue
+        end
+
         local Cash = World:get(Player_Entity, Components.Cash)
 
         if Cash < Pickaxe_Data.Price then

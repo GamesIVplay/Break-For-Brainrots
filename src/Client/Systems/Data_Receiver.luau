@@ -78,6 +78,14 @@ local function Handle_Last_Restock_Changes(Local_Entity: Types.Entity)
     end
 end
 
+local function Handle_Upgrades_Changes(Local_Entity: Types.Entity)
+    for _, Value in Network.DataChanged.Upgrades.Iter() do
+        World:set(Local_Entity, Components.Upgrades, Value)
+
+        Fusion_Values.Upgrades:set(Value)
+    end
+end
+
 local function Handle_Buy_VFX()
     for _, Model: Model in Network.VFX.Buy.Iter() do
         if not Model:IsDescendantOf(game.Workspace) then
@@ -109,6 +117,8 @@ return {
         Handle_Stock_Changes(Local_Entity)
 
         Handle_Last_Restock_Changes(Local_Entity)
+
+        Handle_Upgrades_Changes(Local_Entity)
 
         Handle_Buy_VFX()
     end,
