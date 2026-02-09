@@ -96,6 +96,16 @@ local function Handle_Buy_VFX()
     end
 end
 
+local function Handle_Block_Spawn()
+    for _, Model: Model in Network.VFX.Block_Spawn.Iter() do
+        if not Model:IsDescendantOf(game.Workspace) then
+            continue
+        end
+
+        require(VFX.Block_Spawn)(Model)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.First,
@@ -121,6 +131,8 @@ return {
         Handle_Upgrades_Changes(Local_Entity)
 
         Handle_Buy_VFX()
+
+        Handle_Block_Spawn()
     end,
     runConditions = {},
 }

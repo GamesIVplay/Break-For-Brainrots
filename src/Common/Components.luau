@@ -28,16 +28,20 @@ local Components: {
 
     NotificationType: Types.Id<Types.NotificationType>,
 
+    Health: Types.Id<number>,
+
     Singletons: {},
     Tags: {
         Networked: Types.Entity,
         Plot: Types.Entity,
         Notification: Types.Entity,
+        Block: Types.Entity,
     },
     Relationships: {
         Owner: Types.Entity,
         Plot: Types.Entity,
         Previous: Types.Entity,
+        Block: Types.Entity,
     },
 } =
     {
@@ -65,16 +69,20 @@ local Components: {
 
         NotificationType = World:component(),
 
+        Health = World:component(),
+
         Singletons = {},
         Tags = {
             Networked = World:component(),
             Plot = World:component(),
             Notification = World:component(),
+            Block = World:component(),
         },
         Relationships = {
             Owner = World:component(),
             Plot = World:component(),
             Previous = World:component(),
+            Block = World:component(),
         },
     }
 

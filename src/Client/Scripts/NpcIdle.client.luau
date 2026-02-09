@@ -51,3 +51,4 @@ for _, Inst in workspace:GetDescendants() do
 end
 
 workspace.DescendantAdded:Connect(Start)
+CollectionService:GetInstanceAddedSignal("Idle"):Connect(Start)

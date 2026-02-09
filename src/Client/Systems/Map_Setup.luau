@@ -49,7 +49,9 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
 
     Proximity(Skip_Screen, {
         ActionText = "Skip Block",
-    }, function() end)
+    }, function()
+        Network.Requests.Skip_Block.Fire()
+    end)
 end
 
 local function Setup_Shops(Local_Player: Player)
