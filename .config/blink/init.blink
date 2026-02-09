@@ -57,6 +57,14 @@ scope Requests {
 		Poll: true,
         Data: string 
     }
+
+	event Buy_Upgrade {
+        From: Client,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: string 
+	}
 }
 
 scope DataChanged {

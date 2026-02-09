@@ -1,5 +1,6 @@
 return table.freeze({
     ["Restock"] = 3524818685,
+    ["Break Block"] = 3524818590,
 
     -- Map offers
     ["Gold Ballerina Cappuccina"] = 3527109775,

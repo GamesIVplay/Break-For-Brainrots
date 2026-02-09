@@ -15,6 +15,7 @@ type Block = {
     Image: string,
     Developer_Product: number,
     Model: Model,
+    Roll_Brainrot: () -> string,
 }
 
 local Blocks: { [string]: Block } = {
@@ -28,6 +29,7 @@ local Blocks: { [string]: Block } = {
         Image = "rbxassetid://79213647551491",
         Developer_Product = 3524815548,
         Model = Block_Models:WaitForChild("Common"),
+        Roll_Brainrot = function() end,
     },
     ["Rare"] = {
         Health = 30,
@@ -39,6 +41,7 @@ local Blocks: { [string]: Block } = {
         Image = "rbxassetid://93587961651208",
         Developer_Product = 3524815699,
         Model = Block_Models:WaitForChild("Rare"),
+        Roll_Brainrot = function() end,
     },
     ["Epic"] = {
         Health = 250,
@@ -50,6 +53,7 @@ local Blocks: { [string]: Block } = {
         Image = "rbxassetid://97817682630959",
         Developer_Product = 3524816002,
         Model = Block_Models:WaitForChild("Epic"),
+        Roll_Brainrot = function() end,
     },
     ["Legendary"] = {
         Health = 600,
@@ -61,6 +65,7 @@ local Blocks: { [string]: Block } = {
         Image = "rbxassetid://72423874015250",
         Developer_Product = 3524816133,
         Model = Block_Models:WaitForChild("Legendary"),
+        Roll_Brainrot = function() end,
     },
     ["Mythical"] = {
         Health = 1250,
@@ -72,6 +77,7 @@ local Blocks: { [string]: Block } = {
         Image = "rbxassetid://89867971269576",
         Developer_Product = 3524816198,
         Model = Block_Models:WaitForChild("Mythical"),
+        Roll_Brainrot = function() end,
     },
     ["Secret"] = {
         Health = 2500,
@@ -83,6 +89,7 @@ local Blocks: { [string]: Block } = {
         Image = "rbxassetid://110996944104233",
         Developer_Product = 3524816292,
         Model = Block_Models:WaitForChild("Secret"),
+        Roll_Brainrot = function() end,
     },
 }
 

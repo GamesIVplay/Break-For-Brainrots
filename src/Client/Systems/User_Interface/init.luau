@@ -778,7 +778,7 @@ local function Setup_Upgrades_Content(LocalEntity: Types.Entity, PlayerGui: Play
 
         Scope:Hydrate(Original_Text_Label)({
             Text = Scope:Computed(function(Use)
-                return Data.Levels[Use(Level_Computed)].Multiplier
+                return `x{Data.Levels[Use(Level_Computed)].Multiplier}`
             end),
         })
 
@@ -787,10 +787,10 @@ local function Setup_Upgrades_Content(LocalEntity: Types.Entity, PlayerGui: Play
                 local Next_Data = Data.Levels[Use(Level_Computed) + 1]
 
                 if Next_Data then
-                    return Next_Data.Multiplier
+                    return `x{Next_Data.Multiplier}`
                 end
 
-                return ""
+                return "?"
             end),
         })
 
@@ -808,7 +808,9 @@ local function Setup_Upgrades_Content(LocalEntity: Types.Entity, PlayerGui: Play
             end),
         })
 
-        Hydrate_Button(Buy, function() end)
+        Hydrate_Button(Buy, function()
+            Network.Requests.Buy_Upgrade.Fire(Name)
+        end)
 
         local RobuxBuy = ImageLabel:WaitForChild("RobuxBuy") :: ImageButton
 

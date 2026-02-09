@@ -31,6 +31,8 @@ local Proximity = require(ReplicatedStorage.Common.Modules.Proximity)
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 
 local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
+    local Local_Player = World:get(Local_Entity, Components.Player)
+
     World:set(Local_Entity, Components.Plot_Model, Plot_Model)
 
     Home_Billboard:Clone().Parent = Plot_Model
@@ -41,7 +43,9 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
 
     Proximity(Break_Screen, {
         ActionText = "Break Block",
-    }, function() end)
+    }, function()
+        MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Break Block"])
+    end)
 
     Proximity(Skip_Screen, {
         ActionText = "Skip Block",
