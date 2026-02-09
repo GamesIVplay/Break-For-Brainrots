@@ -38,11 +38,15 @@ return {
         World:set(Local_Entity, Components.Last_Restock, 0)
 
         if Local_Player.Character then
-            Setup_Character(Local_Entity, Local_Player.Character)
+            task.spawn(function()
+                Setup_Character(Local_Entity, Local_Player.Character)
+            end)
         end
 
         Local_Player.CharacterAdded:Connect(function(Character)
-            Setup_Character(Local_Entity, Character)
+            task.spawn(function()
+                Setup_Character(Local_Entity, Local_Player.Character)
+            end)
         end)
 
         Local_Player.CharacterRemoving:Connect(function()

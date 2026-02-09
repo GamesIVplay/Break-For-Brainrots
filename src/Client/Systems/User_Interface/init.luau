@@ -318,6 +318,50 @@ local function Setup_HUD_Cash(PlayerGui: PlayerGui)
     })
 end
 
+local function Setup_HUD_Offers(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    local Local_Player = World:get(LocalEntity, Components.Player)
+
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+
+    local Offers = Main:WaitForChild("Offers") :: Frame
+
+    local Offer_One = Offers:WaitForChild("Offer_One") :: TextButton
+    local Offer_One_Price_Text_Label = Offer_One:WaitForChild("Price") :: TextLabel
+
+    local Offer_Two = Offers:WaitForChild("Offer_Two") :: TextButton
+    local Offer_Two_Price_Text_Label = Offer_Two:WaitForChild("Price") :: TextLabel
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["Ballerino Lololo"])
+
+        if Product_Info then
+            Offer_One_Price_Text_Label.Text =
+                `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Offer_One_Price_Text_Label.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Offer_One, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Ballerino Lololo"])
+    end)
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["Tung Sahur"])
+
+        if Product_Info then
+            Offer_Two_Price_Text_Label.Text =
+                `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Offer_Two_Price_Text_Label.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Offer_Two, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Tung Sahur"])
+    end)
+end
+
 local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_HUD_Visibility(PlayerGui)
 
@@ -326,6 +370,8 @@ local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_HUD_Left_Buttons(LocalEntity, PlayerGui)
 
     Setup_HUD_Cash(PlayerGui)
+
+    Setup_HUD_Offers(LocalEntity, PlayerGui)
 end
 
 local function Setup_Robux_Shop_Visibility(PlayerGui: PlayerGui)

@@ -8,6 +8,8 @@ local Shops = Map:WaitForChild("Shops") :: Folder
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 
+local UIGradients = Assets:WaitForChild("UIGradients") :: Folder
+
 local Zone = require(Assets:WaitForChild("Modules"):WaitForChild("Zone")) :: any
 
 local Billboards = Assets:WaitForChild("Billboards")
@@ -27,6 +29,8 @@ local World = require(ReplicatedStorage.Common.World)
 local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Proximity = require(ReplicatedStorage.Common.Modules.Proximity)
+local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
+local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 
@@ -43,12 +47,14 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
 
     Proximity(Break_Screen, {
         ActionText = "Break Block",
+        MaxActivationDistance = 4.5,
     }, function()
         MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Break Block"])
     end)
 
     Proximity(Skip_Screen, {
         ActionText = "Skip Block",
+        MaxActivationDistance = 4.5,
     }, function()
         Network.Requests.Skip_Block.Fire()
     end)
@@ -111,20 +117,25 @@ local function Setup_Gold_Ballerina_Cappuccina(Local_Player: Player)
             continue
         end
 
-        local Mesh = Inst:FindFirstChildOfClass("MeshPart") :: MeshPart
+        local Main = Inst:FindFirstChild("Main", true) :: Attachment
+        local Rarity_Text_Label = Main:FindFirstChild("Rarity", true) :: TextLabel
+        local Price_Text_Label = Main:FindFirstChild("Price", true) :: TextLabel
 
-        if not Mesh then
-            continue
-        end
-
-        local Attachment = Mesh:FindFirstChildOfClass("Attachment")
-
-        if not Attachment then
-            continue
-        end
-
-        Proximity(Attachment, { ActionText = "Purchase" }, function()
+        Proximity(Main, { ActionText = "Purchase" }, function()
             MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Gold Ballerina Cappuccina"])
+        end)
+
+        UIGradients.Legendary:Clone().Parent = Rarity_Text_Label
+
+        task.spawn(function()
+            local Product_Info = Util.Get_Product_Info(Developer_Products["Gold Ballerina Cappuccina"])
+
+            if Product_Info then
+                Price_Text_Label.Text =
+                    `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+            else
+                Price_Text_Label.Visible = false
+            end
         end)
     end
 end
@@ -135,20 +146,25 @@ local function Setup_Diamond_Bananita_Dolphinita(Local_Player: Player)
             continue
         end
 
-        local Mesh = Inst:FindFirstChildOfClass("MeshPart") :: MeshPart
+        local Main = Inst:FindFirstChild("Main", true) :: Attachment
+        local Rarity_Text_Label = Main:FindFirstChild("Rarity", true) :: TextLabel
+        local Price_Text_Label = Main:FindFirstChild("Price", true) :: TextLabel
 
-        if not Mesh then
-            continue
-        end
-
-        local Attachment = Mesh:FindFirstChildOfClass("Attachment")
-
-        if not Attachment then
-            continue
-        end
-
-        Proximity(Attachment, { ActionText = "Purchase" }, function()
+        Proximity(Main, { ActionText = "Purchase" }, function()
             MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Diamond Bananita Dolphinita"])
+        end)
+
+        UIGradients.Epic:Clone().Parent = Rarity_Text_Label
+
+        task.spawn(function()
+            local Product_Info = Util.Get_Product_Info(Developer_Products["Diamond Bananita Dolphinita"])
+
+            if Product_Info then
+                Price_Text_Label.Text =
+                    `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+            else
+                Price_Text_Label.Visible = false
+            end
         end)
     end
 end
