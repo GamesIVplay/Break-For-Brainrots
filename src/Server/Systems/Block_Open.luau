@@ -66,7 +66,7 @@ local function Open_Blocks()
 
         World:set(Player_Entity, Components.Opens, Opens + 1)
 
-        task.delay(4.5, function()
+        task.delay(4, function()
             if not World:contains(Block_Entity) or not World:contains(Player_Entity) then
                 return
             end

@@ -15,7 +15,7 @@ return function(
     local MutationFolder = Brainrot_Models:FindFirstChild(Primary_Mutation or "Normal") :: Folder
     local Brainrot_Model = MutationFolder:FindFirstChild(Brainrot_Name):Clone() :: Model
 
-    local Scale = Weight.GetScale(Brainrot_Weight, 0.1, 5)
+    local Scale = Weight.GetScale(Brainrot_Weight, 0.9, 4)
 
     Brainrot_Model:ScaleTo(Scale)
 

@@ -98,9 +98,20 @@ local function Verify_Integrity()
                 error(("[Brainrots Integrity] Missing Primary Mutation folder: '%s'"):format(Primary_Mutation_Name))
             end
 
-            if not MutationFolder:FindFirstChild(Brainrot_Name) then
+            local Brainrot_Model = MutationFolder:FindFirstChild(Brainrot_Name)
+            if not Brainrot_Model then
                 error(
                     ("[Brainrots Integrity] Missing Brainrot model '%s' in Primary Mutation '%s'"):format(
+                        Brainrot_Name,
+                        Primary_Mutation_Name
+                    )
+                )
+            end
+
+            -- Check PrimaryPart
+            if not Brainrot_Model.PrimaryPart then
+                error(
+                    ("[Brainrots Integrity] Model '%s' in Primary Mutation '%s' has no PrimaryPart set"):format(
                         Brainrot_Name,
                         Primary_Mutation_Name
                     )
@@ -112,8 +123,13 @@ local function Verify_Integrity()
                 error("[Brainrots Integrity] Missing Normal folder")
             end
 
-            if not NormalFolder:FindFirstChild(Brainrot_Name) then
+            local Normal_Model = NormalFolder:FindFirstChild(Brainrot_Name)
+            if not Normal_Model then
                 error(("[Brainrots Integrity] Missing Brainrot model '%s' in Normal folder"):format(Brainrot_Name))
+            end
+
+            if not Normal_Model.PrimaryPart then
+                error(("[Brainrots Integrity] Normal model '%s' has no PrimaryPart set"):format(Brainrot_Name))
             end
         end
     end

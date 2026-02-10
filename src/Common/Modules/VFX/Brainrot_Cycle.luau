@@ -1,7 +1,13 @@
 local Debris = game:GetService("Debris")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
+
+local Sounds = Assets:WaitForChild("Sounds")
+local World_Sounds = Sounds:WaitForChild("World")
+local Cycle = World_Sounds:WaitForChild("Cycle") :: Sound
+local Cycle_Result = World_Sounds:WaitForChild("Cycle_Result") :: Sound
 
 local VFX = Assets:WaitForChild("VFX")
 local Spin = VFX:WaitForChild("Spin") :: Attachment
@@ -13,12 +19,16 @@ local Roll_Secondary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Se
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 local Weight = require(ReplicatedStorage.Common.Modules.Weight)
 
-local CYCLE_DURATION = 1
+local CYCLE_DURATION = 0.5
 local SHOWCASE_TIME = 3
-local BOUNCE_TIME = 0.1
+local BOUNCE_TIME = 0.08
+local FINAL_BOUNCE_TIME = 0.3
 local BRAINROT_OFFSET = Vector3.new(0, 0.5, 0)
+local CYCLE_INTERVAL = BOUNCE_TIME
+local CYCLE_COUNT = math.floor(CYCLE_DURATION / CYCLE_INTERVAL + 0.5)
 
 local Brainrot_Tween_Info = TweenInfo.new(BOUNCE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+local Final_Brainrot_Tween_Info = TweenInfo.new(FINAL_BOUNCE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 
 local function Spawn_Spin_Vfx(CF: CFrame)
     local Part = Instance.new("Part")
@@ -72,14 +82,31 @@ local function Spawn_Cycle_Brainrot(
 
     local Brainrot_Model =
         Generate_Brainrot_Model(Rolled_Brainrot, Rolled_Primary_Mutation, Rolled_Secondary_Mutations, Rolled_Weight)
+    local Primary_Part = Brainrot_Model.PrimaryPart
+
+    local Sound: Sound
 
     if not Result then
-        local Highlight = Instance.new("Highlight")
-        Highlight.FillColor = Color3.fromRGB(0, 0, 0)
-        Highlight.FillTransparency = 0
-        Highlight.OutlineTransparency = 1
-        Highlight.DepthMode = Enum.HighlightDepthMode.Occluded
-        Highlight.Parent = Brainrot_Model
+        Sound = Cycle:Clone()
+    else
+        Sound = Cycle_Result:Clone()
+    end
+
+    Sound.Parent = Primary_Part
+    Sound:Play()
+
+    local Highlight = Instance.new("Highlight")
+    Highlight.FillColor = Color3.fromRGB(0, 0, 0)
+    Highlight.FillTransparency = 0
+    Highlight.OutlineTransparency = 1
+    Highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+    Highlight.Parent = Brainrot_Model
+
+    if Result then
+        Highlight.FillColor = Color3.fromRGB(255, 255, 255)
+        TweenService:Create(Highlight, Final_Brainrot_Tween_Info, { FillTransparency = 1 }):Play()
+
+        Brainrot_Model:AddTag("Idle")
     end
 
     Brainrot_Model.Parent = workspace:FindFirstChild("Debris")
@@ -93,12 +120,16 @@ local function Spawn_Cycle_Brainrot(
 
     Brainrot_Model:ScaleTo(Target_Scale)
 
-    Util.Tween_Model_Scale(Target_Scale, Original_Scale, Brainrot_Tween_Info, Brainrot_Model)
+    Util.Tween_Model_Scale(
+        Target_Scale,
+        Original_Scale,
+        not Result and Brainrot_Tween_Info or Final_Brainrot_Tween_Info,
+        Brainrot_Model
+    )
 
-    task.wait(BOUNCE_TIME)
+    task.wait(not Result and BOUNCE_TIME or FINAL_BOUNCE_TIME)
 
     if Result then
-        Brainrot_Model:AddTag("Idle")
         Debris:AddItem(Brainrot_Model, SHOWCASE_TIME)
     else
         Brainrot_Model:Destroy()
@@ -115,9 +146,7 @@ return function(Data: {
 })
     Spawn_Spin_Vfx(Data.Spin_VFX_CF)
 
-    local Start = os.time()
-
-    while os.time() - Start < CYCLE_DURATION do
+    for i = 1, CYCLE_COUNT do
         Spawn_Cycle_Brainrot(Data.Block, Data.Mutation_Luck, Data.Brainrot_CF)
     end
 
