@@ -102,7 +102,7 @@ local function Handle_Buy_VFX()
             continue
         end
 
-        require(VFX.Buy)(Model)
+        task.spawn(require(VFX.Buy), Model)
     end
 end
 
@@ -112,7 +112,7 @@ local function Handle_Block_Spawn()
             continue
         end
 
-        require(VFX.Block_Spawn)(Model)
+        task.spawn(require(VFX.Block_Spawn), Model)
     end
 end
 
@@ -122,13 +122,19 @@ local function Handle_Block_Hit()
             continue
         end
 
-        require(VFX.Block_Hit)(Model)
+        task.spawn(require(VFX.Block_Hit), Model)
     end
 end
 
 local function Handle_Block_Break()
     for _, CF: CFrame in Network.VFX.Block_Break.Iter() do
-        require(VFX.Block_Break)(CF)
+        task.spawn(require(VFX.Block_Break), CF)
+    end
+end
+
+local function Handle_Brainrot_Cycle()
+    for _, Data in Network.VFX.Brainrot_Cycle.Iter() do
+        task.spawn(require(VFX.Brainrot_Cycle), Data)
     end
 end
 
@@ -203,6 +209,8 @@ return {
         Handle_Block_Hit()
 
         Handle_Block_Break()
+
+        Handle_Brainrot_Cycle()
 
         Handle_Tool_Setup(Local_Entity)
     end,

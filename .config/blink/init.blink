@@ -63,6 +63,26 @@ scope VFX {
 		Poll: true,
         Data: CFrame 
 	}
+
+	event Brainrot_Cycle {
+		From: Server,
+    	Type: Reliable,
+    	Call: SingleSync,
+		Poll: true,
+    	Data: struct {
+			Block: string,
+			Mutation_Luck: u8,
+        	Owner: Types.Id,
+        	Brainrot_CF: CFrame,
+			Spin_VFX_CF: CFrame,
+        	Rolled_Brainrot: struct {
+            	Name: string,
+            	Primary_Mutation: string?,
+				Secondary_Mutations: string[],
+				Weight: Types.Weight
+        	}
+    	}
+	}
 }
 
 scope Requests {

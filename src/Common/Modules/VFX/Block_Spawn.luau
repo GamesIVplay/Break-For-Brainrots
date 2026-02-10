@@ -18,11 +18,13 @@ return function(Block_Model: Model)
     Sound.Parent = Block_Model.PrimaryPart
     Sound:Destroy()
 
-    task.spawn(function()
-        Util.Tween_Model_Scale(1, 0.3, Spawn_Tween_Info, Block_Model)
+    Util.Tween_Model_Scale(1, 0.3, Spawn_Tween_Info, Block_Model)
 
-        task.wait(BOUNCE_TIME)
+    task.wait(BOUNCE_TIME)
 
-        Util.Tween_Model_Scale(0.8, 1, Spawn_Tween_Info, Block_Model)
-    end)
+    if not Block_Model:IsDescendantOf(workspace) then
+        return
+    end
+
+    Util.Tween_Model_Scale(0.8, 1, Spawn_Tween_Info, Block_Model)
 end

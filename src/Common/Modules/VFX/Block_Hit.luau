@@ -21,18 +21,16 @@ return function(Block_Model: Model)
     Sound.Parent = Block_Model.PrimaryPart
     Sound:Destroy()
 
-    task.spawn(function()
-        Util.Tween_Model_Scale(1, 0.5, Spawn_Tween_Info, Block_Model)
-        local Highlight = Block_Hit_Highlight:Clone()
-        Highlight.Parent = Block_Model
+    Util.Tween_Model_Scale(1, 0.5, Spawn_Tween_Info, Block_Model)
+    local Highlight = Block_Hit_Highlight:Clone()
+    Highlight.Parent = Block_Model
 
-        task.wait(BOUNCE_TIME)
+    task.wait(BOUNCE_TIME)
 
-        if not Block_Model:IsDescendantOf(workspace) then
-            return
-        end
+    if not Block_Model:IsDescendantOf(workspace) then
+        return
+    end
 
-        Highlight:Destroy()
-        Util.Tween_Model_Scale(0.8, 1, Spawn_Tween_Info, Block_Model)
-    end)
+    Highlight:Destroy()
+    Util.Tween_Model_Scale(0.8, 1, Spawn_Tween_Info, Block_Model)
 end

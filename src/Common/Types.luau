@@ -15,7 +15,6 @@ export type AnimationInfo = {
 }
 
 export type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Mythical" | "Secret"
-
 export type NotificationType = "Success" | "Info" | "Warning" | "Error" | "Reward"
 
 return {}

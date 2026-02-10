@@ -2,6 +2,7 @@ type Id = f64
 type Cash = f64
 type Rebirth = f64
 type Opens = f64
+type Weight = f16
 
-enum Rarity = {Common, Rare, Epic, Legendary, Mythical, Secret}
 enum NotificationType = {Success, Info, Warning, Error, Reward}
+

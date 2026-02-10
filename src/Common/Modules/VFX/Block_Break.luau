@@ -9,7 +9,7 @@ local Block_Break = VFX:WaitForChild("Block_Break") :: Attachment
 return function(CF: CFrame)
     local Part = Instance.new("Part")
     Part.Transparency = 1
-    Part.Size = Vector3.new(1, 1, 1)
+    Part.Size = Vector3.one
     Part.CFrame = CF
     Part.CanCollide = false
     Part.Anchored = true
@@ -25,6 +25,8 @@ return function(CF: CFrame)
             Inst:Emit(EmitCount)
         end
     end
+
+    local Start = os.time()
 
     Debris:AddItem(Part, 3)
 end

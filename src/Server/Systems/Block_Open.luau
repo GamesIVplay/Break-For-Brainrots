@@ -28,13 +28,14 @@ local function Open_Blocks()
         end
 
         local Plot_Entity = World:target(Block_Entity, Components.Relationships.Owner)
-        local Plot_Owner = World:target(Plot_Entity, Components.Relationships.Owner)
+        local Player_Entity = World:target(Plot_Entity, Components.Relationships.Owner)
 
-        if not Plot_Owner then
+        if not Player_Entity then
             continue
         end
 
-        local Opens = World:get(Plot_Owner, Components.Opens)
+        local Player = World:get(Player_Entity, Components.Player)
+        local Opens = World:get(Player_Entity, Components.Opens)
 
         World:add(Block_Entity, Components.Tags.Opening)
 
@@ -42,22 +43,36 @@ local function Open_Blocks()
 
         Network.VFX.Block_Break.FireAll(Block_Model.PrimaryPart.CFrame)
 
-        local Mutation_Luck = Calculate_Mutation_Luck(Plot_Owner)
+        local Mutation_Luck = Calculate_Mutation_Luck(Player_Entity)
 
         local Rolled_Brainrot = Blocks[Block_Name].Roll_Brainrot()
         local Rolled_Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck)
         local Rolled_Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck)
         local Rolled_Weight = Weight.Roll_Weight()
 
-        warn("________")
-        print(Rolled_Brainrot)
-        print(Rolled_Primary_Mutation)
-        print(Rolled_Secondary_Mutations)
-        print(Rolled_Weight)
-        warn("________")
+        Network.VFX.Brainrot_Cycle.FireAll({
+            Block = Block_Name,
+            Mutation_Luck = Mutation_Luck,
+            Brainrot_CF = Block_Model:GetPivot(),
+            Spin_VFX_CF = Block_Model.PrimaryPart.CFrame,
+            Owner = Player.UserId,
+            Rolled_Brainrot = {
+                Name = Rolled_Brainrot,
+                Primary_Mutation = Rolled_Primary_Mutation,
+                Secondary_Mutations = Rolled_Secondary_Mutations,
+                Weight = Rolled_Weight,
+            },
+        })
 
-        World:set(Plot_Owner, Components.Opens, Opens + 1)
-        World:delete(Block_Entity)
+        World:set(Player_Entity, Components.Opens, Opens + 1)
+
+        task.delay(4.5, function()
+            if not World:contains(Block_Entity) or not World:contains(Player_Entity) then
+                return
+            end
+
+            World:delete(Block_Entity)
+        end)
     end
 end
 

@@ -20,9 +20,9 @@ local ProfileStore = require(ReplicatedStorage.Packages.ProfileStore)
 type Profile = ProfileStore.Profile<ProfileData>
 
 local PLAYER_DATA_TEMPLATE: ProfileData = {
-    Cash = 10_000,
+    Cash = 200,
     Rebirth = 0,
-    Pickaxe = "Starter",
+    Pickaxe = "Angel",
     Owned_Pickaxes = { "Starter" },
     Opens = 0,
     Gamepasses = {},
