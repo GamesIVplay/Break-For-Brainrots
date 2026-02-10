@@ -23,6 +23,14 @@ event Notification {
     }
 }
 
+event Setup_Tool {
+	From: Server,
+    Type: Reliable,
+    Call: SingleSync,
+	Poll: true,
+    Data: Instance(Tool)
+}
+
 scope VFX { 
 	event Buy {
         From: Server,
@@ -38,6 +46,22 @@ scope VFX {
         Call: SingleSync,
 		Poll: true,
         Data: Instance(Model) 
+	}
+
+	event Block_Hit {
+		From: Server,
+        Type: Reliable,
+        Call: SingleSync,
+		Poll: true,
+        Data: Instance(Model) 
+	}
+
+	event Block_Break {
+		From: Server,
+        Type: Reliable,
+        Call: SingleSync,
+		Poll: true,
+        Data: CFrame 
 	}
 }
 
@@ -79,6 +103,14 @@ scope Requests {
         Type: Reliable,
         Call: SingleSync, 
 		Poll: true
+	}
+
+	event Swing {
+		From: Client,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+		Data: Types.Id
 	}
 }
 

@@ -67,7 +67,7 @@ local Upgrades: { [string]: Upgrade } = {
         Developer_Product = 3532186376,
     },
 
-    ["Mutation Chance"] = {
+    ["Mutation Luck"] = {
         Index = 4,
         Rebirth = 2,
         Image = "rbxassetid://78657286311430",

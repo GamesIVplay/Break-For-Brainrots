@@ -36,6 +36,7 @@ local Components: {
         Plot: Types.Entity,
         Notification: Types.Entity,
         Block: Types.Entity,
+        Opening: Types.Entity,
     },
     Relationships: {
         Owner: Types.Entity,
@@ -77,6 +78,7 @@ local Components: {
             Plot = World:component(),
             Notification = World:component(),
             Block = World:component(),
+            Opening = World:component(),
         },
         Relationships = {
             Owner = World:component(),

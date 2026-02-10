@@ -127,6 +127,7 @@ local function Verify_Integrity()
     local Total_Block_Chances = 0
 
     for Block_Name, Block_Data in Blocks do
+        Block_Data.Model:AddTag("Block")
         Total_Block_Chances += Block_Data.Chance
     end
     if not IsClose(Total_Block_Chances, 1) then

@@ -27,7 +27,7 @@ local function Shuffle(Tbl)
     end
 end
 
-while false do
+while true do
     Shuffle(Tracks)
     for _, Track in ipairs(Tracks) do
         if Track.Parent ~= SoundService then

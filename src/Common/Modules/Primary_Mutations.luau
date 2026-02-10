@@ -22,4 +22,4 @@ local Primary_Mutations: { [string]: Primary_Mutation } = {
     },
 }
 
-return Primary_Mutations
+return table.freeze(Primary_Mutations)

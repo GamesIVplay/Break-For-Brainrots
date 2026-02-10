@@ -47,7 +47,10 @@ local function Add_Pickaxe_Tool(Player: Player, Name: string)
         end
     end
 
-    Data.Tool:Clone().Parent = Player.Backpack
+    local Pickaxe_Tool = Data.Tool:Clone()
+
+    Pickaxe_Tool.Parent = Player.Backpack
+    Network.Setup_Tool.Fire(Player, Pickaxe_Tool)
 
     for _, Tool in Existing_Tools do
         Tool.Parent = Player.Backpack

@@ -3,13 +3,14 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local Network = require(ServerScriptService.Network)
 
-local Ratelimit = require(ReplicatedStorage.Packages.Ratelimit)
-local Skip_Rate_Limit = Ratelimit(1, 8)
-
 local Components = require(ReplicatedStorage.Common.Components)
 local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
 local World = require(ReplicatedStorage.Common.World)
+
+local Last_Skipped: { [Player]: number } = {}
+
+local COOLDOWN = 3
 
 return {
     name = script.Name,
@@ -34,22 +35,29 @@ return {
                 continue
             end
 
-            --[[if World:has(Block_Entity, Components.Tags.Opening) then
+            if World:has(Block_Entity, Components.Tags.Opening) then
                 Network.Notification.Fire(Player, {
-                    Text = "Your crate is opening!",
+                    Text = "Your block is opening!",
+                    Type = "Error",
                 })
                 continue
-            end]]
+            end
 
-            --[[if not Skip_Rate_Limit(Player_Entity) then
+            local Now = os.clock()
+            local Last = Last_Skipped[Player] or 0
+            local Elapsed = Now - Last
+
+            if Elapsed < COOLDOWN then
                 Network.Notification.Fire(Player, {
-                    Text = "You're on cooldown",
+                    Text = ("%.1f seconds remaining"):format(COOLDOWN - Elapsed),
                     Type = "Warning",
                 })
                 continue
-            end]]
+            end
 
             World:delete(Block_Entity)
+
+            Last_Skipped[Player] = os.clock()
         end
     end,
     runConditions = {},

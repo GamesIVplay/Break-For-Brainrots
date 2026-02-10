@@ -7,32 +7,22 @@ local World = require(ReplicatedStorage.Common.World)
 local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 
 return function(Player_Entity: Types.Entity)
-    local Luck = 1
+    local Mutation_Luck = 1
 
     if not World:contains(Player_Entity) or not World:has(Player_Entity, Components.Player) then
-        return Luck
+        return Mutation_Luck
     end
 
     local Player_Upgrades = World:get(Player_Entity, Components.Upgrades)
 
     if Player_Upgrades then
-        for _, Upgrade_Name in { "Luck Multiplier", "Better Luck" } do
+        for _, Upgrade_Name in { "Mutation Luck" } do
             local Level = Player_Upgrades[Upgrade_Name]
             local Multiplier = Upgrades[Upgrade_Name].Levels[Level].Multiplier
 
-            Luck *= Multiplier
+            Mutation_Luck *= Multiplier
         end
     end
 
-    local Gamepasses = World:get(Player_Entity, Components.Gamepasses)
-
-    if Gamepasses and table.find(Gamepasses, "x2 Luck") then
-        Luck *= 2
-    end
-
-    if Gamepasses and table.find(Gamepasses, "VIP") then
-        Luck *= 2
-    end
-
-    return Luck
+    return Mutation_Luck
 end
