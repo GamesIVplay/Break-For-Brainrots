@@ -56,14 +56,6 @@ scope VFX {
         Data: Instance(Model) 
 	}
 
-	event Block_Break {
-		From: Server,
-        Type: Reliable,
-        Call: SingleSync,
-		Poll: true,
-        Data: CFrame 
-	}
-
 	event Brainrot_Cycle {
 		From: Server,
     	Type: Reliable,
@@ -82,6 +74,14 @@ scope VFX {
 				Weight: Types.Weight
         	}
     	}
+	}
+
+	event Swing {
+		From: Server,
+        Type: Reliable,
+        Call: SingleSync,
+		Poll: true,
+        Data: Instance(Model) 
 	}
 }
 
@@ -130,7 +130,7 @@ scope Requests {
         Type: Reliable,
         Call: SingleSync, 
 		Poll: true,
-		Data: Types.Id
+		Data: Types.Id?
 	}
 }
 

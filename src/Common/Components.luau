@@ -30,6 +30,12 @@ local Components: {
 
     Health: Types.Id<number>,
 
+    Stand: Types.Id<Model>,
+    Primary_Mutation: Types.Id<string>,
+    Secondary_Mutations: Types.Id<{ string }>,
+    Weight: Types.Id<number>,
+    Offline_Cash: Types.Id<number>,
+
     Singletons: {},
     Tags: {
         Networked: Types.Entity,
@@ -37,12 +43,14 @@ local Components: {
         Notification: Types.Entity,
         Block: Types.Entity,
         Opening: Types.Entity,
+        Brainrot: Types.Entity,
     },
     Relationships: {
         Owner: Types.Entity,
         Plot: Types.Entity,
         Previous: Types.Entity,
         Block: Types.Entity,
+        Brainrot: Types.Entity,
     },
 } =
     {
@@ -72,6 +80,12 @@ local Components: {
 
         Health = World:component(),
 
+        Stand = World:component(),
+        Primary_Mutation = World:component(),
+        Secondary_Mutations = World:component(),
+        Weight = World:component(),
+        Offline_Cash = World:component(),
+
         Singletons = {},
         Tags = {
             Networked = World:component(),
@@ -79,12 +93,14 @@ local Components: {
             Notification = World:component(),
             Block = World:component(),
             Opening = World:component(),
+            Brainrot = World:component(),
         },
         Relationships = {
             Owner = World:component(),
             Plot = World:component(),
             Previous = World:component(),
             Block = World:component(),
+            Brainrot = World:component(),
         },
     }
 

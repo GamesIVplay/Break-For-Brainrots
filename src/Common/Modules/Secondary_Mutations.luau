@@ -8,25 +8,25 @@ type Secondary_Mutation = {
 local Secondary_Mutations: { [string]: Secondary_Mutation } = {
     ["Blood"] = {
         Weather = "Blood",
-        Chance = 0.2,
-        Cash_Multiplier = 1.15,
+        Chance = 0.08,
+        Cash_Multiplier = 1.5,
         Image = "rbxassetid://122272507513469",
-    },
-    ["Candy"] = {
-        Weather = "Candy",
-        Chance = 0.15,
-        Cash_Multiplier = 1.25,
-        Image = "rbxassetid://127536426524827",
     },
     ["Volcanic"] = {
         Weather = "Volcanic",
-        Chance = 0.1,
+        Chance = 0.08,
         Cash_Multiplier = 1.5,
         Image = "rbxassetid://112422836214373",
     },
+    ["Candy"] = {
+        Weather = "Candy",
+        Chance = 0.03,
+        Cash_Multiplier = 2,
+        Image = "rbxassetid://127536426524827",
+    },
     ["Toxic"] = {
         Weather = "Toxic",
-        Chance = 0.05,
+        Chance = 0.01,
         Cash_Multiplier = 2,
         Image = "rbxassetid://73251144399969",
     },

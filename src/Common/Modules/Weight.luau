@@ -11,8 +11,6 @@ function Weight.Roll_Weight()
         Weight_Value *= Lucky_multiplier
     end
 
-    Weight_Value = math.floor(Weight_Value * 10 + 0.5) / 10
-
     return Weight_Value
 end
 

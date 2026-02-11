@@ -13,7 +13,7 @@ local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 
 local function Handle_Swing_Requests()
-    for _, Player: Player, Block_Entity: Types.Entity in Network.Requests.Swing.Iter() do
+    for _, Player: Player, Block_Entity: Types.Entity? in Network.Requests.Swing.Iter() do
         if not Ratelimits.Swing_Rate_Limit(Player) then
             continue
         end
@@ -21,6 +21,12 @@ local function Handle_Swing_Requests()
         local Player_Entity = Registry.Get("Players", Player)
 
         if not Player_Entity then
+            continue
+        end
+
+        local Character = World:get(Player_Entity, Components.Renderable)
+
+        if not Character then
             continue
         end
 
@@ -36,7 +42,13 @@ local function Handle_Swing_Requests()
             continue
         end
 
-        if not World:contains(Block_Entity) or not World:has(Block_Entity, Components.Tags.Block) then
+        Network.VFX.Swing.FireExcept(Player, Character)
+
+        if
+            not Block_Entity
+            or not World:contains(Block_Entity)
+            or not World:has(Block_Entity, Components.Tags.Block)
+        then
             continue
         end
 

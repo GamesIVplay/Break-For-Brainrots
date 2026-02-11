@@ -456,6 +456,13 @@ local function Setup_Pickaxes_Visibility(PlayerGui: PlayerGui)
         end
 
         local TargetY = (FrameHeightPx + PaddingPx) * Count_Above
+        local CanvasHeight = Contents.AbsoluteCanvasSize.Y
+        local WindowHeight = Contents.AbsoluteWindowSize.Y
+
+        local MaxY = math.max(0, CanvasHeight - WindowHeight)
+
+        TargetY = math.clamp(TargetY, 0, MaxY)
+
         Contents.CanvasPosition = Vector2.new(0, TargetY)
     end)
 

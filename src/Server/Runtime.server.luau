@@ -18,6 +18,7 @@ Start({
     require(Systems.Swing),
     require(Systems.Block_Overhead),
     require(Systems.Block_Open),
+    require(Systems.Cash_Generator),
     require(Systems.Data_Sender),
     require(Systems.Leaderstats),
 })

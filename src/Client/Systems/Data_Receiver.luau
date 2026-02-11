@@ -126,15 +126,19 @@ local function Handle_Block_Hit()
     end
 end
 
-local function Handle_Block_Break()
-    for _, CF: CFrame in Network.VFX.Block_Break.Iter() do
-        task.spawn(require(VFX.Block_Break), CF)
-    end
-end
-
 local function Handle_Brainrot_Cycle()
     for _, Data in Network.VFX.Brainrot_Cycle.Iter() do
         task.spawn(require(VFX.Brainrot_Cycle), Data)
+    end
+end
+
+local function Handle_Swing()
+    for _, Model: Model in Network.VFX.Swing.Iter() do
+        if not Model:IsDescendantOf(game.Workspace) then
+            continue
+        end
+
+        task.spawn(require(VFX.Swing), Model)
     end
 end
 
@@ -156,6 +160,8 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
             AnimPlayer.PlayAnimation(Animator, { Name = "Swing", Priority = Enum.AnimationPriority.Action })
 
             task.delay(0.2, function()
+                task.spawn(require(VFX.Swing), Character)
+
                 for _, Block_Model: Model in CollectionService:GetTagged("Block") do
                     if not Block_Model:IsDescendantOf(workspace:FindFirstChild("Blocks")) then
                         continue
@@ -170,9 +176,11 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
 
                         Network.Requests.Swing.Fire(Hit_Block_Entity)
 
-                        break
+                        return
                     end
                 end
+
+                Network.Requests.Swing.Fire()
             end)
         end)
     end
@@ -208,9 +216,9 @@ return {
 
         Handle_Block_Hit()
 
-        Handle_Block_Break()
-
         Handle_Brainrot_Cycle()
+
+        Handle_Swing()
 
         Handle_Tool_Setup(Local_Entity)
     end,
