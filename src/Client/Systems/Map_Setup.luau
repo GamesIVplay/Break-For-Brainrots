@@ -82,7 +82,7 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
 
         local Place_Prompt = Proximity(
             Brainrot_Spawn_Attachment,
-            { ActionText = "Place", MaxActivationDistance = 6, UIOffset = Vector2.new(0, 100) },
+            { ActionText = "Place", MaxActivationDistance = 6 },
             function()
                 -- Fire to pickup / place
             end
