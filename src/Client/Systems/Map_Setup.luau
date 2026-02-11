@@ -2,6 +2,7 @@ local CollectionService = game:GetService("CollectionService")
 local MarketPlaceService = game:GetService("MarketplaceService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
 local Map = workspace:WaitForChild("Map") :: Folder
 local Shops = Map:WaitForChild("Shops") :: Folder
@@ -14,6 +15,8 @@ local Zone = require(Assets:WaitForChild("Modules"):WaitForChild("Zone")) :: any
 
 local Billboards = Assets:WaitForChild("Billboards")
 local Home_Billboard = Billboards:WaitForChild("Home") :: BillboardGui
+
+local VFX = ReplicatedStorage.Common.Modules.VFX
 
 local Network = require(ReplicatedFirst.Network)
 
@@ -29,10 +32,14 @@ local World = require(ReplicatedStorage.Common.World)
 local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Proximity = require(ReplicatedStorage.Common.Modules.Proximity)
+local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
+
+local TOUCH_PART_BOUNCE_TIME = 0.08
+local TOUCH_PART_TWEEN_INFO = TweenInfo.new(TOUCH_PART_BOUNCE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 
 local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
     local Local_Player = World:get(Local_Entity, Components.Player)
@@ -58,6 +65,69 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
     }, function()
         Network.Requests.Skip_Block.Fire()
     end)
+
+    local Stands = Plot_Model:FindFirstChild("Stands")
+
+    for _, Stand_Model in Stands:GetChildren() do
+        local Touch = Stand_Model:FindFirstChild("Touch") :: Part
+        local Brainrot_Spawn_Attachment = Stand_Model:FindFirstChild("Brainrot_Spawn", true) :: Attachment
+
+        local Tween_Up = TweenService:Create(Touch, TOUCH_PART_TWEEN_INFO, {
+            Position = Touch.Position,
+        })
+
+        local Tween_Down = TweenService:Create(Touch, TOUCH_PART_TWEEN_INFO, {
+            Position = Touch.Position - Vector3.new(0, 0.35, 0),
+        })
+
+        local Place_Prompt = Proximity(
+            Brainrot_Spawn_Attachment,
+            { ActionText = "Place", MaxActivationDistance = 10 },
+            function()
+                print("PLACE FIRED")
+                --Network.Requests.Place.Fire(Stand_Model)
+            end
+        )
+
+        local function Update_Prompt()
+            if Stand_Model:GetAttribute("ServerEntity") then
+                Place_Prompt.Enabled = false
+            else
+                Place_Prompt.Enabled = true
+            end
+        end
+
+        Stand_Model:GetAttributeChangedSignal("ServerEntity"):Connect(Update_Prompt)
+
+        Update_Prompt()
+
+        local Collect_Zone = Zone.fromParts({ Touch })
+        Collect_Zone:BindToHeartbeat()
+
+        Collect_Zone:ListenTo("Player", "Entered", function(Target_Player: Player)
+            if Target_Player ~= Local_Player then
+                return
+            end
+
+            if not Ratelimits.Collect(Stand_Model) then
+                return
+            end
+
+            local ServerEntity = Stand_Model:GetAttribute("ServerEntity")
+
+            if ServerEntity then
+                Network.Requests.Collect.Fire(ServerEntity)
+
+                task.spawn(require(VFX.Collect), Touch)
+            end
+
+            Tween_Down:Play()
+
+            task.wait(0.8)
+
+            Tween_Up:Play()
+        end)
+    end
 end
 
 local function Setup_Shops(Local_Player: Player)

@@ -142,6 +142,16 @@ local function Handle_Swing()
     end
 end
 
+local function Handle_Bounce_Brainrot()
+    for _, Model: Model in Network.VFX.Bounce_Brainrot.Iter() do
+        if not Model:IsDescendantOf(game.Workspace) then
+            continue
+        end
+
+        task.spawn(require(VFX.Bounce_Brainrot), Model)
+    end
+end
+
 local function Handle_Tool_Setup(Local_Entity: Types.Entity)
     for _, Tool: Tool in Network.Setup_Tool.Iter() do
         Tool.Activated:Connect(function()
@@ -219,6 +229,8 @@ return {
         Handle_Brainrot_Cycle()
 
         Handle_Swing()
+
+        Handle_Bounce_Brainrot()
 
         Handle_Tool_Setup(Local_Entity)
     end,

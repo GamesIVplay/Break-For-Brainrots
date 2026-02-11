@@ -125,6 +125,7 @@ local function Open_Blocks()
                 Open_Stand:SetAttribute("ServerEntity", Brainrot_Entity)
 
                 World:set(Brainrot_Entity, Components.Name, Rolled_Brainrot)
+                World:set(Brainrot_Entity, Components.Renderable, Brainrot_Model)
 
                 if Rolled_Primary_Mutation then
                     World:set(Brainrot_Entity, Components.Primary_Mutation, Rolled_Primary_Mutation)
