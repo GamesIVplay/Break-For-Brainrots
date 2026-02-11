@@ -18,7 +18,7 @@ return function(Part: Part)
 
     local Highlight = Instance.new("Highlight")
     Highlight.FillColor = Color3.fromRGB(255, 255, 255)
-    Highlight.FillTransparency = 0.3
+    Highlight.FillTransparency = 0
     Highlight.OutlineTransparency = 1
     Highlight.DepthMode = Enum.HighlightDepthMode.Occluded
     Highlight.Parent = Part

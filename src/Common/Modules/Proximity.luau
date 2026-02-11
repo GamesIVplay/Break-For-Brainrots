@@ -4,6 +4,7 @@ type ProximityPromptOptions = {
     HoldDuration: number?,
     RequiresLineOfSight: boolean?,
     MaxActivationDistance: number?,
+    UIOffset: Vector2?,
     Args: any?,
     Once: boolean?,
 }
@@ -26,6 +27,7 @@ return function(
     Prompt.HoldDuration = Options.HoldDuration or 0
     Prompt.RequiresLineOfSight = Options.RequiresLineOfSight or false
     Prompt.MaxActivationDistance = Options.MaxActivationDistance or 10
+    Prompt.UIOffset = Options.UIOffset or Vector2.zero
     Prompt.Style = Enum.ProximityPromptStyle.Custom
     Prompt.Parent = Target
 

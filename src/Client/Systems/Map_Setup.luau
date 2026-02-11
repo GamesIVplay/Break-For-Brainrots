@@ -82,24 +82,23 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
 
         local Place_Prompt = Proximity(
             Brainrot_Spawn_Attachment,
-            { ActionText = "Place", MaxActivationDistance = 10 },
+            { ActionText = "Place", MaxActivationDistance = 6, UIOffset = Vector2.new(0, 100) },
             function()
-                print("PLACE FIRED")
-                --Network.Requests.Place.Fire(Stand_Model)
+                -- Fire to pickup / place
             end
         )
 
-        local function Update_Prompt()
+        local function Update_Prompt_Text()
             if Stand_Model:GetAttribute("ServerEntity") then
-                Place_Prompt.Enabled = false
+                Place_Prompt.ActionText = "Pickup Brainrot"
             else
-                Place_Prompt.Enabled = true
+                Place_Prompt.ActionText = "Place Brainrot"
             end
         end
 
-        Stand_Model:GetAttributeChangedSignal("ServerEntity"):Connect(Update_Prompt)
+        Stand_Model:GetAttributeChangedSignal("ServerEntity"):Connect(Update_Prompt_Text)
 
-        Update_Prompt()
+        Update_Prompt_Text()
 
         local Collect_Zone = Zone.fromParts({ Touch })
         Collect_Zone:BindToHeartbeat()
