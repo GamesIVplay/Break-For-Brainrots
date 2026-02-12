@@ -37,6 +37,7 @@ local function Load_Brainrots()
         local Total_Offline_Cash = 0
 
         local Time_Offline = os.time() - LastPlayed
+        Time_Offline = math.min(Time_Offline, 4 * 60 * 60) -- 4 hour cap
 
         for Stand_Number, Serialized_Brainrot in Pending_Brainrots do
             local Stand_Model = Stands:FindFirstChild(tostring(Stand_Number)) :: Model
@@ -61,7 +62,7 @@ local function Load_Brainrots()
                 Income_Per_sec *= 2
             end
 
-            local New_Offline_Cash = math.round((Time_Offline * Income_Per_Sec) * 0.10)
+            local New_Offline_Cash = math.round((Time_Offline * Income_Per_Sec) * 0.01) -- 1% of what u would make
             Offline_Cash += New_Offline_Cash
 
             Total_Offline_Cash += New_Offline_Cash
