@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Log = require(ReplicatedStorage.Common.Log)
+local Types = require(ReplicatedStorage.Common.Types)
 
 export type ProfileData = {
     Cash: number,
@@ -14,26 +15,31 @@ export type ProfileData = {
     Last_Restock: number,
     Block_Queue: { string },
     Upgrades: { [string]: number },
+    Brainrot_Inventory: { [number]: Types.Brainrot_Item },
+    Brainrots: { [number]: Types.Serialized_Brainrot },
+    LastPlayed: number,
 }
 
 local ProfileStore = require(ReplicatedStorage.Packages.ProfileStore)
 type Profile = ProfileStore.Profile<ProfileData>
 
 local PLAYER_DATA_TEMPLATE: ProfileData = {
-    Cash = 999_999_999,
-    Rebirth = 5,
-    Pickaxe = "Angel",
-    Owned_Pickaxes = { "Starter", "Angel" },
+    Cash = 250,
+    Rebirth = 0,
+    Pickaxe = "Starter",
+    Owned_Pickaxes = { "Starter" },
     Opens = 0,
     Gamepasses = {},
     Stock = {},
     Last_Restock = os.time(),
     Block_Queue = {},
     Upgrades = {},
+    Brainrot_Inventory = {},
+    Brainrots = {},
+    LastPlayed = os.time(),
 }
 
-local PlayerProfileStore = ProfileStore.New("Main", PLAYER_DATA_TEMPLATE)
-
+local PlayerProfileStore = ProfileStore.New(not _G.IN_DEV and "Main" or "Dev", PLAYER_DATA_TEMPLATE)
 local Profiles: { [Player]: Profile } = {}
 
 function Load_Profile(Player: Player): Profile?
@@ -43,7 +49,7 @@ function Load_Profile(Player: Player): Profile?
 
     local Profile
 
-    if _G.IN_DEV == true then
+    if _G.Mock == true then
         Profile = PlayerProfileStore.Mock:StartSessionAsync(tostring(Player.UserId), {
             Cancel = function()
                 return not Player:IsDescendantOf(Players)

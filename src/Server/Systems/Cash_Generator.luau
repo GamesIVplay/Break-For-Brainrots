@@ -21,6 +21,7 @@ local Util = require(ReplicatedStorage.Common.Modules.Util)
 local Can_Generate = Ratelimit(1, 1)
 
 local Cash_Generator_Query = World:query(
+    Components.Renderable,
     Components.Name,
     Components.Secondary_Mutations,
     Components.Weight,
@@ -34,6 +35,7 @@ local Cash_Generator_Query = World:query(
 local function Generate_Brainrots_Cash()
     for
         Brainrot_Entity: Types.Entity,
+        Brainrot_Model: Model,
         Brainrot_Name: string,
         Secondary_Mutations: { string },
         Weight: number,
@@ -77,6 +79,10 @@ local function Generate_Brainrots_Cash()
         if not Overhead then
             Overhead = Collect_Overhead:Clone()
             Overhead.Parent = Touch
+
+            Brainrot_Model.Destroying:Connect(function()
+                Overhead:Destroy()
+            end)
         end
 
         local Cash_Text_Label = Overhead:FindFirstChild("Cash") :: TextLabel

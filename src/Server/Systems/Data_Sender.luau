@@ -12,7 +12,9 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
+local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
+local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update_Brainrot_Overhead)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Player_Entities = World:query(Components.Player):cached()
@@ -33,10 +35,6 @@ end
 
 local function Add_Pickaxe_Tool(Player: Player, Name: string)
     local Data = Pickaxes[Name]
-
-    if not Data then
-        error(`Invalid pickaxe: {Name}`)
-    end
 
     local Existing_Tools = {}
 
@@ -192,6 +190,131 @@ local function Replicate_Upgrades(Player: Player, Entity: Types.Entity)
     end
 end
 
+local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity)
+    local Character = World:get(Entity, Components.Renderable)
+
+    if not Character then
+        return
+    end
+
+    local Brainrot_Inventory = World:get(Entity, Components.Brainrot_Inventory) :: { [number]: Types.Brainrot_Item }
+
+    local Existing_Tools = {}
+
+    for _, Inst: Instance in Player.Backpack:GetChildren() do
+        if Inst:IsA("Tool") and Inst:HasTag("Brainrot") then
+            local Index = Inst:GetAttribute("Index")
+            if Index then
+                Existing_Tools[Index] = Inst
+            end
+        end
+    end
+
+    for _, Inst: Instance in Player.Character:GetChildren() do
+        if Inst:IsA("Tool") and Inst:HasTag("Brainrot") then
+            local Index = Inst:GetAttribute("Index")
+            if Index then
+                Existing_Tools[Index] = Inst
+            end
+        end
+    end
+
+    local Slots_To_Keep = {}
+
+    for Index = 1, #Brainrot_Inventory do
+        local Brainrot_Item = Brainrot_Inventory[Index]
+        if not Brainrot_Item then
+            continue
+        end
+
+        Slots_To_Keep[Index] = true
+
+        local Old_Tool = Existing_Tools[Index]
+
+        if Old_Tool then
+            local Name_Match = Old_Tool:GetAttribute("Name") == Brainrot_Item.Name
+            local Primary_Match = Old_Tool:GetAttribute("Primary_Mutation") == Brainrot_Item.Primary_Mutation
+            local Secondary_Match = Old_Tool:GetAttribute("Secondary_Mutations")
+                == table.concat(Brainrot_Item.Secondary_Mutations, ",")
+            local Weight_Match = Old_Tool:GetAttribute("Weight") == Brainrot_Item.Weight
+
+            if Name_Match and Primary_Match and Secondary_Match and Weight_Match then
+                continue
+            else
+                Old_Tool:Destroy()
+            end
+        end
+
+        local Brainrot_Name = Brainrot_Item.Name
+        local Primary_Mutation = Brainrot_Item.Primary_Mutation
+        local Secondary_Mutations = Brainrot_Item.Secondary_Mutations
+        local Weight = Brainrot_Item.Weight
+
+        local Tool_Name
+
+        local New_Tool = Instance.new("Tool")
+
+        if Primary_Mutation then
+            New_Tool:SetAttribute("Primary_Mutation", Primary_Mutation)
+            Tool_Name = string.format("[%s] %s", Primary_Mutation, Brainrot_Name)
+        else
+            Tool_Name = string.format("[%.1f kg] %s", Weight, Brainrot_Name)
+        end
+
+        New_Tool.Name = Tool_Name
+        New_Tool.ToolTip = Tool_Name
+        New_Tool:SetAttribute("Name", Brainrot_Name)
+        New_Tool:SetAttribute("Secondary_Mutations", table.concat(Secondary_Mutations, ","))
+        New_Tool:SetAttribute("Weight", Weight)
+        New_Tool:SetAttribute("Index", Index)
+        New_Tool:AddTag("Brainrot")
+
+        local Brainrot_Model, _, Extents =
+            Generate_Brainrot_Model(Brainrot_Name, Primary_Mutation, Secondary_Mutations, Weight)
+
+        Update_Brainrot_Overhead(Brainrot_Model, {
+            Brainrot_Name = Brainrot_Name,
+            Primary_Mutation = Primary_Mutation,
+            Secondary_Mutations = Secondary_Mutations,
+            Weight = Weight,
+        })
+
+        New_Tool.Grip = CFrame.new(0, 0, Extents.Z / 3)
+
+        local Handle = Brainrot_Model.PrimaryPart
+        Handle.Name = "Handle"
+
+        for _, Inst: Instance in Brainrot_Model:GetDescendants() do
+            if Inst:IsA("BasePart") then
+                Inst.Massless = true
+                Inst.CanCollide = false
+                Inst.Anchored = false
+
+                if Inst == Handle then
+                    continue
+                end
+
+                local Weld = Instance.new("WeldConstraint")
+                Weld.Part0 = Handle
+                Weld.Part1 = Inst
+                Weld.Parent = Handle
+            end
+        end
+
+        for _, Inst in Brainrot_Model:GetChildren() do
+            Inst.Parent = New_Tool
+        end
+
+        New_Tool.Parent = Player.Backpack
+    end
+
+    for Slot, Tool in Existing_Tools do
+        if not Slots_To_Keep[Slot] then
+            Tool:Destroy()
+        end
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.PostUpdate,
@@ -214,6 +337,8 @@ return {
             Replicate_Last_Restock(Player, Entity)
 
             Replicate_Upgrades(Player, Entity)
+
+            Replicate_Brainrot_Inventory(Player, Entity)
         end
     end,
     runConditions = {},

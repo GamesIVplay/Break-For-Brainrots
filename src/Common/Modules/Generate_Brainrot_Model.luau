@@ -13,11 +13,11 @@ return function(
     Primary_Mutation: string?,
     Secondary_Mutations: { string },
     Brainrot_Weight: number
-): (Model, CFrame)
+): (Model, CFrame, Vector3)
     local MutationFolder = Brainrot_Models:FindFirstChild(Primary_Mutation or "Normal") :: Folder
     local Brainrot_Model = MutationFolder:FindFirstChild(Brainrot_Name):Clone() :: Model
 
-    local Scale = Weight.GetScale(Brainrot_Weight, 1, 2)
+    local Scale = Weight.GetScale(Brainrot_Weight, 1, 2.5)
 
     Brainrot_Model:ScaleTo(Scale)
 
@@ -35,5 +35,5 @@ return function(
         Weld.Parent = Part
     end
 
-    return Brainrot_Model, Offset
+    return Brainrot_Model, Offset, Extents
 end

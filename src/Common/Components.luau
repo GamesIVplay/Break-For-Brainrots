@@ -17,9 +17,12 @@ local Components: {
     Opens: Types.Id<number>,
     Gamepasses: Types.Id<{ string }>,
     Stock: Types.Id<{ [string]: number }>,
-    Last_Restock: number,
-    Block_Queue: { string },
-    Upgrades: { [string]: number },
+    Last_Restock: Types.Id<number>,
+    Block_Queue: Types.Id<{ string }>,
+    Upgrades: Types.Id<{ [string]: number }>,
+    Brainrot_Inventory: Types.Id<{ [number]: Types.Brainrot_Item }>,
+    Pending_Brainrots: Types.Id<{ [number]: Types.Serialized_Brainrot }>,
+    LastPlayed: Types.Id<number>,
 
     Plot_Model: Types.Id<Model>,
 
@@ -70,6 +73,9 @@ local Components: {
         Last_Restock = World:component(),
         Block_Queue = World:component(),
         Upgrades = World:component(),
+        Brainrot_Inventory = World:component(),
+        Pending_Brainrots = World:component(),
+        LastPlayed = World:component(),
 
         Plot_Model = World:component(),
 

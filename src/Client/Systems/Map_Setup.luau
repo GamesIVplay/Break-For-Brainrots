@@ -82,9 +82,15 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
 
         local Place_Prompt = Proximity(
             Brainrot_Spawn_Attachment,
-            { ActionText = "Place", MaxActivationDistance = 6 },
+            { ActionText = "Place Brainrot", MaxActivationDistance = 6 },
             function()
-                -- Fire to pickup / place
+                local ServerEntity = Stand_Model:GetAttribute("ServerEntity")
+
+                if ServerEntity and Ratelimits.Pickup() then
+                    Network.Requests.Pickup.Fire(ServerEntity)
+                elseif Ratelimits.Place() then
+                    Network.Requests.Place.Fire(Stand_Model)
+                end
             end
         )
 

@@ -916,7 +916,7 @@ local function Setup_Stroke_Fixer(PlayerGui: PlayerGui)
         local ScreenSize = Camera.ViewportSize
         local ScaleFactorY = ScreenSize.Y / Reference_Height
 
-        for _, Descendant in pairs(PlayerGui:GetDescendants()) do
+        for _, Descendant in PlayerGui:GetDescendants() do
             if Descendant:IsA("UIStroke") then
                 local Original_Thickness = Descendant:GetAttribute("Original_Thickness") or Descendant.Thickness
 

@@ -3,8 +3,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local Network = require(ServerScriptService.Network)
 
-local Jecs = require(ReplicatedStorage.Packages.Jecs)
-local Pair = Jecs.pair
+local New_Brainrot_Entity = require(ServerScriptService.Server.Modules.New_Brainrot_Entity)
 
 local Components = require(ReplicatedStorage.Common.Components)
 local Phases = require(ReplicatedStorage.Common.Phases)
@@ -12,12 +11,9 @@ local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
-local Brainrot_Offset = require(ReplicatedStorage.Common.Modules.Brainrot_Offset)
 local Calculate_Mutation_Luck = require(ReplicatedStorage.Common.Modules.Calculate_Mutation_Luck)
-local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Roll_Primary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Primary_Mutation)
 local Roll_Secondary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Secondary_Mutation)
-local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update_Brainrot_Overhead)
 local Weight = require(ReplicatedStorage.Common.Modules.Weight)
 
 local Block_Open_Query = World:query(Components.Name, Components.Renderable, Components.Health)
@@ -43,6 +39,7 @@ local function Open_Blocks()
         local Player = World:get(Player_Entity, Components.Player)
         local Gamepasses = World:get(Player_Entity, Components.Gamepasses)
         local Opens = World:get(Player_Entity, Components.Opens)
+        local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
 
         World:add(Block_Entity, Components.Tags.Opening)
 
@@ -98,58 +95,21 @@ local function Open_Blocks()
             end
 
             if Open_Stand then
-                local Attachment = Open_Stand:FindFirstChild("Brainrot_Spawn", true) :: Attachment
-
-                local Brainrot_Model, Offset = Generate_Brainrot_Model(
+                New_Brainrot_Entity(
+                    Player_Entity,
+                    Open_Stand,
                     Rolled_Brainrot,
                     Rolled_Primary_Mutation,
                     Rolled_Secondary_Mutations,
                     Rolled_Weight
                 )
-
-                Update_Brainrot_Overhead(Brainrot_Model, {
-                    Brainrot_Name = Rolled_Brainrot,
+            else
+                table.insert(Brainrot_Inventory, {
+                    Name = Rolled_Brainrot,
                     Primary_Mutation = Rolled_Primary_Mutation,
                     Secondary_Mutations = Rolled_Secondary_Mutations,
                     Weight = Rolled_Weight,
                 })
-
-                Brainrot_Model:AddTag("Idle")
-
-                Brainrot_Model.Parent = workspace:FindFirstChild("Brainrots")
-
-                Brainrot_Model:PivotTo(Attachment.WorldCFrame * Offset * CFrame.new(Brainrot_Offset))
-
-                local Brainrot_Entity = World:entity()
-
-                Open_Stand:SetAttribute("ServerEntity", Brainrot_Entity)
-
-                World:set(Brainrot_Entity, Components.Name, Rolled_Brainrot)
-                World:set(Brainrot_Entity, Components.Renderable, Brainrot_Model)
-
-                if Rolled_Primary_Mutation then
-                    World:set(Brainrot_Entity, Components.Primary_Mutation, Rolled_Primary_Mutation)
-                end
-
-                World:set(Brainrot_Entity, Components.Secondary_Mutations, Rolled_Secondary_Mutations)
-                World:set(Brainrot_Entity, Components.Weight, Rolled_Weight)
-                World:set(Brainrot_Entity, Components.Stand, Open_Stand)
-                World:set(Brainrot_Entity, Components.Cash, 0)
-                World:set(Brainrot_Entity, Components.Offline_Cash, 0)
-
-                World:add(Brainrot_Entity, Components.Tags.Brainrot)
-                World:add(Brainrot_Entity, Components.Tags.Networked)
-
-                World:add(Brainrot_Entity, Pair(Components.Relationships.Owner, Player_Entity))
-                World:add(Player_Entity, Pair(Components.Relationships.Brainrot, Brainrot_Entity))
-
-                World:set(Brainrot_Entity, Components.Cleanup, function()
-                    Brainrot_Model:Destroy()
-                    Open_Stand:RemoveTag("Occupied")
-                    Open_Stand:SetAttribute("ServerEntity", nil)
-                end)
-            else
-                -- Add to inventory
             end
 
             World:set(Player_Entity, Components.Opens, Opens + 1)

@@ -17,6 +17,9 @@ local Network = require(ServerScriptService.Network)
 
 local Profile = require(ServerScriptService.Server.Modules.Profile)
 
+local Jecs = require(ReplicatedStorage.Packages.Jecs)
+local Pair = Jecs.pair
+
 local Collect = require(ReplicatedStorage.Common.Collect)
 local Components = require(ReplicatedStorage.Common.Components)
 local Log = require(ReplicatedStorage.Common.Log)
@@ -109,6 +112,9 @@ local function Handle_New_Player(Player: Player)
     World:set(Player_Entity, Components.Last_Restock, Profile_Data.Last_Restock)
     World:set(Player_Entity, Components.Block_Queue, Profile_Data.Block_Queue)
     World:set(Player_Entity, Components.Upgrades, Profile_Data.Upgrades)
+    World:set(Player_Entity, Components.Brainrot_Inventory, Profile_Data.Brainrot_Inventory)
+    World:set(Player_Entity, Components.Pending_Brainrots, Profile_Data.Brainrots)
+    World:set(Player_Entity, Components.LastPlayed, Profile_Data.LastPlayed)
     World:set(Player_Entity, Components.Cleanup, function()
         Profile.Unload(Player)
 
@@ -118,6 +124,10 @@ local function Handle_New_Player(Player: Player)
     end)
 
     Player_Profile.OnSave:Connect(function()
+        if World:has(Player_Entity, Components.Pending_Brainrots) then
+            return
+        end
+
         Profile_Data.Cash = World:get(Player_Entity, Components.Cash)
         Profile_Data.Rebirth = World:get(Player_Entity, Components.Rebirth)
         Profile_Data.Pickaxe = World:get(Player_Entity, Components.Pickaxe)
@@ -128,6 +138,40 @@ local function Handle_New_Player(Player: Player)
         Profile_Data.Last_Restock = World:get(Player_Entity, Components.Last_Restock)
         Profile_Data.Block_Queue = World:get(Player_Entity, Components.Block_Queue)
         Profile_Data.Upgrades = World:get(Player_Entity, Components.Upgrades)
+        Profile_Data.Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
+        Profile_Data.LastPlayed = os.time()
+
+        local Serialized_Brainrots: { [number]: Types.Serialized_Brainrot } = {}
+
+        for
+            Brainrot_Entity,
+            Brainrot_Name: string,
+            Secondary_Mutations: { string },
+            Weight: number,
+            Cash: number,
+            Offline_Cash: number,
+            Stand: Model
+        in
+            World:query(
+                Components.Name,
+                Components.Secondary_Mutations,
+                Components.Weight,
+                Components.Cash,
+                Components.Offline_Cash,
+                Components.Stand
+            ):with(Pair(Components.Relationships.Owner, Player_Entity))
+        do
+            Serialized_Brainrots[tonumber(Stand.Name)] = {
+                Name = Brainrot_Name,
+                Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation),
+                Secondary_Mutations = Secondary_Mutations,
+                Weight = Weight,
+                Cash = Cash,
+                Offline_Cash = Offline_Cash,
+            }
+        end
+
+        Profile_Data.Brainrots = Serialized_Brainrots
     end)
 
     if Player.Character then

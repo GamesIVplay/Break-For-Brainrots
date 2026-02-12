@@ -17,4 +17,20 @@ export type AnimationInfo = {
 export type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Mythical" | "Secret"
 export type NotificationType = "Success" | "Info" | "Warning" | "Error" | "Reward"
 
+export type Brainrot_Item = {
+    Name: string,
+    Primary_Mutation: string?,
+    Secondary_Mutations: { string },
+    Weight: number,
+}
+
+export type Serialized_Brainrot = {
+    Name: string,
+    Primary_Mutation: string?,
+    Secondary_Mutations: { string },
+    Weight: number,
+    Cash: number,
+    Offline_Cash: number,
+}
+
 return {}

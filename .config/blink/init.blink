@@ -148,6 +148,22 @@ scope Requests {
 	   Poll: true,
        Data: Types.Id
     }
+
+	event Pickup {
+       From: Client,
+       Type: Reliable,
+       Call: SingleSync,
+	   Poll: true,
+       Data: Types.Id
+    }
+
+	event Place {
+       From: Client,
+       Type: Reliable,
+       Call: SingleSync,
+	   Poll: true,
+       Data: Instance(Model)  
+    }
 }
 
 scope DataChanged {

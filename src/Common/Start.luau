@@ -1,5 +1,6 @@
 _G.IN_DEV = true
 _G.JECS_DEBUG = true
+_G.Mock = false
 
 local ContextActionService = game:GetService("ContextActionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -19,7 +20,7 @@ local function Setup_Jabby()
     Jabby.set_check_function(function(Player)
         local RankInGroup = Player:GetRankInGroupAsync(GroupId)
 
-        if RankInGroup >= 6 or Player.UserId == 3439160531 then
+        if Player.UserId == 3439160531 then
             return true
         else
             return false
