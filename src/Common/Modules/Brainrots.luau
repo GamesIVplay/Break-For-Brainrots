@@ -69,8 +69,6 @@ local Brainrots: { [string]: Brainrot } = {
     ["Strawberrelli Flamingelli"] = { Rarity = "Mythical", IncomePerSec = 1_820 },
     ["Bombardiro Crocodilo"] = { Rarity = "Mythical", IncomePerSec = 2_000 },
     ["Lerulerulerule"] = { Rarity = "Mythical", IncomePerSec = 2_200 },
-    ["Extra Mythical 1"] = { Rarity = "Mythical", IncomePerSec = 2_300 },
-    ["Extra Mythical 2"] = { Rarity = "Mythical", IncomePerSec = 2_400 },
 
     -- Secret (2,600 → 3,400)
     ["Pakrahmatmatina"] = { Rarity = "Secret", IncomePerSec = 2_600 },
