@@ -23,6 +23,7 @@ Start({
     require(Systems.Pickup),
     require(Systems.Cash_Generator),
     require(Systems.Collect),
-    require(Systems.Data_Sender),
+    require(Systems.Brainrot_Cleanup),
     require(Systems.Leaderstats),
+    require(Systems.Data_Sender),
 })
