@@ -89,7 +89,7 @@ local function Create_Notifications()
     if UserInputService.TouchEnabled and workspace.CurrentCamera.ViewportSize.X < 1024 then
         Notifications.Position = UDim2.fromScale(0.5, 0.825)
     else
-        Notifications.Position = UDim2.fromScale(0.5, 0.92)
+        Notifications.Position = UDim2.fromScale(0.5, 0.9)
     end
 
     local Template = Notifications:FindFirstChild("Template") :: Frame?

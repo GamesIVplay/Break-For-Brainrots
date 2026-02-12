@@ -88,7 +88,7 @@ local Upgrades: { [string]: Upgrade } = {
 
     ["Better Luck"] = {
         Index = 5,
-        Rebirth = 3,
+        Rebirth = 2,
         Image = "rbxassetid://101894466559920",
         Image_Size = UDim2.fromScale(0.166, 0.665),
         Levels = {

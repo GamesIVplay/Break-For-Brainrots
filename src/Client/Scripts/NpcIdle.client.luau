@@ -33,6 +33,19 @@ local PRESETS = {
         YawAngleDegrees = 1,
         RollAngleDegrees = 0.5,
     },
+
+    -- Brainrot but less movement
+    DecorBrainrot = {
+        Distance = 0.15,
+        Duration = 2.25,
+        BobHeight = 0.15,
+        BobSpeed = 1.25,
+        GlideHeight = 0.45,
+        GlideSpeed = 3.5,
+        WagSpeed = 1.1,
+        YawAngleDegrees = 12,
+        RollAngleDegrees = 6,
+    },
 }
 
 local function Start(Inst: Instance)

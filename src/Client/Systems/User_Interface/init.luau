@@ -26,6 +26,7 @@ local OnEvent = Fusion.OnEvent
 local Peek = Fusion.peek
 
 local Clock = require(ReplicatedStorage.Packages.Clock)
+local TopbarPlus = require(ReplicatedStorage.Packages.TopbarPlus)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
 local Components = require(ReplicatedStorage.Common.Components)
@@ -909,6 +910,86 @@ local function Setup_Upgrades(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Upgrades_Content(LocalEntity, PlayerGui)
 end
 
+local function Setup_Daily_Rewards_Visibility(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Daily_Rewards_Frame = Frames:WaitForChild("DailyRewards") :: ImageLabel
+
+    Hydrate_Frame_Visibility(Daily_Rewards_Frame, "DailyRewards")
+
+    Setup_Close_Button(Daily_Rewards_Frame:WaitForChild("Close"))
+end
+
+local function Setup_Daily_Rewards(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    Setup_Daily_Rewards_Visibility(PlayerGui)
+end
+
+local function Setup_Playtime_Rewards_Visibility(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Playtime_Rewards_Frame = Frames:WaitForChild("PlaytimeRewards") :: ImageLabel
+
+    Hydrate_Frame_Visibility(Playtime_Rewards_Frame, "PlaytimeRewards")
+
+    Setup_Close_Button(Playtime_Rewards_Frame:WaitForChild("Close"))
+end
+
+local function Setup_Playtime_Rewards(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    Setup_Playtime_Rewards_Visibility(PlayerGui)
+end
+
+local function Setup_Topbar_Daily_Rewards()
+    local Icon = TopbarPlus.new()
+        :setImage("rbxassetid://122975945860743")
+        :setImageScale(0.8)
+        :oneClick(true)
+        :align("Right")
+        :setCaption("Daily Rewards")
+        :setOrder(2)
+        :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+
+    Icon.selected:Connect(function()
+        Activate:Play()
+
+        Toggle_Screen("DailyRewards")
+    end)
+
+    Icon.viewingStarted:Connect(function()
+        Hover:Play()
+    end)
+end
+
+local function Setup_Topbar_Playtime_Rewards()
+    local Icon = TopbarPlus.new()
+        :setImage("rbxassetid://87992968703996")
+        :setImageScale(0.8)
+        :oneClick(true)
+        :align("Right")
+        :setCaption("Playtime Rewards")
+        :setOrder(1)
+        :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+
+    Icon.selected:Connect(function()
+        Activate:Play()
+
+        Toggle_Screen("PlaytimeRewards")
+    end)
+
+    Icon.viewingStarted:Connect(function()
+        Hover:Play()
+    end)
+end
+
+local function Setup_Topbar()
+    TopbarPlus.modifyBaseTheme(require(script.Icon_Themes.Default))
+
+    Setup_Topbar_Daily_Rewards()
+
+    Setup_Topbar_Playtime_Rewards()
+end
+
 local function Setup_Stroke_Fixer(PlayerGui: PlayerGui)
     local Reference_Height = 1080
 
@@ -965,6 +1046,10 @@ return {
             Setup_Pickaxes(Local_Entity, PlayerGui)
             Setup_Blocks(Local_Entity, PlayerGui)
             Setup_Upgrades(Local_Entity, PlayerGui)
+            Setup_Daily_Rewards(Local_Entity, PlayerGui)
+            Setup_Playtime_Rewards(Local_Entity, PlayerGui)
+
+            Setup_Topbar()
 
             Setup_Stroke_Fixer(PlayerGui)
 
