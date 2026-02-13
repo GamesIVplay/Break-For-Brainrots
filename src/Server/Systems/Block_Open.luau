@@ -4,6 +4,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local Network = require(ServerScriptService.Network)
 
 local New_Brainrot_Entity = require(ServerScriptService.Server.Modules.New_Brainrot_Entity)
+local Slot_Util = require(ServerScriptService.Server.Modules.Slot_Util)
 
 local Components = require(ReplicatedStorage.Common.Components)
 local Phases = require(ReplicatedStorage.Common.Phases)
@@ -95,12 +96,6 @@ local function Open_Blocks()
                 break
             end
 
-            local Brainrot_Inventory_Size = 0
-
-            for _ in pairs(Brainrot_Inventory) do
-                Brainrot_Inventory_Size += 1
-            end
-
             if Open_Stand then
                 New_Brainrot_Entity(
                     Player_Entity,
@@ -110,17 +105,16 @@ local function Open_Blocks()
                     Rolled_Secondary_Mutations,
                     Rolled_Weight
                 )
-            elseif Brainrot_Inventory_Size <= Brainrot_Capacity then
-                for Index = 1, Brainrot_Inventory_Size + 1 do
-                    if Brainrot_Inventory[Index] == nil then
-                        Brainrot_Inventory[Index] = {
-                            Name = Rolled_Brainrot,
-                            Primary_Mutation = Rolled_Primary_Mutation,
-                            Secondary_Mutations = Rolled_Secondary_Mutations,
-                            Weight = Rolled_Weight,
-                        }
-                        break
-                    end
+            else
+                local Open_Slot = Slot_Util.GetFirstOpen(Brainrot_Inventory, Brainrot_Capacity)
+
+                if Open_Slot then
+                    Brainrot_Inventory[Open_Slot] = {
+                        Name = Rolled_Brainrot,
+                        Primary_Mutation = Rolled_Primary_Mutation,
+                        Secondary_Mutations = Rolled_Secondary_Mutations,
+                        Weight = Rolled_Weight,
+                    }
                 end
             end
 

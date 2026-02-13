@@ -5,6 +5,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local Network = require(ServerScriptService.Network)
 
 local New_Brainrot_Entity = require(ServerScriptService.Server.Modules.New_Brainrot_Entity)
+local Slot_Util = require(ServerScriptService.Server.Modules.Slot_Util)
 
 local Components = require(ReplicatedStorage.Common.Components)
 local Phases = require(ReplicatedStorage.Common.Phases)
@@ -94,10 +95,12 @@ local function Handle_Place_Requests()
             Brainrot_Item.Name,
             Brainrot_Item.Primary_Mutation,
             Brainrot_Item.Secondary_Mutations,
-            Brainrot_Item.Weight
+            Brainrot_Item.Weight,
+            Brainrot_Item.Cash,
+            Brainrot_Item.Offline_Cash
         )
 
-        Brainrot_Inventory[Index] = nil
+        Slot_Util.Clear_Slot(Brainrot_Inventory, Index)
 
         Network.Notification.Fire(Player, {
             Text = "Brainrot was placed",

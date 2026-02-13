@@ -236,6 +236,8 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
             local Secondary_Match = Old_Tool:GetAttribute("Secondary_Mutations")
                 == table.concat(Brainrot_Item.Secondary_Mutations, ",")
             local Weight_Match = Old_Tool:GetAttribute("Weight") == Brainrot_Item.Weight
+            local Cash_Match = Old_Tool:GetAttribute("Cash") == Brainrot_Item.Cash
+            local Offline_Cash_Match = Old_Tool:GetAttribute("Offline_Cash") == Brainrot_Item.Offline_Cash
 
             if Name_Match and Primary_Match and Secondary_Match and Weight_Match then
                 continue
@@ -248,6 +250,8 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
         local Primary_Mutation = Brainrot_Item.Primary_Mutation
         local Secondary_Mutations = Brainrot_Item.Secondary_Mutations
         local Weight = Brainrot_Item.Weight
+        local Cash = Brainrot_Item.Cash
+        local Offline_Cash = Brainrot_Item.Offline_Cash
 
         local Tool_Name
 
@@ -265,6 +269,8 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
         New_Tool:SetAttribute("Name", Brainrot_Name)
         New_Tool:SetAttribute("Secondary_Mutations", table.concat(Secondary_Mutations, ","))
         New_Tool:SetAttribute("Weight", Weight)
+        New_Tool:SetAttribute("Cash", Cash)
+        New_Tool:SetAttribute("Offline_Cash", Offline_Cash)
         New_Tool:SetAttribute("Index", Index)
         New_Tool:AddTag("Brainrot")
 

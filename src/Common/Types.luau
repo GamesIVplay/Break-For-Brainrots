@@ -22,6 +22,8 @@ export type Brainrot_Item = {
     Primary_Mutation: string?,
     Secondary_Mutations: { string },
     Weight: number,
+    Cash: number,
+    Offline_Cash: number,
 }
 
 export type Serialized_Brainrot = {

@@ -65,7 +65,12 @@ local function Handle_Pickup_Requests()
             Offline_Cash = Offline_Cash,
         }
 
-        Brainrot_Inventory[Open_Slot] = Brainrot_Item
+        for Index = 1, Brainrot_Inventory_Size + 1 do
+            if Brainrot_Inventory[Index] == nil then
+                Brainrot_Inventory[Index] = Brainrot_Item
+                break
+            end
+        end
 
         World:delete(Brainrot_Entity)
 
