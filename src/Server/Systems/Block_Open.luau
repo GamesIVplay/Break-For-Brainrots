@@ -11,6 +11,7 @@ local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
+local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
 local Calculate_Mutation_Luck = require(ReplicatedStorage.Common.Modules.Calculate_Mutation_Luck)
 local Roll_Primary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Primary_Mutation)
 local Roll_Secondary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Secondary_Mutation)
@@ -68,30 +69,36 @@ local function Open_Blocks()
             },
         })
 
-        local Plot_Model = World:get(Plot_Entity, Components.Renderable) :: Model
-        local Stands = Plot_Model:FindFirstChild("Stands")
-
-        local Open_Stand: Model?
-
-        for Stand = 1, 10 do
-            if (Stand == 5 or Stand == 10) and not table.find(Gamepasses, "+2 Slots") then
-                continue
-            end
-
-            local Stand_Model = Stands:FindFirstChild(Stand)
-
-            if Stand_Model:HasTag("Occupied") then
-                continue
-            end
-
-            Stand_Model:AddTag("Occupied")
-            Open_Stand = Stand_Model
-            break
-        end
-
         task.delay(3.8, function()
             if not World:contains(Block_Entity) or not World:contains(Player_Entity) then
                 return
+            end
+
+            local Plot_Model = World:get(Plot_Entity, Components.Renderable) :: Model
+            local Stands = Plot_Model:FindFirstChild("Stands")
+
+            local Open_Stand: Model?
+
+            for Stand = 1, 10 do
+                if (Stand == 5 or Stand == 10) and not table.find(Gamepasses, "+2 Slots") then
+                    continue
+                end
+
+                local Stand_Model = Stands:FindFirstChild(Stand)
+
+                if Stand_Model:HasTag("Occupied") then
+                    continue
+                end
+
+                Stand_Model:AddTag("Occupied")
+                Open_Stand = Stand_Model
+                break
+            end
+
+            local Brainrot_Inventory_Size = 0
+
+            for _ in pairs(Brainrot_Inventory) do
+                Brainrot_Inventory_Size += 1
             end
 
             if Open_Stand then
@@ -103,13 +110,18 @@ local function Open_Blocks()
                     Rolled_Secondary_Mutations,
                     Rolled_Weight
                 )
-            else
-                table.insert(Brainrot_Inventory, {
-                    Name = Rolled_Brainrot,
-                    Primary_Mutation = Rolled_Primary_Mutation,
-                    Secondary_Mutations = Rolled_Secondary_Mutations,
-                    Weight = Rolled_Weight,
-                })
+            elseif Brainrot_Inventory_Size <= Brainrot_Capacity then
+                for Index = 1, Brainrot_Inventory_Size + 1 do
+                    if Brainrot_Inventory[Index] == nil then
+                        Brainrot_Inventory[Index] = {
+                            Name = Rolled_Brainrot,
+                            Primary_Mutation = Rolled_Primary_Mutation,
+                            Secondary_Mutations = Rolled_Secondary_Mutations,
+                            Weight = Rolled_Weight,
+                        }
+                        break
+                    end
+                end
             end
 
             World:set(Player_Entity, Components.Opens, Opens + 1)

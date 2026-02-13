@@ -164,6 +164,13 @@ scope Requests {
 	   Poll: true,
        Data: Instance(Model)  
     }
+
+	event Equip_Best_Brainrots {
+	   From: Client,
+       Type: Reliable,
+       Call: SingleSync,
+	   Poll: true,
+	}
 }
 
 scope DataChanged {

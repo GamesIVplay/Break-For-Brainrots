@@ -221,8 +221,7 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
 
     local Slots_To_Keep = {}
 
-    for Index = 1, #Brainrot_Inventory do
-        local Brainrot_Item = Brainrot_Inventory[Index]
+    for Index, Brainrot_Item in pairs(Brainrot_Inventory) do
         if not Brainrot_Item then
             continue
         end

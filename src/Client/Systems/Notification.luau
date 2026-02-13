@@ -17,6 +17,9 @@ local Notification_Sounds = UISounds:WaitForChild("Notification")
 local UIGradients = Assets:WaitForChild("UIGradients")
 local Notification_UI_Gradients = UIGradients:WaitForChild("Notification")
 
+local Fusion = require(ReplicatedStorage.Packages.Fusion)
+local Peek = Fusion.peek
+
 local Components = require(ReplicatedStorage.Common.Components)
 local Network = require(ReplicatedFirst.Network)
 local Phases = require(ReplicatedStorage.Common.Phases)
@@ -25,6 +28,9 @@ local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Spring = require(ReplicatedStorage.Common.Modules.Spring)
+
+local Scope = Fusion.scoped(Fusion)
+local DeviceType = require(script.Parent.User_Interface.Components.DeviceType)(Scope)
 
 local NOTIFICATION_COUNT = 0
 local DEFAULT_NOTIFICATION_DURATION = 4
@@ -86,10 +92,10 @@ local function Create_Notifications()
         return
     end
 
-    if UserInputService.TouchEnabled and workspace.CurrentCamera.ViewportSize.X < 1024 then
-        Notifications.Position = UDim2.fromScale(0.5, 0.825)
-    else
+    if Peek(DeviceType) ~= "Mobile" then
         Notifications.Position = UDim2.fromScale(0.5, 0.9)
+    else
+        Notifications.Position = UDim2.fromScale(0.5, 0.825)
     end
 
     local Template = Notifications:FindFirstChild("Template") :: Frame?

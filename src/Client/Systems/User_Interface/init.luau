@@ -940,6 +940,21 @@ local function Setup_Playtime_Rewards(LocalEntity: Types.Entity, PlayerGui: Play
     Setup_Playtime_Rewards_Visibility(PlayerGui)
 end
 
+local function Setup_Sell_Visibility(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Sell_Frame = Frames:WaitForChild("Sell") :: ImageLabel
+
+    Hydrate_Frame_Visibility(Sell_Frame, "Sell")
+
+    Setup_Close_Button(Sell_Frame:WaitForChild("Close"))
+end
+
+local function Setup_Sell(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    Setup_Sell_Visibility(PlayerGui)
+end
+
 local function Setup_Topbar_Daily_Rewards()
     local Icon = TopbarPlus.new()
         :setImage("rbxassetid://122975945860743")
@@ -950,14 +965,18 @@ local function Setup_Topbar_Daily_Rewards()
         :setOrder(2)
         :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
 
+    if Peek(DeviceType) ~= "Mobile" then
+        Icon:setLabel("Daily Rewards")
+
+        Icon.viewingStarted:Connect(function()
+            Hover:Play()
+        end)
+    end
+
     Icon.selected:Connect(function()
         Activate:Play()
 
         Toggle_Screen("DailyRewards")
-    end)
-
-    Icon.viewingStarted:Connect(function()
-        Hover:Play()
     end)
 end
 
@@ -971,14 +990,18 @@ local function Setup_Topbar_Playtime_Rewards()
         :setOrder(1)
         :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
 
+    if Peek(DeviceType) ~= "Mobile" then
+        Icon:setLabel("Playtime Rewards")
+
+        Icon.viewingStarted:Connect(function()
+            Hover:Play()
+        end)
+    end
+
     Icon.selected:Connect(function()
         Activate:Play()
 
         Toggle_Screen("PlaytimeRewards")
-    end)
-
-    Icon.viewingStarted:Connect(function()
-        Hover:Play()
     end)
 end
 
@@ -1048,6 +1071,7 @@ return {
             Setup_Upgrades(Local_Entity, PlayerGui)
             Setup_Daily_Rewards(Local_Entity, PlayerGui)
             Setup_Playtime_Rewards(Local_Entity, PlayerGui)
+            Setup_Sell(Local_Entity, PlayerGui)
 
             Setup_Topbar()
 

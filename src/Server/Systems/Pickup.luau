@@ -12,6 +12,7 @@ local Registry = require(ReplicatedStorage.Common.Registry)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
+local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 
 local function Handle_Pickup_Requests()
@@ -34,12 +35,26 @@ local function Handle_Pickup_Requests()
             continue
         end
 
+        local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
+
+        local Brainrot_Inventory_Size = 0
+
+        for _ in pairs(Brainrot_Inventory) do
+            Brainrot_Inventory_Size += 1
+        end
+
+        if Brainrot_Inventory_Size > Brainrot_Capacity then
+            Network.Notification.Fire(
+                Player,
+                { Text = `Your inventory is full ({Brainrot_Inventory_Size}/{Brainrot_Capacity})`, Type = "Error" }
+            )
+            continue
+        end
+
         local Brainrot_Name = World:get(Brainrot_Entity, Components.Name)
         local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
         local Secondary_Mutations = World:get(Brainrot_Entity, Components.Secondary_Mutations)
         local Weight = World:get(Brainrot_Entity, Components.Weight)
-
-        local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
 
         local Brainrot_Item: Types.Brainrot_Item = {
             Name = Brainrot_Name,
@@ -48,7 +63,7 @@ local function Handle_Pickup_Requests()
             Weight = Weight,
         }
 
-        for Index = 1, #Brainrot_Inventory + 1 do
+        for Index = 1, Brainrot_Inventory_Size + 1 do
             if Brainrot_Inventory[Index] == nil then
                 Brainrot_Inventory[Index] = Brainrot_Item
                 break

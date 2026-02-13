@@ -21,6 +21,7 @@ Start({
     require(Systems.Block_Open),
     require(Systems.Place),
     require(Systems.Pickup),
+    require(Systems.Equip_Best_Brainrots),
     require(Systems.Cash_Generator),
     require(Systems.Collect),
     require(Systems.Brainrot_Cleanup),
