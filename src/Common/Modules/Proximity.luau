@@ -5,6 +5,8 @@ type ProximityPromptOptions = {
     RequiresLineOfSight: boolean?,
     MaxActivationDistance: number?,
     UIOffset: Vector2?,
+    Keycode: Enum.KeyCode,
+    GamepadKeyCode: Enum.KeyCode,
     Args: any?,
     Once: boolean?,
 }
@@ -28,6 +30,8 @@ return function(
     Prompt.RequiresLineOfSight = Options.RequiresLineOfSight or false
     Prompt.MaxActivationDistance = Options.MaxActivationDistance or 10
     Prompt.UIOffset = Options.UIOffset or Vector2.zero
+    Prompt.KeyboardKeyCode = Options.Keycode or Enum.KeyCode.E
+    Prompt.GamepadKeyCode = Options.GamepadKeyCode or Enum.KeyCode.ButtonX
     Prompt.Style = Enum.ProximityPromptStyle.Custom
     Prompt.Parent = Target
 

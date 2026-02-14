@@ -6,3 +6,12 @@ type Weight = f16
 
 enum NotificationType = {Success, Info, Warning, Error, Reward}
 
+struct Brainrot_Item {
+	Name: string,
+	Primary_Mutation: string?,
+	Secondary_Mutations: string[],
+	Weight: Weight,
+	Cash: Cash,
+	Offline_Cash: Cash
+}
+

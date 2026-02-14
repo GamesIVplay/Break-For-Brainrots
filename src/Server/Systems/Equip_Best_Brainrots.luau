@@ -14,6 +14,7 @@ local Registry = require(ReplicatedStorage.Common.Registry)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
+local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
 local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 
@@ -28,10 +29,32 @@ local function Handle_Equip_Best_Brainrots_Requests()
             continue
         end
 
+        local Gamepasses = World:get(Player_Entity, Components.Gamepasses)
+
+        if not Gamepasses then
+            continue
+        end
+
+        local HasExtraSlots = table.find(Gamepasses, "+2 Slots")
+
         local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
         if not Brainrot_Inventory then
             continue
         end
+
+        local Plot_Entity = World:target(Player_Entity, Components.Relationships.Plot)
+
+        if not Plot_Entity then
+            continue
+        end
+
+        local Plot_Model = World:get(Plot_Entity, Components.Renderable)
+
+        if not Plot_Model then
+            continue
+        end
+
+        local Stands = Plot_Model:FindFirstChild("Stands")
 
         for
             Brainrot_Entity,
@@ -49,6 +72,12 @@ local function Handle_Equip_Best_Brainrots_Requests()
                 Components.Offline_Cash
             ):with(Components.Tags.Brainrot, Pair(Components.Relationships.Owner, Player_Entity))
         do
+            local Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
+
+            if not Slot then
+                break
+            end
+
             local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
 
             local Brainrot_Item: Types.Brainrot_Item = {
@@ -60,14 +89,69 @@ local function Handle_Equip_Best_Brainrots_Requests()
                 Offline_Cash = Offline_Cash,
             }
 
-            for Index = 1, Brainrot_Inventory_Size + 1 do
-                if Brainrot_Inventory[Index] == nil then
-                    Brainrot_Inventory[Index] = Brainrot_Item
-                    break
-                end
-            end
+            Brainrot_Inventory[Slot] = Brainrot_Item
 
             World:delete(Brainrot_Entity)
+        end
+
+        local Sorted_By_Income = {}
+
+        Slot_Util.For_Each(Brainrot_Inventory, Brainrot_Capacity, function(Index, Item: Types.Brainrot_Item)
+            table.insert(Sorted_By_Income, {
+                Index = Index,
+                Data = Item,
+                Income = Calculate_Income_Per_Sec({
+                    Brainrot_Name = Item.Name,
+                    Primary_Mutation = Item.Primary_Mutation,
+                    Secondary_Mutations = Item.Secondary_Mutations,
+                    Weight = Item.Weight,
+                }),
+            })
+        end)
+
+        table.sort(Sorted_By_Income, function(a, b)
+            return a.Income > b.Income
+        end)
+
+        for Index = 1, HasExtraSlots and 10 or 8 do
+            local Data = Sorted_By_Income[Index]
+
+            if not Data then
+                break
+            end
+
+            local Open_Stand: Model?
+
+            for Stand = 1, 10 do
+                if (Stand == 5 or Stand == 10) and not table.find(Gamepasses, "+2 Slots") then
+                    continue
+                end
+
+                local Stand_Model = Stands:FindFirstChild(Stand)
+
+                if Stand_Model:HasTag("Occupied") then
+                    continue
+                end
+
+                Stand_Model:AddTag("Occupied")
+                Open_Stand = Stand_Model
+                break
+            end
+
+            if Open_Stand then
+                New_Brainrot_Entity(
+                    Player_Entity,
+                    Open_Stand,
+                    Data.Data.Name,
+                    Data.Data.Primary_Mutation,
+                    Data.Data.Secondary_Mutations,
+                    Data.Data.Weight
+                )
+
+                Slot_Util.Clear_Slot(Brainrot_Inventory, Data.Index)
+            else
+                break
+            end
         end
     end
 end
@@ -75,6 +159,8 @@ end
 return {
     name = script.Name,
     phase = Phases.Runservice.Update,
-    system = Handle_Equip_Best_Brainrots_Requests,
+    system = function()
+        Handle_Equip_Best_Brainrots_Requests()
+    end,
     runConditions = {},
 }

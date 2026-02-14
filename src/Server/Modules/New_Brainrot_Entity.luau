@@ -11,6 +11,7 @@ local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Brainrot_Offset = require(ReplicatedStorage.Common.Modules.Brainrot_Offset)
+local Calculate_Sell_Price = require(ReplicatedStorage.Common.Modules.Calculate_Sell_Price)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update_Brainrot_Overhead)
 
@@ -24,6 +25,8 @@ return function(
     Cash: number?,
     Offline_Cash: number?
 )
+    local Player = World:get(Player_Entity, Components.Player)
+
     local Attachment = Open_Stand:FindFirstChild("Brainrot_Spawn", true) :: Attachment
 
     local Brainrot_Model, Offset = Generate_Brainrot_Model(Brainrot_Name, Primary_Mutation, Secondary_Mutations, Weight)
@@ -70,6 +73,18 @@ return function(
         Open_Stand:RemoveTag("Occupied")
         Open_Stand:SetAttribute("ServerEntity", nil)
     end)
+
+    local Sell_Price = Calculate_Sell_Price({
+        Brainrot_Name = Brainrot_Name,
+        Primary_Mutation = Primary_Mutation,
+        Secondary_Mutations = Secondary_Mutations,
+        Weight = Weight,
+    })
+
+    Network.Setup_Sell_Prompt.Fire(Player, {
+        Brainrot_Model = Brainrot_Model,
+        Sell_Price = Sell_Price,
+    })
 
     return Brainrot_Entity, Brainrot_Model
 end

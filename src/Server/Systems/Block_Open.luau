@@ -106,7 +106,7 @@ local function Open_Blocks()
                     Rolled_Weight
                 )
             else
-                local Open_Slot = Slot_Util.GetFirstOpen(Brainrot_Inventory, Brainrot_Capacity)
+                local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
 
                 if Open_Slot then
                     Brainrot_Inventory[Open_Slot] = {
@@ -114,7 +114,14 @@ local function Open_Blocks()
                         Primary_Mutation = Rolled_Primary_Mutation,
                         Secondary_Mutations = Rolled_Secondary_Mutations,
                         Weight = Rolled_Weight,
+                        Cash = 0,
+                        Offline_Cash = 0,
                     }
+                else
+                    Network.Notification.Fire(
+                        Player,
+                        { Text = `Your inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`, Type = "Error" }
+                    )
                 end
             end
 

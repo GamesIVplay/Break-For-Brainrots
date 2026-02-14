@@ -80,19 +80,19 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
             Position = Touch.Position - Vector3.new(0, 0.35, 0),
         })
 
-        local Place_Prompt = Proximity(
-            Brainrot_Spawn_Attachment,
-            { ActionText = "Place Brainrot", MaxActivationDistance = 6 },
-            function()
-                local ServerEntity = Stand_Model:GetAttribute("ServerEntity")
+        local Place_Prompt = Proximity(Brainrot_Spawn_Attachment, {
+            ActionText = "Place Brainrot",
+            MaxActivationDistance = 6,
+            HoldDuration = 0.5,
+        }, function()
+            local ServerEntity = Stand_Model:GetAttribute("ServerEntity")
 
-                if ServerEntity and Ratelimits.Pickup() then
-                    Network.Requests.Pickup.Fire(ServerEntity)
-                elseif Ratelimits.Place() then
-                    Network.Requests.Place.Fire(Stand_Model)
-                end
+            if ServerEntity and Ratelimits.Pickup() then
+                Network.Requests.Pickup.Fire(ServerEntity)
+            elseif Ratelimits.Place() then
+                Network.Requests.Place.Fire(Stand_Model)
             end
-        )
+        end)
 
         local function Update_Prompt_Text()
             if Stand_Model:GetAttribute("ServerEntity") then

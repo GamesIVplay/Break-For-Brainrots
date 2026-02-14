@@ -1,6 +1,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
+local Slot_Util = require(ServerScriptService.Server.Modules.Slot_Util)
+
 local Jecs = require(ReplicatedStorage.Packages.Jecs)
 local Pair = Jecs.pair
 
@@ -12,6 +14,7 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
+local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
 local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update_Brainrot_Overhead)
@@ -198,6 +201,26 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
     end
 
     local Brainrot_Inventory = World:get(Entity, Components.Brainrot_Inventory) :: { [number]: Types.Brainrot_Item }
+    local Previous_Brainrot_Inventory =
+        World:get(Entity, Pair(Components.Relationships.Previous, Components.Brainrot_Inventory))
+
+    if Util.TablesAreEqual(Previous_Brainrot_Inventory, Brainrot_Inventory) then
+        return
+    end
+
+    local Serialized_Brainrot_Inventory: { Types.Brainrot_Item } = {}
+
+    Slot_Util.For_Each(Brainrot_Inventory, Brainrot_Capacity, function(_, Brainrot_Item: Types.Brainrot_Item)
+        table.insert(Serialized_Brainrot_Inventory, Brainrot_Item)
+    end)
+
+    Network.DataChanged.Brainrot_Inventory.Fire(Player, Serialized_Brainrot_Inventory)
+
+    World:set(
+        Entity,
+        Pair(Components.Relationships.Previous, Components.Brainrot_Inventory),
+        Util.CopyTable(Brainrot_Inventory, true)
+    )
 
     local Existing_Tools = {}
 
@@ -239,7 +262,14 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
             local Cash_Match = Old_Tool:GetAttribute("Cash") == Brainrot_Item.Cash
             local Offline_Cash_Match = Old_Tool:GetAttribute("Offline_Cash") == Brainrot_Item.Offline_Cash
 
-            if Name_Match and Primary_Match and Secondary_Match and Weight_Match then
+            if
+                Name_Match
+                and Primary_Match
+                and Secondary_Match
+                and Weight_Match
+                and Cash_Match
+                and Offline_Cash_Match
+            then
                 continue
             else
                 Old_Tool:Destroy()
@@ -318,6 +348,8 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
             Tool:Destroy()
         end
     end
+
+    Log.Info(`{Player.Name}'s Brainrot Inventory was changed`)
 end
 
 return {

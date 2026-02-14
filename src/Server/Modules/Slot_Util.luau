@@ -33,4 +33,19 @@ function Slot_Util.Is_Occupied(Slots, Index, MaxSlots)
     return Slots[Index] ~= nil
 end
 
+function Slot_Util.For_Each(Slots, MaxSlots, Callback)
+    for i = 1, MaxSlots do
+        local Value = Slots[i]
+        if Value ~= nil then
+            Callback(i, Value)
+        end
+    end
+end
+
+function Slot_Util.Clear_All(Slots, MaxSlots)
+    for i = 1, MaxSlots do
+        Slots[i] = nil
+    end
+end
+
 return Slot_Util

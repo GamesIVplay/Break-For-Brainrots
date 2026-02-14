@@ -20,9 +20,12 @@ local World = require(ReplicatedStorage.Common.World)
 
 local AnimPlayer = require(ReplicatedStorage.Common.Modules.AnimPlayer)
 local Block_Hit = require(ReplicatedStorage.Common.Modules.VFX.Block_Hit)
+local Proximity = require(ReplicatedStorage.Common.Modules.Proximity)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
+
+local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local function Handle_Cash_Changes(Local_Entity: Types.Entity)
     for _, Value in Network.DataChanged.Cash.Iter() do
@@ -196,6 +199,44 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
     end
 end
 
+local function Handle_Sell_Prompt_Setup()
+    for _, Data in Network.Setup_Sell_Prompt.Iter() do
+        local Brainrot_Model = Data.Brainrot_Model
+        local Sell_Price = Data.Sell_Price
+
+        if not Brainrot_Model:IsDescendantOf(workspace) then
+            continue
+        end
+
+        Proximity(Brainrot_Model.PrimaryPart, {
+            ObjectText = Brainrot_Model.Name,
+            ActionText = `Sell: ${Util.Abbreviate_Number(Sell_Price)}`,
+            MaxActivationDistance = 7,
+            Keycode = Enum.KeyCode.Q,
+            GamepadKeyCode = Enum.KeyCode.ButtonY,
+            HoldDuration = 1,
+        }, function()
+            if not Ratelimits.Sell() then
+                return
+            end
+
+            local ServerEntity = Brainrot_Model:GetAttribute("ServerEntity")
+
+            if ServerEntity then
+                Network.Requests.Sell_Brainrot.Fire(ServerEntity)
+            end
+        end)
+    end
+end
+
+local function Handle_Inventory_Changes(Local_Entity: Types.Entity)
+    for _, Data in Network.DataChanged.Brainrot_Inventory.Iter() do
+        World:set(Local_Entity, Components.Brainrot_Inventory, Data)
+
+        Fusion_Values.Brainrot_Inventory:set(Data)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.First,
@@ -233,6 +274,10 @@ return {
         Handle_Bounce_Brainrot()
 
         Handle_Tool_Setup(Local_Entity)
+
+        Handle_Sell_Prompt_Setup()
+
+        Handle_Inventory_Changes(Local_Entity)
     end,
     runConditions = {},
 }

@@ -43,6 +43,11 @@ local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 local World = require(ReplicatedStorage.Common.World)
 
+local Brainrots = require(ReplicatedStorage.Common.Modules.Brainrots)
+local Calculate_Sell_Price = require(ReplicatedStorage.Common.Modules.Calculate_Sell_Price)
+local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
+local Secondary_Mutations_Config = require(ReplicatedStorage.Common.Modules.Secondary_Mutations)
+
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 local Teleport_Character = require(ReplicatedFirst.Client.Modules.Teleport_Character)
 
@@ -203,6 +208,57 @@ local function Setup_Close_Button(ImageButton: ImageButton)
     Hydrate_Button(ImageButton, function()
         Fusion_Values.Screen:set("HUD")
     end)
+end
+
+type Brainrot_Group = {
+    Key: string,
+    Name: string,
+    Primary_Mutation: string?,
+    Secondary_Mutations: { string },
+    Count: number,
+    Total_Value: number,
+}
+
+local function Make_Sell_Group_Key(Item: Types.Brainrot_Item): string
+    local Secondary_Mutations = Util.CopyTable(Item.Secondary_Mutations)
+    table.sort(Secondary_Mutations)
+
+    return table.concat({
+        Item.Name,
+        Item.Primary_Mutation or "",
+        table.concat(Secondary_Mutations, ","),
+    })
+end
+
+local function Make_Sell_Group(Brainrot_Inventory: { Types.Brainrot_Item })
+    local Groups = {}
+
+    for _, Brainrot_Item in Brainrot_Inventory do
+        local Key = Make_Sell_Group_Key(Brainrot_Item)
+
+        if not Groups[Key] then
+            Groups[Key] = {
+                Key = Key,
+                Name = Brainrot_Item.Name,
+                Primary_Mutation = Brainrot_Item.Primary_Mutation,
+                Secondary_Mutations = Brainrot_Item.Secondary_Mutations,
+                Count = 0,
+                Total_Value = 0,
+            }
+        end
+
+        local Sell_Price = Calculate_Sell_Price({
+            Brainrot_Name = Brainrot_Item.Name,
+            Primary_Mutation = Brainrot_Item.Primary_Mutation,
+            Secondary_Mutations = Brainrot_Item.Secondary_Mutations,
+            Weight = Brainrot_Item.Weight,
+        })
+
+        Groups[Key].Count += 1
+        Groups[Key].Total_Value += Sell_Price
+    end
+
+    return Groups
 end
 
 local function Setup_HUD_Visibility(PlayerGui: PlayerGui)
@@ -951,8 +1007,152 @@ local function Setup_Sell_Visibility(PlayerGui: PlayerGui)
     Setup_Close_Button(Sell_Frame:WaitForChild("Close"))
 end
 
+local function Setup_Sell_Total_Value(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Sell_Frame = Frames:WaitForChild("Sell") :: ImageLabel
+    local Total_Value = Sell_Frame:WaitForChild("Total_Value") :: TextLabel
+
+    Scope:Hydrate(Total_Value)({
+        Text = Scope:Computed(function(Use)
+            local Brainrot_Inventory = Use(Fusion_Values.Brainrot_Inventory)
+
+            local Total_Value = 0
+
+            for _, Brainrot_Item: Types.Brainrot_Item in Brainrot_Inventory do
+                local Sell_Price = Calculate_Sell_Price({
+                    Brainrot_Name = Brainrot_Item.Name,
+                    Primary_Mutation = Brainrot_Item.Primary_Mutation,
+                    Secondary_Mutations = Brainrot_Item.Secondary_Mutations,
+                    Weight = Brainrot_Item.Weight,
+                })
+
+                Total_Value += Sell_Price
+            end
+
+            return `Total Value: ${Util.Format_Number_With_Commas(Total_Value)}`
+        end),
+    })
+end
+
+local function Setup_Sell_All_Button(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Sell_Frame = Frames:WaitForChild("Sell") :: ImageLabel
+    local Sell_All = Sell_Frame:WaitForChild("Sell_All") :: ImageLabel
+
+    Hydrate_Button(Sell_All, function()
+        if not Ratelimits.Sell_All() then
+            return
+        end
+
+        Network.Requests.Sell_All.Fire()
+    end)
+end
+
+local function Setup_Sell_Contents(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Sell_Frame = Frames:WaitForChild("Sell") :: ImageLabel
+    local Contents = Sell_Frame:WaitForChild("Contents") :: ScrollingFrame
+
+    local Template = Contents:WaitForChild("Template") :: ImageButton
+    Template.Visible = false
+
+    Scope:Hydrate(Contents)({
+        [Children] = Scope:Computed(function(Use)
+            local Brainrot_Inventory = Use(Fusion_Values.Brainrot_Inventory)
+            local Groups = Make_Sell_Group(Brainrot_Inventory)
+
+            local Children = {}
+
+            for _, Data in Groups do
+                local Brainrot_Data = Brainrots[Data.Name]
+
+                local ImageButton = Template:Clone()
+                ImageButton.Visible = true
+                ImageButton.LayoutOrder = -Data.Total_Value
+                ImageButton.ZIndex = -Data.Total_Value
+
+                local Title_Text
+
+                if Data.Primary_Mutation then
+                    Title_Text = `{Data.Primary_Mutation} {Data.Name}`
+                else
+                    Title_Text = Data.Name
+                end
+
+                local Title = ImageButton:FindFirstChild("Title") :: TextLabel
+                Title.Text = Title_Text
+
+                if Data.Primary_Mutation then
+                    local UIGradient = UIGradients:FindFirstChild(Data.Primary_Mutation)
+
+                    if UIGradient then
+                        UIGradient:Clone().Parent = Title
+                    end
+                end
+
+                local Rarity = ImageButton:FindFirstChild("Rarity")
+                Rarity.Text = Brainrot_Data.Rarity
+
+                local UIGradient = UIGradients:FindFirstChild(Brainrot_Data.Rarity)
+
+                if UIGradient then
+                    UIGradient:Clone().Parent = ImageButton
+                end
+
+                local Total_Value = ImageButton:FindFirstChild("Total_Value") :: TextLabel
+                Total_Value.Text = `${Util.Format_Number_With_Commas(Data.Total_Value)}`
+
+                local Owned = ImageButton:FindFirstChild("Owned") :: TextLabel
+                Owned.Text = `Owned: {Data.Count}`
+
+                local Secondary_Mutations_Frame = ImageButton:FindFirstChild("Secondary_Mutations") :: Frame
+                local Secondary_Mutations_Template = Secondary_Mutations_Frame:FindFirstChild("Template") :: ImageLabel
+                Secondary_Mutations_Template.Visible = false
+
+                for _, Mutation_Name in Data.Secondary_Mutations do
+                    local Clone = Secondary_Mutations_Template:Clone()
+                    Clone.Name = Mutation_Name
+                    Clone.Image = Secondary_Mutations_Config[Mutation_Name].Image
+                    Clone.Visible = true
+                    Clone.Parent = Secondary_Mutations_Frame
+                end
+
+                local Sell = ImageButton:FindFirstChild("Sell") :: ImageButton
+
+                Hydrate_Button(Sell, function()
+                    if not Ratelimits.Sell_Brainrot_Item_Group() then
+                        return
+                    end
+
+                    Network.Requests.Sell_Brainrot_Item_Group.Fire({
+                        Name = Data.Name,
+                        Primary_Mutation = Data.Primary_Mutation,
+                        Secondary_Mutations = Data.Secondary_Mutations,
+                    })
+                end)
+
+                table.insert(Children, ImageButton)
+            end
+
+            return Children
+        end),
+    })
+end
+
 local function Setup_Sell(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Sell_Visibility(PlayerGui)
+
+    Setup_Sell_Total_Value(PlayerGui)
+
+    Setup_Sell_All_Button(PlayerGui)
+
+    Setup_Sell_Contents(PlayerGui)
 end
 
 local function Setup_Topbar_Daily_Rewards()

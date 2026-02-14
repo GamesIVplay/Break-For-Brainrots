@@ -14,4 +14,5 @@ return table.freeze({
     Stock = Scope:Value({}),
     Last_Restock = Scope:Value(0),
     Upgrades = Scope:Value({}),
+    Brainrot_Inventory = Scope:Value({}),
 })

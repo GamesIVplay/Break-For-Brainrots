@@ -24,6 +24,7 @@ Start({
     require(Systems.Equip_Best_Brainrots),
     require(Systems.Cash_Generator),
     require(Systems.Collect),
+    require(Systems.Sell),
     require(Systems.Brainrot_Cleanup),
     require(Systems.Leaderstats),
     require(Systems.Data_Sender),

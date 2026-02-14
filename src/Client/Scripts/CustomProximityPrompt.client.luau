@@ -13,7 +13,7 @@ local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 local MontserratBold =
-    Font.new("rbxasset://fonts/families/Montserrat.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+    Font.new("rbxasset://fonts/families/Montserrat.json", Enum.FontWeight.ExtraBold, Enum.FontStyle.Normal)
 
 local function removeRichTextTags(text)
     -- This pattern removes all rich text tags (anything between < and >)
@@ -203,7 +203,9 @@ local function createPrompt(prompt, inputType, gui)
     actionText.TextSize = 19
     actionText.BackgroundTransparency = 1
     actionText.TextTransparency = 1
-    actionText.TextColor3 = Color3.new(1, 1, 1)
+    actionText.TextColor3 = Color3.fromRGB(48, 255, 1)
+    --actionText.TextColor3 = Color3.new(1,1,1)
+    actionText.TextTruncate = Enum.TextTruncate.AtEnd
     actionText.TextXAlignment = Enum.TextXAlignment.Left
     actionText.RichText = true
     actionText.Parent = frame

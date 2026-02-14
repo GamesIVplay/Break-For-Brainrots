@@ -19,13 +19,10 @@ local function Handle_Pickaxe_Equip_Requests()
         local Owned_Pickaxes = World:get(Player_Entity, Components.Owned_Pickaxes)
 
         if not table.find(Owned_Pickaxes, Pickaxe_Name) then
-            -- Notif
             continue
         end
 
         World:set(Player_Entity, Components.Pickaxe, Pickaxe_Name)
-
-        -- Send Notif
     end
 end
 
