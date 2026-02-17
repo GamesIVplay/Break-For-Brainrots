@@ -12,6 +12,7 @@ Start({
     require(Systems.Plot),
     require(Systems.Brainrot_Loader),
     require(Systems.Event),
+    require(Systems.Block_Reward),
     require(Systems.Restock),
     require(Systems.Buy_Pickaxe),
     require(Systems.Buy_Block),

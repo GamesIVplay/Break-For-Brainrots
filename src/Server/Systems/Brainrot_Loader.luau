@@ -13,8 +13,8 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
+local Calculate_Cash_Multiplier = require(ReplicatedStorage.Common.Modules.Calculate_Cash_Multiplier)
 local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
-local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Pending_Brainrot_Query = World:query(
@@ -65,17 +65,9 @@ local function Load_Brainrots()
                 Weight = Serialized_Brainrot.Weight,
             })
 
-            Income_Per_Sec *= Rebirths[Rebirth].Multiplier
+            local New_Offline_Cash =
+                math.round((Time_Offline * Income_Per_Sec * Calculate_Cash_Multiplier(Player_Entity)) * 0.01) -- 1% of what u would make
 
-            if Gamepasses and table.find(Gamepasses, "VIP") then
-                Income_Per_Sec *= 1.25
-            end
-
-            if table.find(Gamepasses, "x2 Cash") then
-                Income_Per_sec *= 2
-            end
-
-            local New_Offline_Cash = math.round((Time_Offline * Income_Per_Sec) * 0.01) -- 1% of what u would make
             Offline_Cash += New_Offline_Cash
 
             Total_Offline_Cash += New_Offline_Cash

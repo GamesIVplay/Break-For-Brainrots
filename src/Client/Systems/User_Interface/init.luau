@@ -298,6 +298,7 @@ local function Setup_HUD_Top_Buttons(LocalEntity: Types.Entity, PlayerGui: Playe
 
     local Home = Top:WaitForChild("Home") :: ImageButton
     local Shops = Top:WaitForChild("Shops") :: ImageButton
+    local Sell = Top:WaitForChild("Sell") :: ImageButton
 
     Hydrate_Button(Home, function()
         local Plot_Model = World:get(LocalEntity, Components.Plot_Model)
@@ -315,6 +316,12 @@ local function Setup_HUD_Top_Buttons(LocalEntity: Types.Entity, PlayerGui: Playe
         local Shop_Spawn = Map:WaitForChild("Shops"):WaitForChild("Spawn") :: Part
 
         Teleport_Character(Shop_Spawn.CFrame)
+    end)
+
+    Hydrate_Button(Sell, function()
+        local Sell_Spawn = Map:WaitForChild("Shops"):WaitForChild("Sell_Spawn") :: Part
+
+        Teleport_Character(Sell_Spawn.CFrame)
     end)
 end
 
@@ -1386,7 +1393,7 @@ local function Setup_Upgrades_Content(LocalEntity: Types.Entity, PlayerGui: Play
 
         Scope:Hydrate(Original_Text_Label)({
             Text = Scope:Computed(function(Use)
-                return `x{string.format("%.1f", Data.Levels[Use(Level_Computed)].Multiplier)}`
+                return `x{string.format("%.2f", Data.Levels[Use(Level_Computed)].Multiplier)}`
             end),
         })
 
@@ -1395,7 +1402,7 @@ local function Setup_Upgrades_Content(LocalEntity: Types.Entity, PlayerGui: Play
                 local Next_Data = Data.Levels[Use(Level_Computed) + 1]
 
                 if Next_Data then
-                    return `x{string.format("%.1f", Next_Data.Multiplier)}`
+                    return `x{string.format("%.2f", Next_Data.Multiplier)}`
                 end
 
                 return "?"

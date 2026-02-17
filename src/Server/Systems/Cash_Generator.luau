@@ -15,8 +15,8 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
+local Calculate_Cash_Multiplier = require(ReplicatedStorage.Common.Modules.Calculate_Cash_Multiplier)
 local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
-local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Can_Generate = Ratelimit(1, 1)
@@ -50,18 +50,6 @@ local function Generate_Brainrots_Cash()
             continue
         end
 
-        local Gamepasses = World:get(Owner_Entity, Components.Gamepasses)
-
-        if not Gamepasses then
-            continue
-        end
-
-        local Rebirth = World:get(Owner_Entity, Components.Rebirth)
-
-        if not Rebirth then
-            continue
-        end
-
         local Income_Per_Sec = Calculate_Income_Per_Sec({
             Brainrot_Name = Brainrot_Name,
             Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation),
@@ -69,20 +57,8 @@ local function Generate_Brainrots_Cash()
             Weight = Weight,
         })
 
-        Income_Per_Sec *= Rebirths[Rebirth].Multiplier
-
-        if Gamepasses and table.find(Gamepasses, "VIP") then
-            Income_Per_Sec *= 1.25
-        end
-
-        if table.find(Gamepasses, "x2 Cash") then
-            Income_Per_Sec *= 2
-        end
-
-        local NewCash = Cash
-
         if Can_Generate(Brainrot_Entity) then
-            NewCash += math.round(Income_Per_Sec)
+            Cash += math.round(Income_Per_Sec * Calculate_Cash_Multiplier(Owner_Entity))
         end
 
         local Touch = Stand:FindFirstChild("Touch") :: Part
@@ -101,7 +77,7 @@ local function Generate_Brainrots_Cash()
         local Cash_Text_Label = Overhead:FindFirstChild("Cash") :: TextLabel
         local Offline_Cash_Text_Label = Overhead:FindFirstChild("Offline_Cash") :: TextLabel
 
-        Cash_Text_Label.Text = `${Util.Format_Number_With_Commas(NewCash)}`
+        Cash_Text_Label.Text = `${Util.Format_Number_With_Commas(Cash)}`
         Offline_Cash_Text_Label.Text = `(Offline Cash: ${Util.Format_Number_With_Commas(Offline_Cash)})`
 
         if Offline_Cash > 0 then
@@ -110,7 +86,7 @@ local function Generate_Brainrots_Cash()
             Offline_Cash_Text_Label.Visible = false
         end
 
-        World:set(Brainrot_Entity, Components.Cash, NewCash)
+        World:set(Brainrot_Entity, Components.Cash, Cash)
     end
 end
 

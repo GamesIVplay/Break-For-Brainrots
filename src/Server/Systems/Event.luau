@@ -30,14 +30,7 @@ for Name in Events do
     table.insert(Event_Names, Name)
 end
 
-local Block_Names = {}
-for Name in Blocks do
-    if Name == "Common" or Name == "Rare" then
-        continue
-    end
-
-    table.insert(Block_Names, Name)
-end
+local Block_Names = { "Rare", "Epic", "Legendary" }
 
 local function Choose_Next_Event()
     if Next_Event then
@@ -59,6 +52,7 @@ local function Update_Admin_Machine_Display()
         local Event_Block_Amount = Model:FindFirstChild("Block_Amount", true) :: TextLabel
         local Event_Luck_Amount = Model:FindFirstChild("Luck_Amount", true) :: TextLabel
         local Remaining_Text_Label = Model:FindFirstChild("Remaining", true) :: TextLabel
+        local Time_Till = Model:FindFirstChild("Time_Till", true) :: TextLabel
 
         Event_Title.Text = Next_Event.Name
         Event_Image.Image = Events[Next_Event.Name].Image
@@ -68,7 +62,9 @@ local function Update_Admin_Machine_Display()
 
         local T = Util.BreakdownTime(Calculate_Time_Till_Next_Event())
 
+        local Time_Text = `{T.Minutes}m {T.Seconds}s`
         Remaining_Text_Label.Text = `{T.Minutes}m {T.Seconds}s`
+        Time_Till.Text = `{Time_Text} till event`
     end
 end
 

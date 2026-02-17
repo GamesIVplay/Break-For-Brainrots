@@ -555,7 +555,7 @@ return {
 
             if
                 Gamepass_Name
-                and MarketPlaceService:UserOwnsGamePassAsync(Player, Gamepasses[Gamepass_Name])
+                and MarketPlaceService:UserOwnsGamePassAsync(Player.UserId, Gamepasses[Gamepass_Name])
                 and not table.find(Owned_Gamepasses, Gamepass_Name)
             then
                 table.insert(Owned_Gamepasses, Gamepass_Name)

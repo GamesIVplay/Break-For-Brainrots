@@ -3,17 +3,17 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local Network = require(ServerScriptService.Network)
 
-local Slot_Util = require(ServerScriptService.Server.Modules.Slot_Util)
+--[[local Slot_Util = require(ServerScriptService.Server.Modules.Slot_Util)
 
 local Jecs = require(ReplicatedStorage.Packages.Jecs)
-local Pair = Jecs.pair
+local Pair = Jecs.pair]]
 
 local Components = require(ReplicatedStorage.Common.Components)
 local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
 local World = require(ReplicatedStorage.Common.World)
 
-local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
+-- local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 
@@ -59,11 +59,11 @@ local function Handle_Rebirth_Requests()
             continue
         end
 
-        local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
+        --[[local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
 
         if not Brainrot_Inventory then
             continue
-        end
+        end]]
 
         local Next_Rebirth_Data = Rebirths[Rebirth + 1]
 
@@ -83,13 +83,13 @@ local function Handle_Rebirth_Requests()
             continue
         end
 
-        for Brainrot_Entity in
+        --[[for Brainrot_Entity in
             World:query(Components.Tags.Brainrot):with(Pair(Components.Relationships.Owner, Player_Entity))
         do
             World:delete(Brainrot_Entity)
         end
 
-        Slot_Util.Clear_All(Brainrot_Inventory, Brainrot_Capacity)
+        Slot_Util.Clear_All(Brainrot_Inventory, Brainrot_Capacity)]]
 
         World:set(Player_Entity, Components.Cash, 0)
         World:set(Player_Entity, Components.Rebirth, Rebirth + 1)
