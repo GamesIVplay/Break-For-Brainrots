@@ -4,13 +4,13 @@ local Components = require(ReplicatedStorage.Common.Components)
 local Phases = require(ReplicatedStorage.Common.Phases)
 local World = require(ReplicatedStorage.Common.World)
 
-local Leaderstats_Query = World:query(Components.Player, Components.Cash, Components.Opens):cached()
+local Leaderstats_Query = World:query(Components.Player, Components.Rebirth, Components.Cash, Components.Opens):cached()
 
 return {
     name = script.Name,
     phase = Phases.Runservice.PostUpdate,
     system = function()
-        for _, Player, Cash: number, Opens: number in Leaderstats_Query:iter() do
+        for _, Player, Rebirth: number, Cash: number, Opens: number in Leaderstats_Query:iter() do
             local Leaderstats = Player:FindFirstChild("leaderstats")
 
             if not Leaderstats then
@@ -18,6 +18,16 @@ return {
                 Leaderstats.Name = "leaderstats"
                 Leaderstats.Parent = Player
             end
+
+            local RebirthInstance = Leaderstats:FindFirstChild("🔄 Rebirth")
+
+            if not RebirthInstance then
+                RebirthInstance = Instance.new("IntValue")
+                RebirthInstance.Name = "🔄 Rebirth"
+                RebirthInstance.Parent = Leaderstats
+            end
+
+            RebirthInstance.Value = Rebirth
 
             local CashInstance = Leaderstats:FindFirstChild("💵 Cash")
 

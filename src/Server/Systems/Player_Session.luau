@@ -31,6 +31,7 @@ local AnimPlayer = require(ReplicatedStorage.Common.Modules.AnimPlayer)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 
+local Gamepass_Query = World:query(Components.Player, Components.Gamepasses):cached()
 local PlayersRemoving = Collect(Players.PlayerRemoving)
 
 local function Update_Character_Collision_Groups(Character: Model)
@@ -76,9 +77,6 @@ local function Handle_New_Player(Player: Player)
     local Player_Entity = World:entity()
     Registry.Define("Players", Player, Player_Entity)
 
-    World:set(Player_Entity, Components.Player, Player)
-    World:set(Player_Entity, Components.Name, Player.Name)
-
     for Name, Id in Gamepasses do
         if
             not table.find(Profile_Data.Gamepasses, Name)
@@ -102,6 +100,11 @@ local function Handle_New_Player(Player: Player)
         end
     end
 
+    if Profile_Data.Claimed_Group_Reward then
+        World:add(Player_Entity, Components.Tags.Claimed_Group_Reward)
+    end
+
+    World:set(Player_Entity, Components.Name, Player.Name)
     World:set(Player_Entity, Components.Cash, Profile_Data.Cash)
     World:set(Player_Entity, Components.Rebirth, Profile_Data.Rebirth)
     World:set(Player_Entity, Components.Pickaxe, Profile_Data.Pickaxe)
@@ -115,6 +118,8 @@ local function Handle_New_Player(Player: Player)
     World:set(Player_Entity, Components.Brainrot_Inventory, Profile_Data.Brainrot_Inventory)
     World:set(Player_Entity, Components.Pending_Brainrots, Profile_Data.Brainrots)
     World:set(Player_Entity, Components.LastPlayed, Profile_Data.LastPlayed)
+    World:set(Player_Entity, Components.Index, Profile_Data.Index)
+    World:set(Player_Entity, Components.Player, Player)
     World:set(Player_Entity, Components.Cleanup, function()
         Profile.Unload(Player)
 
@@ -123,9 +128,15 @@ local function Handle_New_Player(Player: Player)
         Log.Info(`Cleaned up {Player.Name}'s entity`)
     end)
 
+    World:add(Player_Entity, Components.Tags.Networked)
+
     Player_Profile.OnSave:Connect(function()
         if World:has(Player_Entity, Components.Pending_Brainrots) then
             return
+        end
+
+        if World:has(Player_Entity, Components.Tags.Claimed_Group_Reward) then
+            Profile_Data.Claimed_Group_Reward = true
         end
 
         Profile_Data.Cash = World:get(Player_Entity, Components.Cash)
@@ -139,6 +150,7 @@ local function Handle_New_Player(Player: Player)
         Profile_Data.Block_Queue = World:get(Player_Entity, Components.Block_Queue)
         Profile_Data.Upgrades = World:get(Player_Entity, Components.Upgrades)
         Profile_Data.Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
+        Profile_Data.Index = World:get(Player_Entity, Components.Index)
         Profile_Data.LastPlayed = os.time()
 
         local Serialized_Brainrots: { [number]: Types.Serialized_Brainrot } = {}
@@ -161,7 +173,7 @@ local function Handle_New_Player(Player: Player)
                 Components.Stand
             ):with(Pair(Components.Relationships.Owner, Player_Entity))
         do
-            Serialized_Brainrots[tonumber(Stand.Name)] = {
+            Serialized_Brainrots[Stand.Name] = {
                 Name = Brainrot_Name,
                 Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation),
                 Secondary_Mutations = Secondary_Mutations,
@@ -223,12 +235,18 @@ return {
     name = script.Name,
     phase = Phases.Runservice.First,
     system = function()
-        for _, Player in Network.ClientLoaded.Iter() do
+        for _, Player: Player in Network.ClientLoaded.Iter() do
             task.spawn(Handle_New_Player, Player)
         end
 
-        for Player in PlayersRemoving do
+        for Player: Player in PlayersRemoving do
             task.spawn(Handle_Leaving_Player, Player)
+        end
+
+        for _, Player: Player, Gamepasses: { string } in Gamepass_Query:iter() do
+            if table.find(Gamepasses, "VIP") then
+                Player:AddTag("VIP")
+            end
         end
     end,
     runConditions = {},

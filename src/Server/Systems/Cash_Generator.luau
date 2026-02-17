@@ -16,6 +16,7 @@ local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
+local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Can_Generate = Ratelimit(1, 1)
@@ -55,12 +56,24 @@ local function Generate_Brainrots_Cash()
             continue
         end
 
+        local Rebirth = World:get(Owner_Entity, Components.Rebirth)
+
+        if not Rebirth then
+            continue
+        end
+
         local Income_Per_Sec = Calculate_Income_Per_Sec({
             Brainrot_Name = Brainrot_Name,
             Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation),
             Secondary_Mutations = Secondary_Mutations,
             Weight = Weight,
         })
+
+        Income_Per_Sec *= Rebirths[Rebirth].Multiplier
+
+        if Gamepasses and table.find(Gamepasses, "VIP") then
+            Income_Per_Sec *= 1.25
+        end
 
         if table.find(Gamepasses, "x2 Cash") then
             Income_Per_Sec *= 2

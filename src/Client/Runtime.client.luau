@@ -37,11 +37,15 @@ repeat
 until Success == true
 
 Start({
+    require(Systems.Cmdr),
     require(Systems.Init_Local_Entity),
     require(Systems.Map_Setup),
     require(Systems.User_Interface),
     require(Systems.Notification),
     require(Systems.Data_Receiver),
+    require(Systems.Gift),
+    require(Systems.Event),
+    require(Systems.Music),
 })
 
 require(game:GetService("ReplicatedFirst").Network).ClientLoaded.Fire()

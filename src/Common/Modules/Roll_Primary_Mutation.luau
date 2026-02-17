@@ -1,7 +1,7 @@
 local Primary_Mutations = require(script.Parent.Primary_Mutations)
 
 return function(Mutation_Luck: number)
-    local Luck_Factor = 0.5 -- reduce luck effect by half
+    local Luck_Factor = 0.15
 
     for Mutation_Name, Data in Primary_Mutations do
         local Effective_Chance = Data.Chance * (1 + Mutation_Luck * Luck_Factor)

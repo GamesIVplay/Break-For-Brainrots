@@ -1,6 +1,5 @@
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
 
 local NotificationHaptic = Instance.new("HapticEffect")
 NotificationHaptic.Position = Vector3.new(0, 0, 0)
@@ -95,7 +94,7 @@ local function Create_Notifications()
     if Peek(DeviceType) ~= "Mobile" then
         Notifications.Position = UDim2.fromScale(0.5, 0.9)
     else
-        Notifications.Position = UDim2.fromScale(0.5, 0.825)
+        Notifications.Position = UDim2.fromScale(0.5, 0.8)
     end
 
     local Template = Notifications:FindFirstChild("Template") :: Frame?

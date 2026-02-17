@@ -25,6 +25,9 @@ local Children = Fusion.Children
 local OnEvent = Fusion.OnEvent
 local Peek = Fusion.peek
 
+type Fusion = Fusion.Fusion
+type Scope = Fusion.Scope
+
 local Clock = require(ReplicatedStorage.Packages.Clock)
 local TopbarPlus = require(ReplicatedStorage.Packages.TopbarPlus)
 
@@ -45,7 +48,10 @@ local World = require(ReplicatedStorage.Common.World)
 
 local Brainrots = require(ReplicatedStorage.Common.Modules.Brainrots)
 local Calculate_Sell_Price = require(ReplicatedStorage.Common.Modules.Calculate_Sell_Price)
+local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
+local Rarities = require(ReplicatedStorage.Common.Modules.Rarities)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
+local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 local Secondary_Mutations_Config = require(ReplicatedStorage.Common.Modules.Secondary_Mutations)
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
@@ -57,6 +63,8 @@ local PRESS_DOWN_SIZE_MULTIPLIER = 0.9
 local ACTIVATE_VELOCITY = 2
 local EQUIPPED_IMAGE_ID = "rbxassetid://105827258558873"
 local UNEQUIPPED_IMAGE_ID = "rbxassetid://119691695893621"
+local CANT_REBIRTH_ID = "rbxassetid://89624548762867"
+local CAN_REBIRTH_ID = "rbxassetid://90784618165931"
 
 local Scope = Fusion.scoped(Fusion)
 
@@ -311,15 +319,13 @@ local function Setup_HUD_Top_Buttons(LocalEntity: Types.Entity, PlayerGui: Playe
 end
 
 local function Setup_HUD_Left_Buttons(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
-    local Local_Player = World:get(LocalEntity, Components.Player)
-
     local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
     local Left = Main:WaitForChild("Left") :: Frame
 
     local RobuxShop = Left:WaitForChild("RobuxShop") :: ImageButton
     local Index = Left:WaitForChild("Index") :: ImageButton
     local Rebirth = Left:WaitForChild("Rebirth") :: ImageButton
-    local VIP = Left:WaitForChild("VIP") :: ImageButton
+    local Upgrades = Left:WaitForChild("Upgrades") :: ImageButton
 
     Hydrate_Button(RobuxShop, function()
         Toggle_Screen("RobuxShop")
@@ -333,8 +339,8 @@ local function Setup_HUD_Left_Buttons(LocalEntity: Types.Entity, PlayerGui: Play
         Toggle_Screen("Rebirth")
     end)
 
-    Hydrate_Button(VIP, function()
-        MarketplaceService:PromptGamePassPurchase(Local_Player, Gamepasses["VIP"])
+    Hydrate_Button(Upgrades, function()
+        Toggle_Screen("Upgrades")
     end)
 end
 
@@ -382,11 +388,45 @@ local function Setup_HUD_Offers(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
 
     local Offers = Main:WaitForChild("Offers") :: Frame
 
+    local Random_Brainrot = Offers:WaitForChild("Random_Brainrot") :: TextButton
+    local Random_Brainrot_Icon = Random_Brainrot:WaitForChild("Icon") :: ImageLabel
+    local Random_Brainrot_Price_Text_Label = Random_Brainrot:WaitForChild("Price") :: TextLabel
+
     local Offer_One = Offers:WaitForChild("Offer_One") :: TextButton
     local Offer_One_Price_Text_Label = Offer_One:WaitForChild("Price") :: TextLabel
 
     local Offer_Two = Offers:WaitForChild("Offer_Two") :: TextButton
     local Offer_Two_Price_Text_Label = Offer_Two:WaitForChild("Price") :: TextLabel
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["Random Brainrot"])
+
+        if Product_Info then
+            Random_Brainrot_Price_Text_Label.Text =
+                `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Random_Brainrot_Price_Text_Label.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Random_Brainrot, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Random Brainrot"])
+    end)
+
+    local Brainrot_Images = {
+        "rbxassetid://70703031730045", -- Pencil
+        "rbxassetid://76303552087337", -- Coffee
+        "rbxassetid://121516259576117", -- 67
+        "rbxassetid://115908223011277", -- Gum
+        "rbxassetid://75623505435314", -- Dragon
+        "rbxassetid://94082776251492", -- Job
+        "rbxassetid://98082069262098", -- Shovel
+        "rbxassetid://104919860405904", -- House
+    }
+
+    Clock(1, function()
+        Random_Brainrot_Icon.Image = Brainrot_Images[math.random(1, #Brainrot_Images)]
+    end)
 
     task.spawn(function()
         local Product_Info = Util.Get_Product_Info(Developer_Products["Ballerino Lololo"])
@@ -436,16 +476,257 @@ local function Setup_Robux_Shop_Visibility(PlayerGui: PlayerGui)
     local Frames = Main:WaitForChild("Frames") :: Frame
 
     local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
 
     Hydrate_Frame_Visibility(RobuxShop, "RobuxShop", function()
+        Contents.CanvasPosition = Vector2.zero
         Shop_Open:Play()
     end)
 
     Setup_Close_Button(RobuxShop:WaitForChild("Close"))
 end
 
+local function Setup_Robux_Shop_Starter_Pack(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local StarterPack = Contents:WaitForChild("StarterPack") :: ImageLabel
+    local Buy = StarterPack:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["Starter Pack"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Starter Pack"])
+    end)
+end
+
+local function Setup_Robux_Shop_Pro_Pack(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local ProPack = Contents:WaitForChild("ProPack") :: ImageLabel
+    local Buy = ProPack:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["Pro Pack"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Pro Pack"])
+    end)
+end
+
+local function Setup_Robux_Shop_Brainrot_Offer_One(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Brainrots = Contents:WaitForChild("Brainrots")
+    local Offer_One = Brainrots:WaitForChild("One") :: ImageLabel
+    local Buy = Offer_One:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["Frigo Camelo"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Frigo Camelo"])
+    end)
+end
+
+local function Setup_Robux_Shop_Brainrot_Offer_Two(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Brainrots = Contents:WaitForChild("Brainrots")
+    local Offer_Two = Brainrots:WaitForChild("Two") :: ImageLabel
+    local Buy = Offer_Two:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["Six Seven"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Six Seven"])
+    end)
+end
+
+local function Setup_Robux_Shop_Brainrot_Offer_Three(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Brainrots = Contents:WaitForChild("Brainrots")
+    local Offer_Three = Brainrots:WaitForChild("Three") :: ImageLabel
+    local Buy = Offer_Three:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["Esok Sekolah"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Esok Sekolah"])
+    end)
+end
+
+local function Setup_Robux_Shop_Cash_Offer_One(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Cash = Contents:WaitForChild("Cash")
+    local Offer_One = Cash:WaitForChild("One") :: ImageLabel
+    local Buy = Offer_One:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["Small Pack"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Small Pack"])
+    end)
+end
+
+local function Setup_Robux_Shop_Cash_Offer_Two(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Cash = Contents:WaitForChild("Cash")
+    local Offer_Two = Cash:WaitForChild("Two") :: ImageLabel
+    local Buy = Offer_Two:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["Medium Pack"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Medium Pack"])
+    end)
+end
+
+local function Setup_Robux_Shop_Cash_Offer_Three(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Cash = Contents:WaitForChild("Cash")
+    local Offer_Three = Cash:WaitForChild("Three") :: ImageLabel
+    local Buy = Offer_Three:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["Huge Pack"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Huge Pack"])
+    end)
+end
+
+local function Setup_Robux_Shop_Contents(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    local Local_Player = World:get(LocalEntity, Components.Player)
+
+    -- Packs
+    Setup_Robux_Shop_Starter_Pack(Local_Player, PlayerGui)
+
+    Setup_Robux_Shop_Pro_Pack(Local_Player, PlayerGui)
+
+    -- Brainrot Offers
+    Setup_Robux_Shop_Brainrot_Offer_One(Local_Player, PlayerGui)
+
+    Setup_Robux_Shop_Brainrot_Offer_Two(Local_Player, PlayerGui)
+
+    Setup_Robux_Shop_Brainrot_Offer_Three(Local_Player, PlayerGui)
+
+    -- Cash Offers
+    Setup_Robux_Shop_Cash_Offer_One(Local_Player, PlayerGui)
+
+    Setup_Robux_Shop_Cash_Offer_Two(Local_Player, PlayerGui)
+
+    Setup_Robux_Shop_Cash_Offer_Three(Local_Player, PlayerGui)
+end
+
 local function Setup_Robux_Shop(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Robux_Shop_Visibility(PlayerGui)
+
+    Setup_Robux_Shop_Contents(LocalEntity, PlayerGui)
 end
 
 local function Setup_Index_Visibility(PlayerGui: PlayerGui)
@@ -453,14 +734,131 @@ local function Setup_Index_Visibility(PlayerGui: PlayerGui)
     local Frames = Main:WaitForChild("Frames") :: Frame
 
     local Index = Frames:WaitForChild("Index") :: ImageLabel
+    local Contents = Index:WaitForChild("Contents") :: ScrollingFrame
 
-    Hydrate_Frame_Visibility(Index, "Index")
+    Hydrate_Frame_Visibility(Index, "Index", function()
+        Contents.CanvasPosition = Vector2.zero
+    end)
 
     Setup_Close_Button(Index:WaitForChild("Close"))
 end
 
+local function Setup_Index_Contents(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Index = Frames:WaitForChild("Index") :: ImageLabel
+
+    local Contents = Index:WaitForChild("Contents") :: ScrollingFrame
+    local Template = Contents:WaitForChild("Template") :: ImageLabel
+    Template.Visible = false
+
+    local Mutations = Index:WaitForChild("Mutations")
+
+    local Mutation_Category = Scope:Value("Normal")
+
+    Scope:Hydrate(Contents)({
+        [Children] = Scope:Computed(function(Use, Processor: Fusion.Scope<Fusion.Fusion>)
+            local Mutation = Use(Mutation_Category)
+
+            local Children = {}
+
+            for Brainrot_Name, Data in Brainrots do
+                local Owned_Computed = Processor:Computed(function(Use)
+                    local Index_Data = Use(Fusion_Values.Index)
+
+                    if Index_Data[Mutation] and table.find(Index_Data[Mutation], Brainrot_Name) then
+                        return true
+                    end
+
+                    return false
+                end)
+
+                local ImageLabel = Template:Clone()
+                ImageLabel.LayoutOrder = -Rarities[Data.Rarity]
+                ImageLabel.Visible = true
+
+                local Title = ImageLabel:FindFirstChild("Title") :: TextLabel
+                Title.Text = Brainrot_Name
+
+                Processor:Hydrate(Title)({
+                    Visible = Owned_Computed,
+                })
+
+                local Rarity = ImageLabel:FindFirstChild("Rarity") :: TextLabel
+                Rarity.Text = Data.Rarity
+
+                local UIGradient = UIGradients:FindFirstChild(Data.Rarity)
+
+                if UIGradient then
+                    UIGradient:Clone().Parent = Rarity
+                end
+
+                local ViewportFrame = ImageLabel:FindFirstChildOfClass("ViewportFrame")
+
+                Processor:Hydrate(ViewportFrame)({
+                    ImageColor3 = Processor:Computed(function(Use)
+                        if Use(Owned_Computed) then
+                            return Color3.fromRGB(255, 255, 255)
+                        end
+
+                        return Color3.fromRGB(0, 0, 0)
+                    end),
+                })
+
+                local ViewportCamera = Instance.new("Camera")
+                ViewportCamera.FieldOfView = 70
+                ViewportCamera.Parent = ViewportFrame
+
+                if Mutation == "Rainbow" then
+                    UIGradients:FindFirstChild("Rainbow"):Clone().Parent = ViewportFrame
+                end
+
+                ViewportFrame.CurrentCamera = ViewportCamera
+
+                local WorldModel = Instance.new("WorldModel")
+                WorldModel.Parent = ViewportFrame
+
+                local Model = Generate_Brainrot_Model(Brainrot_Name, Mutation, {}, 10)
+                Model.Parent = workspace.Debris
+                Model:PivotTo(CFrame.new(Vector3.zero))
+                Model.Parent = WorldModel
+
+                local Cf, Size = Model:GetBoundingBox()
+                local MaxSize = math.max(Size.X, Size.Y, Size.Z)
+
+                local Distance = MaxSize * 1
+
+                -- Camera on the opposite side of the model
+                ViewportCamera.CFrame = Cf
+                    * CFrame.new(0, MaxSize * 0.1, -Distance)
+                    * CFrame.fromOrientation(0, math.rad(180), 0)
+
+                table.insert(Processor, ImageLabel)
+
+                table.insert(Children, ImageLabel)
+            end
+
+            return Children
+        end),
+    })
+
+    for _, Inst in Mutations:GetChildren() do
+        if not Inst:IsA("ImageButton") then
+            continue
+        end
+
+        Hydrate_Button(Inst, function()
+            Mutation_Category:set(Inst.Name)
+            Contents.CanvasPosition = Vector2.zero
+        end)
+    end
+end
+
 local function Setup_Index(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Index_Visibility(PlayerGui)
+
+    Setup_Index_Contents(PlayerGui)
 end
 
 local function Setup_Rebirth_Visibility(PlayerGui: PlayerGui)
@@ -474,8 +872,96 @@ local function Setup_Rebirth_Visibility(PlayerGui: PlayerGui)
     Setup_Close_Button(Rebirth:WaitForChild("Close"))
 end
 
+local function Setup_Rebirth_Contents(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Rebirth = Frames:WaitForChild("Rebirth") :: ImageLabel
+    local Old_Multiplier_Title = Rebirth:WaitForChild("Old_Multiplier"):FindFirstChildOfClass("TextLabel")
+    local New_Multiplier_Title = Rebirth:WaitForChild("New_Multiplier"):FindFirstChildOfClass("TextLabel")
+    local Rebirth_Button = Rebirth:WaitForChild("Rebirth") :: ImageButton
+
+    local ProgressBar = Rebirth:WaitForChild("ProgressBar")
+    local ProgressBar_Frame = ProgressBar:FindFirstChildOfClass("Frame")
+    local ProgressBar_Title = ProgressBar:FindFirstChildOfClass("TextLabel")
+
+    Scope:Hydrate(Old_Multiplier_Title)({
+        Text = Scope:Computed(function(Use)
+            local value = Rebirths[Use(Fusion_Values.Rebirth)].Multiplier
+            return `x{string.format("%.1f", value)}`
+        end),
+    })
+
+    Scope:Hydrate(New_Multiplier_Title)({
+        Text = Scope:Computed(function(Use)
+            local Next_Rebirth = Rebirths[Use(Fusion_Values.Rebirth) + 1]
+
+            if not Next_Rebirth then
+                return "?"
+            end
+
+            return `x{string.format("%.1f", Next_Rebirth.Multiplier)}`
+        end),
+    })
+
+    Scope:Hydrate(Rebirth_Button)({
+        Image = Scope:Computed(function(Use)
+            local Cash = Use(Fusion_Values.Cash)
+            local Next_Rebirth = Rebirths[Use(Fusion_Values.Rebirth) + 1]
+
+            if not Next_Rebirth then
+                return CANT_REBIRTH_ID
+            end
+
+            local Progress = math.clamp(Cash / Next_Rebirth.Requirement, 0, 1)
+
+            if Progress ~= 1 then
+                return CANT_REBIRTH_ID
+            end
+
+            return CAN_REBIRTH_ID
+        end),
+    })
+
+    Hydrate_Button(Rebirth_Button, function()
+        if not Ratelimits.Rebirth() then
+            return
+        end
+
+        Network.Requests.Rebirth.Fire()
+    end)
+
+    Scope:Hydrate(ProgressBar_Frame)({
+        Size = Scope:Computed(function(Use)
+            local Cash = Use(Fusion_Values.Cash)
+            local Next_Rebirth = Rebirths[Use(Fusion_Values.Rebirth) + 1]
+
+            if not Next_Rebirth then
+                return UDim2.fromScale(0, 1)
+            end
+
+            return UDim2.fromScale(math.clamp(Cash / Next_Rebirth.Requirement, 0, 1), 1)
+        end),
+    })
+
+    Scope:Hydrate(ProgressBar_Title)({
+        Text = Scope:Computed(function(Use)
+            local Cash = Use(Fusion_Values.Cash)
+            local Next_Rebirth = Rebirths[Use(Fusion_Values.Rebirth) + 1]
+
+            if not Next_Rebirth then
+                return "Max Rebirth"
+            end
+
+            return `${Util.Format_Number_With_Commas(Cash)} / ${Util.Format_Number_With_Commas(Next_Rebirth.Requirement)}`
+        end),
+    })
+end
+
 local function Setup_Rebirth(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Rebirth_Visibility(PlayerGui)
+
+    Setup_Rebirth_Contents(PlayerGui)
 end
 
 local function Setup_Pickaxes_Visibility(PlayerGui: PlayerGui)
@@ -564,8 +1050,20 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
 
         Scope:Hydrate(ImageLabel)({
             Visible = Data.Price == nil and Owned_Computed or true,
-            Active = Has_Rebirth_Required_Computed,
-            Interactable = Has_Rebirth_Required_Computed,
+            Active = Scope:Computed(function(Use)
+                if Use(Owned_Computed) == true then
+                    return true
+                end
+
+                return Use(Has_Rebirth_Required_Computed)
+            end),
+            Interactable = Scope:Computed(function(Use)
+                if Use(Owned_Computed) == true then
+                    return true
+                end
+
+                return Use(Has_Rebirth_Required_Computed)
+            end),
         })
 
         local Title = ImageLabel:WaitForChild("Title") :: TextLabel
@@ -888,7 +1386,7 @@ local function Setup_Upgrades_Content(LocalEntity: Types.Entity, PlayerGui: Play
 
         Scope:Hydrate(Original_Text_Label)({
             Text = Scope:Computed(function(Use)
-                return `x{Data.Levels[Use(Level_Computed)].Multiplier}`
+                return `x{string.format("%.1f", Data.Levels[Use(Level_Computed)].Multiplier)}`
             end),
         })
 
@@ -897,7 +1395,7 @@ local function Setup_Upgrades_Content(LocalEntity: Types.Entity, PlayerGui: Play
                 local Next_Data = Data.Levels[Use(Level_Computed) + 1]
 
                 if Next_Data then
-                    return `x{Next_Data.Multiplier}`
+                    return `x{string.format("%.1f", Next_Data.Multiplier)}`
                 end
 
                 return "?"
@@ -914,7 +1412,13 @@ local function Setup_Upgrades_Content(LocalEntity: Types.Entity, PlayerGui: Play
         local Price = Buy:WaitForChild("Price") :: TextLabel
         Scope:Hydrate(Price)({
             Text = Scope:Computed(function(Use)
-                return `${Util.Format_Number_With_Commas(Data.Levels[Use(Level_Computed)].Price, 2)}`
+                local Next_Data = Data.Levels[Use(Level_Computed) + 1]
+
+                if Next_Data then
+                    return `${Util.Format_Number_With_Commas(Next_Data.Price, 2)}`
+                end
+
+                return "Max"
             end),
         })
 
@@ -937,6 +1441,15 @@ local function Setup_Upgrades_Content(LocalEntity: Types.Entity, PlayerGui: Play
         end)
 
         Scope:Hydrate(RobuxBuy)({
+            Visible = Scope:Computed(function(Use)
+                local Next_Data = Data.Levels[Use(Level_Computed) + 1]
+
+                if Next_Data then
+                    return true
+                end
+
+                return false
+            end),
             Active = Has_Rebirth_Required_Computed,
             Interactable = Has_Rebirth_Required_Computed,
         })
@@ -1001,8 +1514,11 @@ local function Setup_Sell_Visibility(PlayerGui: PlayerGui)
     local Frames = Main:WaitForChild("Frames") :: Frame
 
     local Sell_Frame = Frames:WaitForChild("Sell") :: ImageLabel
+    local Contents = Sell_Frame:WaitForChild("Contents") :: ScrollingFrame
 
-    Hydrate_Frame_Visibility(Sell_Frame, "Sell")
+    Hydrate_Frame_Visibility(Sell_Frame, "Sell", function()
+        Contents.CanvasPosition = Vector2.zero
+    end)
 
     Setup_Close_Button(Sell_Frame:WaitForChild("Close"))
 end
@@ -1063,7 +1579,7 @@ local function Setup_Sell_Contents(PlayerGui: PlayerGui)
     Template.Visible = false
 
     Scope:Hydrate(Contents)({
-        [Children] = Scope:Computed(function(Use)
+        [Children] = Scope:Computed(function(Use, Processor: Fusion.Scope<Fusion.Fusion>)
             local Brainrot_Inventory = Use(Fusion_Values.Brainrot_Inventory)
             local Groups = Make_Sell_Group(Brainrot_Inventory)
 
@@ -1076,6 +1592,8 @@ local function Setup_Sell_Contents(PlayerGui: PlayerGui)
                 ImageButton.Visible = true
                 ImageButton.LayoutOrder = -Data.Total_Value
                 ImageButton.ZIndex = -Data.Total_Value
+
+                table.insert(Processor, ImageButton)
 
                 local Title_Text
 
@@ -1210,7 +1728,7 @@ local function Setup_Topbar()
 
     Setup_Topbar_Daily_Rewards()
 
-    Setup_Topbar_Playtime_Rewards()
+    -- Setup_Topbar_Playtime_Rewards()
 end
 
 local function Setup_Stroke_Fixer(PlayerGui: PlayerGui)

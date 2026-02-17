@@ -352,6 +352,66 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
     Log.Info(`{Player.Name}'s Brainrot Inventory was changed`)
 end
 
+local function Replicate_Index(Player: Player, Entity: Types.Entity)
+    local Index = World:get(Entity, Components.Index)
+    local Previous_Index = World:get(Entity, Pair(Components.Relationships.Previous, Components.Index)) or {}
+
+    local Brainrot_Inventory = World:get(Entity, Components.Brainrot_Inventory)
+
+    for Brainrot_Entity, Name in
+        World:query(Components.Name):with(Components.Tags.Brainrot, Pair(Components.Relationships.Owner, Entity))
+    do
+        local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation) or "Normal"
+
+        if not Index[Primary_Mutation] then
+            Index[Primary_Mutation] = {}
+        end
+
+        if not table.find(Index[Primary_Mutation], Name) then
+            table.insert(Index[Primary_Mutation], Name)
+        end
+    end
+
+    Slot_Util.For_Each(Brainrot_Inventory, Brainrot_Capacity, function(_, Brainrot_Item: Types.Brainrot_Item)
+        local Primary_Mutation = Brainrot_Item.Primary_Mutation or "Normal"
+
+        if not Index[Primary_Mutation] then
+            Index[Primary_Mutation] = {}
+        end
+
+        if not table.find(Index[Primary_Mutation], Brainrot_Item.Name) then
+            table.insert(Index[Primary_Mutation], Brainrot_Item.Name)
+        end
+    end)
+
+    if not Util.TablesAreEqual(Index, Previous_Index) then
+        Network.DataChanged.Index.Fire(Player, Index)
+
+        World:set(Entity, Components.Index, Index)
+        World:set(Entity, Pair(Components.Relationships.Previous, Components.Index), Util.CopyTable(Index, true))
+
+        Log.Info(`{Player.Name}'s index was changed`)
+    end
+end
+
+local function Replicate_Active_Events(Player: Player, Entity: Types.Entity)
+    local Active_Events = World:get(Components.Singletons.Active_Events, Components.Singletons.Active_Events)
+    local Previous_Active_Events =
+        World:get(Entity, Pair(Components.Relationships.Previous, Components.Singletons.Active_Events))
+
+    if not Util.TablesAreEqual(Previous_Active_Events, Active_Events) then
+        Network.DataChanged.Active_Events.Fire(Player, Active_Events)
+
+        World:set(
+            Entity,
+            Pair(Components.Relationships.Previous, Components.Singletons.Active_Events),
+            Util.CopyTable(Active_Events, true)
+        )
+
+        Log.Info(`Active events replicated to {Player.Name}'s`)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.PostUpdate,
@@ -376,6 +436,10 @@ return {
             Replicate_Upgrades(Player, Entity)
 
             Replicate_Brainrot_Inventory(Player, Entity)
+
+            Replicate_Index(Player, Entity)
+
+            Replicate_Active_Events(Player, Entity)
         end
     end,
     runConditions = {},

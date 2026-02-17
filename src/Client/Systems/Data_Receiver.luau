@@ -208,8 +208,11 @@ local function Handle_Sell_Prompt_Setup()
             continue
         end
 
+        local ObjectText = not Data.Primary_Mutation and Data.Brainrot_Name
+            or `{Data.Primary_Mutation} {Data.Brainrot_Name}`
+
         Proximity(Brainrot_Model.PrimaryPart, {
-            ObjectText = Brainrot_Model.Name,
+            ObjectText = ObjectText,
             ActionText = `Sell: ${Util.Abbreviate_Number(Sell_Price)}`,
             MaxActivationDistance = 7,
             Keycode = Enum.KeyCode.Q,
@@ -234,6 +237,40 @@ local function Handle_Inventory_Changes(Local_Entity: Types.Entity)
         World:set(Local_Entity, Components.Brainrot_Inventory, Data)
 
         Fusion_Values.Brainrot_Inventory:set(Data)
+    end
+end
+
+local function Handle_Rebirth()
+    for _, Model: Model in Network.VFX.Rebirth.Iter() do
+        if not Model:IsDescendantOf(game.Workspace) then
+            continue
+        end
+
+        task.spawn(require(VFX.Rebirth), Model)
+    end
+end
+
+local function Handle_Index_Changes(Local_Entity: Types.Entity)
+    for _, Data in Network.DataChanged.Index.Iter() do
+        World:set(Local_Entity, Components.Index, Data)
+
+        Fusion_Values.Index:set(Data)
+    end
+end
+
+local function Handle_Robux_Purchase()
+    for _, Model: Model in Network.VFX.Robux_Purchase.Iter() do
+        if not Model:IsDescendantOf(game.Workspace) then
+            continue
+        end
+
+        task.spawn(require(VFX.Robux_Purchase), Model)
+    end
+end
+
+local function Handle_Active_Events()
+    for _, Data in Network.DataChanged.Active_Events.Iter() do
+        World:set(Components.Singletons.Active_Events, Components.Singletons.Active_Events, Data)
     end
 end
 
@@ -278,6 +315,14 @@ return {
         Handle_Sell_Prompt_Setup()
 
         Handle_Inventory_Changes(Local_Entity)
+
+        Handle_Rebirth()
+
+        Handle_Index_Changes(Local_Entity)
+
+        Handle_Robux_Purchase()
+
+        Handle_Active_Events()
     end,
     runConditions = {},
 }

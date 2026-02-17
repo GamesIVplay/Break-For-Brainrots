@@ -11,4 +11,7 @@ return table.freeze({
     Sell = Ratelimit(1, 0.5),
     Sell_All = Ratelimit(1, 0.5),
     Sell_Brainrot_Item_Group = Ratelimit(1, 0.5),
+    Gift = Ratelimit(1, 0.5),
+    Rebirth = Ratelimit(1, 0.5),
+    Claim_Group_Reward = Ratelimit(1, 0.5),
 })

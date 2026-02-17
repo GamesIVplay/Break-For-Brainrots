@@ -119,6 +119,14 @@ local function Handle_Sell_Requests()
             Total_Price += Sell_Price
         end)
 
+        if Total_Price == 0 then
+            Network.Notification.Fire(Player, {
+                Text = "You have nothing to sell",
+                Type = "Error",
+            })
+            continue
+        end
+
         Slot_Util.Clear_All(Brainrot_Inventory, Brainrot_Capacity)
 
         World:set(Player_Entity, Components.Cash, Player_Cash + Total_Price)

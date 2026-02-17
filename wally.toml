@@ -21,3 +21,5 @@ Clock = "red-blox/clock@^1.0.0"
 Collection = "red-blox/collection@^1.0.0"
 
 TopbarPlus = "uxnknwn/topbarplus@3.0.2-rc.1"
+
+cmdr = "evaera/cmdr@=1.12.0"

@@ -23,6 +23,7 @@ local Components: {
     Brainrot_Inventory: Types.Id<{ [number]: Types.Brainrot_Item }>,
     Pending_Brainrots: Types.Id<{ [number]: Types.Serialized_Brainrot }>,
     LastPlayed: Types.Id<number>,
+    Index: Types.Id<{ [string]: { string } }>,
 
     Plot_Model: Types.Id<Model>,
 
@@ -39,7 +40,15 @@ local Components: {
     Weight: Types.Id<number>,
     Offline_Cash: Types.Id<number>,
 
-    Singletons: {},
+    Singletons: {
+        Active_Events: Types.Id<{
+            [string]: {
+                Start_Time: number,
+                End_Time: number,
+                Luck_Multiplier: number,
+            },
+        }>,
+    },
     Tags: {
         Networked: Types.Entity,
         Plot: Types.Entity,
@@ -47,6 +56,7 @@ local Components: {
         Block: Types.Entity,
         Opening: Types.Entity,
         Brainrot: Types.Entity,
+        Claimed_Group_Reward: Types.Entity,
     },
     Relationships: {
         Owner: Types.Entity,
@@ -76,6 +86,7 @@ local Components: {
         Brainrot_Inventory = World:component(),
         Pending_Brainrots = World:component(),
         LastPlayed = World:component(),
+        Index = World:component(),
 
         Plot_Model = World:component(),
 
@@ -92,7 +103,9 @@ local Components: {
         Weight = World:component(),
         Offline_Cash = World:component(),
 
-        Singletons = {},
+        Singletons = {
+            Active_Events = World:component(),
+        },
         Tags = {
             Networked = World:component(),
             Plot = World:component(),
@@ -100,6 +113,7 @@ local Components: {
             Block = World:component(),
             Opening = World:component(),
             Brainrot = World:component(),
+            Claimed_Group_Reward = World:component(),
         },
         Relationships = {
             Owner = World:component(),
@@ -170,8 +184,14 @@ local function Name_Components(Cts)
     end
 end
 
+local function Init_Components()
+    World:set(Components.Singletons.Active_Events, Components.Singletons.Active_Events, {})
+end
+
 Setup_Hooks()
 
 Name_Components(Components)
+
+Init_Components()
 
 return table.freeze(Components)

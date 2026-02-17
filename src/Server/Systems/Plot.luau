@@ -12,6 +12,7 @@ local Pair = Jecs.pair
 local Components = require(ReplicatedStorage.Common.Components)
 local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
+local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Util = require(ReplicatedStorage.Common.Modules.Util)
@@ -38,9 +39,15 @@ local Plots_Without_Owner = World:query(Components.Renderable)
     :cached()
 
 local function Cleanup_Plots()
-    for _, Plot_Model: Model in Plots_Without_Owner:iter() do
+    for Plot_Entity: Types.Entity, Plot_Model: Model in Plots_Without_Owner:iter() do
         if Plot_Model:HasTag("Cleaned") then
             continue
+        end
+
+        local Block_Entity = World:target(Plot_Entity, Components.Relationships.Block)
+
+        if Block_Entity then
+            World:delete(Block_Entity)
         end
 
         local PlayerInfo = Plot_Model:FindFirstChild("PlayerInfo")
@@ -71,6 +78,8 @@ local function Assign_Plots()
             end
 
             local Plot_Model = World:get(Plot_Entity, Components.Renderable) :: Model
+
+            Plot_Model:RemoveTag("Cleaned")
 
             task.spawn(function()
                 local PlayerInfo = Plot_Model:FindFirstChild("PlayerInfo")

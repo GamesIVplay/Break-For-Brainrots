@@ -12,14 +12,10 @@ local World = require("./World")
 
 local Jabby = require(ReplicatedStorage.Packages.Jabby)
 
-local GroupId = require(ReplicatedStorage.Common.Modules.GroupId)
-
 local Log = require("./Log")
 
 local function Setup_Jabby()
     Jabby.set_check_function(function(Player)
-        local RankInGroup = Player:GetRankInGroupAsync(GroupId)
-
         if Player.UserId == 3439160531 then
             return true
         else

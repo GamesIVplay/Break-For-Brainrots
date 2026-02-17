@@ -8,7 +8,7 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
 local World = require(ReplicatedStorage.Common.World)
 
-local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
+local Upgrades_Config = require(ReplicatedStorage.Common.Modules.Upgrades)
 
 local function Handle_Upgrade_Purchase_Requests()
     for _, Player: Player, Upgrade_Name: string in Network.Requests.Buy_Upgrade.Iter() do
@@ -24,7 +24,7 @@ local function Handle_Upgrade_Purchase_Requests()
             continue
         end
 
-        local Upgrade_Data = Upgrades[Upgrade_Name]
+        local Upgrade_Data = Upgrades_Config[Upgrade_Name]
 
         if not Upgrade_Data then
             Network.Notification.Fire(Player, {
@@ -67,6 +67,8 @@ local function Handle_Upgrade_Purchase_Requests()
         end
 
         Upgrades[Upgrade_Name] = Upgrades[Upgrade_Name] + 1
+
+        World:set(Player_Entity, Components.Cash, Cash - Next_Upgrade_Data.Price)
 
         Network.Notification.Fire(Player, {
             Text = `You upgraded {Upgrade_Name} to level {Upgrades[Upgrade_Name]}!`,

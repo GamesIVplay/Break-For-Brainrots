@@ -18,6 +18,8 @@ export type ProfileData = {
     Brainrot_Inventory: { [number]: Types.Brainrot_Item },
     Brainrots: { [number]: Types.Serialized_Brainrot },
     LastPlayed: number,
+    Index: { [string]: { string } },
+    Claimed_Group_Reward: boolean,
 }
 
 local ProfileStore = require(ReplicatedStorage.Packages.ProfileStore)
@@ -37,6 +39,8 @@ local PLAYER_DATA_TEMPLATE: ProfileData = {
     Brainrot_Inventory = {},
     Brainrots = {},
     LastPlayed = os.time(),
+    Index = {},
+    Claimed_Group_Reward = false,
 }
 
 local PlayerProfileStore = ProfileStore.New(not _G.IN_DEV and "Main" or "Dev", PLAYER_DATA_TEMPLATE)

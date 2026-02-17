@@ -48,11 +48,11 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
 
     Home_Billboard:Clone().Parent = Plot_Model
 
-    local Break_Screen, Skip_Screen =
-        Plot_Model:WaitForChild("Break"):WaitForChild("Screen") :: Part,
+    local Break_Prompt, Skip_Screen =
+        Plot_Model:WaitForChild("Break"):WaitForChild("Prompt") :: Part,
         Plot_Model:WaitForChild("Skip"):WaitForChild("Screen") :: Part
 
-    Proximity(Break_Screen, {
+    Proximity(Break_Prompt, {
         ActionText = "Break Block",
         MaxActivationDistance = 4.5,
     }, function()
@@ -182,7 +182,13 @@ local function Setup_Free_Rewards()
             continue
         end
 
-        Proximity(Prompt, { ActionText = "🎁 Free Reward 🎁" }, function() end)
+        Proximity(Prompt, { ActionText = "🎁 Free Reward 🎁" }, function()
+            if not Ratelimits.Claim_Group_Reward() then
+                return
+            end
+
+            Network.Requests.Claim_Group_Reward.Fire()
+        end)
     end
 end
 
@@ -194,24 +200,12 @@ local function Setup_Gold_Ballerina_Cappuccina(Local_Player: Player)
 
         local Main = Inst:FindFirstChild("Main", true) :: Attachment
         local Rarity_Text_Label = Main:FindFirstChild("Rarity", true) :: TextLabel
-        local Price_Text_Label = Main:FindFirstChild("Price", true) :: TextLabel
 
         Proximity(Main, { ActionText = "Purchase" }, function()
             MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Gold Ballerina Cappuccina"])
         end)
 
         UIGradients.Legendary:Clone().Parent = Rarity_Text_Label
-
-        task.spawn(function()
-            local Product_Info = Util.Get_Product_Info(Developer_Products["Gold Ballerina Cappuccina"])
-
-            if Product_Info then
-                Price_Text_Label.Text =
-                    `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
-            else
-                Price_Text_Label.Visible = false
-            end
-        end)
     end
 end
 
@@ -223,24 +217,12 @@ local function Setup_Diamond_Bananita_Dolphinita(Local_Player: Player)
 
         local Main = Inst:FindFirstChild("Main", true) :: Attachment
         local Rarity_Text_Label = Main:FindFirstChild("Rarity", true) :: TextLabel
-        local Price_Text_Label = Main:FindFirstChild("Price", true) :: TextLabel
 
         Proximity(Main, { ActionText = "Purchase" }, function()
             MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Diamond Bananita Dolphinita"])
         end)
 
         UIGradients.Epic:Clone().Parent = Rarity_Text_Label
-
-        task.spawn(function()
-            local Product_Info = Util.Get_Product_Info(Developer_Products["Diamond Bananita Dolphinita"])
-
-            if Product_Info then
-                Price_Text_Label.Text =
-                    `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
-            else
-                Price_Text_Label.Visible = false
-            end
-        end)
     end
 end
 

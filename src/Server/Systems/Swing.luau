@@ -48,6 +48,7 @@ local function Handle_Swing_Requests()
             not Block_Entity
             or not World:contains(Block_Entity)
             or not World:has(Block_Entity, Components.Tags.Block)
+            or World:has(Block_Entity, Components.Tags.Opening)
         then
             continue
         end

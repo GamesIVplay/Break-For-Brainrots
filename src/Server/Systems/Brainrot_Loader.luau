@@ -14,17 +14,24 @@ local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
+local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
-local Pending_Brainrot_Query =
-    World:query(Components.Player, Components.Gamepasses, Components.LastPlayed, Components.Pending_Brainrots)
-        :with(Pair(Components.Relationships.Plot, Jecs.Wildcard))
-        :cached()
+local Pending_Brainrot_Query = World:query(
+    Components.Player,
+    Components.Rebirth,
+    Components.Gamepasses,
+    Components.LastPlayed,
+    Components.Pending_Brainrots
+)
+    :with(Pair(Components.Relationships.Plot, Jecs.Wildcard))
+    :cached()
 
 local function Load_Brainrots()
     for
         Player_Entity: Types.Entity,
         Player: Player,
+        Rebirth: number,
         Gamepasses: { string },
         LastPlayed: number,
         Pending_Brainrots: { [number]: Types.Serialized_Brainrot }
@@ -40,7 +47,7 @@ local function Load_Brainrots()
         Time_Offline = math.min(Time_Offline, 4 * 60 * 60) -- 4 hour cap
 
         for Stand_Number, Serialized_Brainrot in Pending_Brainrots do
-            local Stand_Model = Stands:FindFirstChild(tostring(Stand_Number)) :: Model
+            local Stand_Model = Stands:FindFirstChild(Stand_Number) :: Model
 
             Stand_Model:AddTag("Occupied")
 
@@ -57,6 +64,12 @@ local function Load_Brainrots()
                 Secondary_Mutations = Serialized_Brainrot.Secondary_Mutations,
                 Weight = Serialized_Brainrot.Weight,
             })
+
+            Income_Per_Sec *= Rebirths[Rebirth].Multiplier
+
+            if Gamepasses and table.find(Gamepasses, "VIP") then
+                Income_Per_Sec *= 1.25
+            end
 
             if table.find(Gamepasses, "x2 Cash") then
                 Income_Per_sec *= 2

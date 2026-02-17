@@ -82,6 +82,8 @@ return function(
     })
 
     Network.Setup_Sell_Prompt.Fire(Player, {
+        Brainrot_Name = Brainrot_Name,
+        Primary_Mutation = Primary_Mutation,
         Brainrot_Model = Brainrot_Model,
         Sell_Price = Sell_Price,
     })

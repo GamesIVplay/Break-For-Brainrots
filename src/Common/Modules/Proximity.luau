@@ -1,4 +1,5 @@
 type ProximityPromptOptions = {
+    Enabled: boolean?,
     ActionText: string?,
     ObjectText: string?,
     HoldDuration: number?,
@@ -24,6 +25,7 @@ return function(
     Options = Options or {}
 
     local Prompt = Instance.new("ProximityPrompt")
+    Prompt.Enabled = Options.Enabled or true
     Prompt.ActionText = Options.ActionText or ""
     Prompt.ObjectText = Options.ObjectText or ""
     Prompt.HoldDuration = Options.HoldDuration or 0
