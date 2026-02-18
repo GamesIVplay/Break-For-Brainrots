@@ -385,4 +385,12 @@ scope DataChanged {
 		Poll: true,
         Data: string[] 
     }
+
+	event Plot_Income_Per_Sec {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: f64
+    }
 }

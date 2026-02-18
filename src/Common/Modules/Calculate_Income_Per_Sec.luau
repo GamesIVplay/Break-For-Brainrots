@@ -23,5 +23,5 @@ return function(Data: {
 
     Income_Per_Sec *= Weight.Get_Cash_Multiplier(Data.Weight)
 
-    return math.max(1, Income_Per_Sec)
+    return math.max(1, math.round(Income_Per_Sec))
 end

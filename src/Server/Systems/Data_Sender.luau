@@ -15,6 +15,7 @@ local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
+local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
 local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update_Brainrot_Overhead)
@@ -447,6 +448,34 @@ local function Replicate_Claimed_Daily_Rewards(Player: Player, Entity: Types.Ent
     end
 end
 
+local function Replicate_Plot_Income_Per_Sec(Player: Player, Entity: Types.Entity)
+    local Plot_Income_Per_Sec = 0
+    local Previous_Plot_Income_Per_Sec =
+        World:get(Entity, Pair(Components.Relationships.Previous, Components.Plot_Income_Per_Sec))
+
+    for Brainrot_Entity, Brainrot_Name: string, Secondary_Mutations: { string }, Weight: number in
+        World:query(Components.Name, Components.Secondary_Mutations, Components.Weight)
+            :with(Components.Tags.Brainrot, Pair(Components.Relationships.Owner, Entity))
+    do
+        local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
+
+        Plot_Income_Per_Sec += Calculate_Income_Per_Sec({
+            Brainrot_Name = Brainrot_Name,
+            Primary_Mutation = Primary_Mutation,
+            Secondary_Mutations = Secondary_Mutations,
+            Weight = Weight,
+        })
+    end
+
+    if Plot_Income_Per_Sec ~= Previous_Plot_Income_Per_Sec then
+        Network.DataChanged.Plot_Income_Per_Sec.Fire(Player, Plot_Income_Per_Sec)
+
+        World:set(Entity, Pair(Components.Relationships.Previous, Components.Plot_Income_Per_Sec), Plot_Income_Per_Sec)
+
+        Log.Info(`{Player.Name}'s plot income per sec changed`)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.PostUpdate,
@@ -479,6 +508,8 @@ return {
             Replicate_Last_Daily_Reward_Claim(Player, Entity)
 
             Replicate_Claimed_Daily_Rewards(Player, Entity)
+
+            Replicate_Plot_Income_Per_Sec(Player, Entity)
         end
     end,
     runConditions = {},

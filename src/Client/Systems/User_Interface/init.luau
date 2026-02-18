@@ -281,6 +281,7 @@ local function Setup_HUD_Visibility(PlayerGui: PlayerGui)
     local Top = Main:WaitForChild("Top") :: Frame
     local Left = Main:WaitForChild("Left") :: Frame
     local Offers = Main:WaitForChild("Offers") :: Frame
+    local Plot_Income_Per_Sec = Main:WaitForChild("Plot_Income_Per_Sec") :: Frame
 
     local Visible_Computed = Scope:Computed(function(Use)
         return Use(Fusion_Values.Screen) == "HUD"
@@ -295,6 +296,10 @@ local function Setup_HUD_Visibility(PlayerGui: PlayerGui)
     })
 
     Scope:Hydrate(Offers)({
+        Visible = Visible_Computed,
+    })
+
+    Scope:Hydrate(Plot_Income_Per_Sec)({
         Visible = Visible_Computed,
     })
 end
@@ -584,6 +589,27 @@ local function Setup_HUD_Right_Corner(LocalEntity: Types.Entity, PlayerGui: Play
     })
 end
 
+local function Setup_HUD_Plot_Income_Per_Sec(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Plot_Income_Per_Sec = Main:WaitForChild("Plot_Income_Per_Sec")
+
+    Scope:Hydrate(Plot_Income_Per_Sec)({
+        Position = Scope:Computed(function(Use)
+            if Use(DeviceType) ~= "Mobile" then
+                return UDim2.fromScale(0.5, 0.85)
+            else
+                return UDim2.fromScale(0.5, 0.75)
+            end
+        end),
+    })
+
+    Scope:Hydrate(Plot_Income_Per_Sec:WaitForChild("Value"))({
+        Text = Scope:Computed(function(Use)
+            return `${Util.Abbreviate_Number(Use(Fusion_Values.Plot_Income_Per_Sec), 2)}/s`
+        end),
+    })
+end
+
 local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_HUD_Visibility(PlayerGui)
 
@@ -596,6 +622,8 @@ local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_HUD_Offers(LocalEntity, PlayerGui)
 
     Setup_HUD_Right_Corner(LocalEntity, PlayerGui)
+
+    Setup_HUD_Plot_Income_Per_Sec(PlayerGui)
 end
 
 local function Setup_Robux_Shop_Visibility(PlayerGui: PlayerGui)
@@ -1033,14 +1061,14 @@ local function Setup_Rebirth_Contents(PlayerGui: PlayerGui)
 
     Scope:Hydrate(Rebirth_Button)({
         Image = Scope:Computed(function(Use)
-            local Cash = Use(Fusion_Values.Cash)
+            local Plot_Income_Per_Sec = Use(Fusion_Values.Plot_Income_Per_Sec)
             local Next_Rebirth = Rebirths[Use(Fusion_Values.Rebirth) + 1]
 
             if not Next_Rebirth then
                 return CANT_REBIRTH_ID
             end
 
-            local Progress = math.clamp(Cash / Next_Rebirth.Requirement, 0, 1)
+            local Progress = math.clamp(Plot_Income_Per_Sec / Next_Rebirth.Requirement, 0, 1)
 
             if Progress ~= 1 then
                 return CANT_REBIRTH_ID
@@ -1060,27 +1088,29 @@ local function Setup_Rebirth_Contents(PlayerGui: PlayerGui)
 
     Scope:Hydrate(ProgressBar_Frame)({
         Size = Scope:Computed(function(Use)
-            local Cash = Use(Fusion_Values.Cash)
+            local Plot_Income_Per_Sec = Use(Fusion_Values.Plot_Income_Per_Sec)
             local Next_Rebirth = Rebirths[Use(Fusion_Values.Rebirth) + 1]
 
             if not Next_Rebirth then
                 return UDim2.fromScale(0, 1)
             end
 
-            return UDim2.fromScale(math.clamp(Cash / Next_Rebirth.Requirement, 0, 1), 1)
+            return UDim2.fromScale(math.clamp(Plot_Income_Per_Sec / Next_Rebirth.Requirement, 0, 1), 1)
         end),
     })
 
     Scope:Hydrate(ProgressBar_Title)({
         Text = Scope:Computed(function(Use)
-            local Cash = Use(Fusion_Values.Cash)
+            local Plot_Income_Per_Sec = Use(Fusion_Values.Plot_Income_Per_Sec)
             local Next_Rebirth = Rebirths[Use(Fusion_Values.Rebirth) + 1]
 
             if not Next_Rebirth then
                 return "Max Rebirth"
             end
 
-            return `${Util.Format_Number_With_Commas(Cash)} / ${Util.Format_Number_With_Commas(Next_Rebirth.Requirement)}`
+            return `Total Cash Per Second: ${Util.Format_Number_With_Commas(Plot_Income_Per_Sec)} / ${Util.Format_Number_With_Commas(
+                Next_Rebirth.Requirement
+            )}`
         end),
     })
 end
@@ -1669,7 +1699,14 @@ local function Setup_Daily_Rewards_Content(PlayerGui: PlayerGui)
                     Claim_Title.Text = "Claim"
                 else
                     Claim.Image = NON_CLAIMABLE_DAILY_REWARD_ID
-                    Claim_Title.Text = string.format("%02d:%02d:%02d", T.Hours, T.Minutes, T.Seconds)
+
+                    if T.Days > 0 then
+                        Claim_Title.Text = string.format("%02d:%02d:%02d:%02d", T.Days, T.Hours, T.Minutes, T.Seconds)
+                    elseif T.Hours > 0 then
+                        Claim_Title.Text = string.format("%02d:%02d:%02d", T.Hours, T.Minutes, T.Seconds)
+                    else
+                        Claim_Title.Text = string.format("%02d:%02d", T.Minutes, T.Seconds)
+                    end
                 end
             else
                 Claim.Image = NON_CLAIMABLE_DAILY_REWARD_ID

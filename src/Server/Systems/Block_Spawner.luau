@@ -32,7 +32,16 @@ local function Spawn_Blocks()
 
         local Block_Name, Block_Data
 
-        if #Block_Queue > 0 then
+        if Opens == 0 or Opens == 1 then
+            Block_Name = "Common"
+            Block_Data = Blocks["Common"]
+        elseif Opens == 2 then
+            Block_Name = "Rare"
+            Block_Data = Blocks["Rare"]
+        elseif Opens == 6 then
+            Block_Name = "Epic"
+            Block_Data = Blocks["Epic"]
+        elseif #Block_Queue > 0 then
             Block_Name, Block_Data = Block_Queue[1], Blocks[Block_Queue[1]]
 
             table.remove(Block_Queue, 1)
@@ -42,7 +51,9 @@ local function Spawn_Blocks()
                 Type = "Info",
             })
         else
-            Block_Name, Block_Data = Roll_Block(Luck, Opens <= 15 and { "Legendary", "Mythical", "Secret" } or nil)
+            local Excluded = Opens <= 9 and { "Mythical", "Secret" } or {}
+
+            Block_Name, Block_Data = Roll_Block(Luck, Excluded)
         end
 
         local Block_Spawn = Plot_Model:FindFirstChild("Block_Spawn", true) :: Attachment

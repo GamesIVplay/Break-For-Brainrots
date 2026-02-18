@@ -3,17 +3,15 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local Network = require(ServerScriptService.Network)
 
---[[local Slot_Util = require(ServerScriptService.Server.Modules.Slot_Util)
-
 local Jecs = require(ReplicatedStorage.Packages.Jecs)
-local Pair = Jecs.pair]]
+local Pair = Jecs.pair
 
 local Components = require(ReplicatedStorage.Common.Components)
 local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
 local World = require(ReplicatedStorage.Common.World)
 
--- local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
+local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 
@@ -53,18 +51,6 @@ local function Handle_Rebirth_Requests()
             continue
         end
 
-        local Cash = World:get(Player_Entity, Components.Cash)
-
-        if not Cash then
-            continue
-        end
-
-        --[[local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
-
-        if not Brainrot_Inventory then
-            continue
-        end]]
-
         local Next_Rebirth_Data = Rebirths[Rebirth + 1]
 
         if not Next_Rebirth_Data then
@@ -75,21 +61,29 @@ local function Handle_Rebirth_Requests()
             continue
         end
 
-        if Cash < Next_Rebirth_Data.Requirement then
+        local Plot_Income_Per_Sec = 0
+
+        for Brainrot_Entity, Brainrot_Name: string, Secondary_Mutations: { string }, Weight: number in
+            World:query(Components.Name, Components.Secondary_Mutations, Components.Weight)
+                :with(Components.Tags.Brainrot, Pair(Components.Relationships.Owner, Player_Entity))
+        do
+            local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
+
+            Plot_Income_Per_Sec += Calculate_Income_Per_Sec({
+                Brainrot_Name = Brainrot_Name,
+                Primary_Mutation = Primary_Mutation,
+                Secondary_Mutations = Secondary_Mutations,
+                Weight = Weight,
+            })
+        end
+
+        if Plot_Income_Per_Sec < Next_Rebirth_Data.Requirement then
             Network.Notification.Fire(Player, {
                 Text = "Requirements not met",
                 Type = "Error",
             })
             continue
         end
-
-        --[[for Brainrot_Entity in
-            World:query(Components.Tags.Brainrot):with(Pair(Components.Relationships.Owner, Player_Entity))
-        do
-            World:delete(Brainrot_Entity)
-        end
-
-        Slot_Util.Clear_All(Brainrot_Inventory, Brainrot_Capacity)]]
 
         World:set(Player_Entity, Components.Cash, 0)
         World:set(Player_Entity, Components.Rebirth, Rebirth + 1)

@@ -1,6 +1,8 @@
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local ImpactHaptic = Instance.new("HapticEffect")
 ImpactHaptic.Position = Vector3.new(0, 0, 0)
@@ -157,7 +159,13 @@ end
 
 local function Handle_Tool_Setup(Local_Entity: Types.Entity)
     for _, Tool: Tool in Network.Setup_Tool.Iter() do
-        Tool.Activated:Connect(function()
+        local Connnections: { RBXScriptConnection } = {}
+
+        --[[local Equipped = false
+        local Holding_Input = false
+        local Starting_Holding_Input = 0]]
+
+        local function Swing()
             local Character = World:get(Local_Entity, Components.Renderable) :: Model?
             local RootPart = Character and Character:FindFirstChild("HumanoidRootPart") :: Part?
             local Animator = Character and Character:FindFirstChild("Animator", true) :: Animator?
@@ -195,6 +203,68 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
 
                 Network.Requests.Swing.Fire()
             end)
+        end
+
+        --[[table.insert(
+            Connnections,
+            Tool.Equipped:Connect(function()
+                Equipped = true
+            end)
+        )
+
+        table.insert(
+            Connnections,
+            Tool.Unequipped:Connect(function()
+                Equipped = false
+            end)
+        )
+
+        table.insert(
+            Connnections,
+            UserInputService.InputBegan:Connect(function(InputObject, GPE)
+                if GPE then
+                    return
+                end
+
+                if InputObject.UserInputType ~= Enum.UserInputType.MouseButton1 then
+                    return
+                end
+
+                Starting_Holding_Input = os.clock()
+                Holding_Input = true
+            end)
+        )
+
+        table.insert(
+            Connnections,
+            UserInputService.InputEnded:Connect(function(InputObject, GPE)
+                if GPE then
+                    return
+                end
+
+                if InputObject.UserInputType ~= Enum.UserInputType.MouseButton1 then
+                    return
+                end
+
+                Holding_Input = false
+            end)
+        )
+
+        table.insert(
+            Connnections,
+            RunService.RenderStepped:Connect(function()
+                if Equipped and Holding_Input and os.clock() - Starting_Holding_Input > 0.1 then
+                    Swing()
+                end
+            end)
+		)]]
+
+        table.insert(Connnections, Tool.Activated:Connect(Swing))
+
+        Tool.Destroying:Connect(function()
+            for _, Connection in Connnections do
+                Connection:disconnect()
+            end
         end)
     end
 end
@@ -292,6 +362,12 @@ local function Handle_Claimed_Daily_Rewards_Changes(Local_Entity: Types.Entity)
     end
 end
 
+local function Handle_Plot_Income_Per_Sec_Changes()
+    for _, Data in Network.DataChanged.Plot_Income_Per_Sec.Iter() do
+        Fusion_Values.Plot_Income_Per_Sec:set(Data)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.First,
@@ -345,6 +421,8 @@ return {
         Handle_Last_Daily_Reward_Claim_Changes(Local_Entity)
 
         Handle_Claimed_Daily_Rewards_Changes(Local_Entity)
+
+        Handle_Plot_Income_Per_Sec_Changes()
     end,
     runConditions = {},
 }

@@ -44,6 +44,8 @@ local Components: {
     Weight: Types.Id<number>,
     Offline_Cash: Types.Id<number>,
 
+    Plot_Income_Per_Sec: Types.Id<number>,
+
     Singletons: {
         Active_Events: Types.Id<{
             [string]: {
@@ -110,6 +112,8 @@ local Components: {
         Secondary_Mutations = World:component(),
         Weight = World:component(),
         Offline_Cash = World:component(),
+
+        Plot_Income_Per_Sec = World:component(),
 
         Singletons = {
             Active_Events = World:component(),
