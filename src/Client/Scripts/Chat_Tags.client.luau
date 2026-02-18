@@ -8,8 +8,6 @@ TextChatService.OnIncomingMessage = function(Message: TextChatMessage)
 
         if Player.UserId == 3439160531 then
             Properties.PrefixText = "<font color='#00A6FF'>[Owner]</font> " .. Message.PrefixText
-        elseif Player:HasTag("VIP") then
-            Properties.PrefixText = "<font color='#FFCD00'>[VIP]</font> " .. Message.PrefixText
         end
     end
 

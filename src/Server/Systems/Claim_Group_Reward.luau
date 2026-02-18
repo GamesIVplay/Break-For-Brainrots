@@ -15,7 +15,7 @@ local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capa
 local GroupId = require(ReplicatedStorage.Common.Modules.GroupId)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 
-local function Handle_Pickup_Requests()
+local function Handle_Claim_Group_Reward_Requests()
     for _, Player: Player in Network.Requests.Claim_Group_Reward.Iter() do
         if not Ratelimits.Claim_Group_Reward(Player) then
             continue
@@ -80,6 +80,6 @@ end
 return {
     name = script.Name,
     phase = Phases.Runservice.Update,
-    system = Handle_Pickup_Requests,
+    system = Handle_Claim_Group_Reward_Requests,
     runConditions = {},
 }

@@ -9,7 +9,6 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
-local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
 local Calculate_Time_Till_Block_Reward = require(ReplicatedStorage.Common.Modules.Calculate_Time_Till_Block_Reward)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
@@ -19,23 +18,23 @@ local Gave_Blocks = false
 
 local function Update_Block_Countdown_Display()
     for _, Part: Part in CollectionService:GetTagged("Block Countdown") do
-        local Mythical_Text = Part:FindFirstChild("Mythical") :: TextLabel
-        local RainbowText = Mythical_Text:FindFirstChild("RainbowText")
+        local Mythical_Text = Part:FindFirstChild("Mythical", true) :: TextLabel
+        local RainbowText = Mythical_Text:FindFirstChild("RainbowText") :: TextLabel
 
-        local Secret_Text = Part:FindFirstChild("Secret") :: TextLabel
+        local Secret_Text = Part:FindFirstChild("Secret", true) :: TextLabel
 
         local T = Util.BreakdownTime(Calculate_Time_Till_Block_Reward())
 
         local Time_Text = `{T.Minutes}m {T.Seconds}s`
 
-        Mythical_Text.Text = `Mythic in {Time_Text}`
-        RainbowText = `Mythic in {Time_Text}`
+        Mythical_Text.Text = `Mythical in {Time_Text}`
+        RainbowText.Text = `Mythical in {Time_Text}`
 
-        Secret = `Secret in {Time_Text}`
+        Secret_Text.Text = `Secret in {Time_Text}`
     end
 end
 
-local function Give_Block_Rewards()
+local function Give_Rewards()
     local SecondsRemaining = Calculate_Time_Till_Block_Reward()
 
     if SecondsRemaining > 0 then
@@ -54,8 +53,9 @@ local function Give_Block_Rewards()
         table.insert(Block_Queue, "Secret")
 
         Network.Notification.Fire(Player, {
-            Text = `A Mythical and Seceret have been addded to queue!`,
+            Text = `A Mythical and Secret Block have been added to queue!`,
             Type = "Info",
+            Duration = 4,
         })
     end
 end
@@ -66,7 +66,7 @@ return {
     system = function()
         Update_Block_Countdown_Display()
 
-        Give_Block_Rewards()
+        Give_Rewards()
     end,
     runConditions = {},
 }

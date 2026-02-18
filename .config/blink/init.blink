@@ -249,6 +249,14 @@ scope Requests {
        Call: SingleSync,
 	   Poll: true,
 	}
+
+	event Claim_Daily_Reward {
+	   From: Client,
+       Type: Reliable,
+       Call: SingleSync,
+	   Poll: true,
+	   Data: u8
+	}
 }
 
 scope DataChanged {
@@ -361,4 +369,20 @@ scope DataChanged {
 			}
 		}
 	}
+
+	event Last_Daily_Reward_Claim {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: f64
+    }
+
+	event Claimed_Daily_Rewards {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: string[] 
+    }
 }

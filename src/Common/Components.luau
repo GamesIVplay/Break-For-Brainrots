@@ -24,6 +24,10 @@ local Components: {
     Pending_Brainrots: Types.Id<{ [number]: Types.Serialized_Brainrot }>,
     LastPlayed: Types.Id<number>,
     Index: Types.Id<{ [string]: { string } }>,
+    PlayTime: Types.Id<number>,
+    Daily_Reward_Id: Types.Id<number>,
+    Last_Daily_Reward_Claim: Types.Id<number>,
+    Claimed_Daily_Rewards: Types.Id<{ string }>,
 
     Plot_Model: Types.Id<Model>,
 
@@ -87,6 +91,10 @@ local Components: {
         Pending_Brainrots = World:component(),
         LastPlayed = World:component(),
         Index = World:component(),
+        PlayTime = World:component(),
+        Daily_Reward_Id = World:component(),
+        Last_Daily_Reward_Claim = World:component(),
+        Claimed_Daily_Rewards = World:component(),
 
         Plot_Model = World:component(),
 

@@ -2,14 +2,14 @@ local Lighting = game:GetService("Lighting")
 local MarketplaceService = game:GetService("MarketplaceService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
 local Camera = workspace.CurrentCamera
 local Map = workspace:WaitForChild("Map")
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
-
-local UIGradients = Assets:WaitForChild("UIGradients") :: Folder
+local UIGradients = Assets:WaitForChild("UIGradients")
 
 local UISounds = Assets:WaitForChild("Sounds"):WaitForChild("UI")
 local Shop_Open = UISounds:WaitForChild("Shop_Open") :: Sound
@@ -31,28 +31,32 @@ type Scope = Fusion.Scope
 local Clock = require(ReplicatedStorage.Packages.Clock)
 local TopbarPlus = require(ReplicatedStorage.Packages.TopbarPlus)
 
-local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
 local Components = require(ReplicatedStorage.Common.Components)
 local Config = require(ReplicatedStorage.Common.Config)
-local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
-local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Log = require(ReplicatedStorage.Common.Log)
 local Phases = require(ReplicatedStorage.Common.Phases)
-local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
 local Registry = require(ReplicatedStorage.Common.Registry)
 local Types = require(ReplicatedStorage.Common.Types)
-local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
-local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
-local Util = require(ReplicatedStorage.Common.Modules.Util)
 local World = require(ReplicatedStorage.Common.World)
 
+local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
 local Brainrots = require(ReplicatedStorage.Common.Modules.Brainrots)
+local Calculate_Cash_Multiplier = require(ReplicatedStorage.Common.Modules.Calculate_Cash_Multiplier)
+local Calculate_Luck = require(ReplicatedStorage.Common.Modules.Calculate_Luck)
+local Calculate_Mutation_Luck = require(ReplicatedStorage.Common.Modules.Calculate_Mutation_Luck)
 local Calculate_Sell_Price = require(ReplicatedStorage.Common.Modules.Calculate_Sell_Price)
+local Daily_Rewards = require(ReplicatedStorage.Common.Modules.Daily_Rewards)
+local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
+local Events = require(ReplicatedStorage.Common.Modules.Events)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
+local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
 local Rarities = require(ReplicatedStorage.Common.Modules.Rarities)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 local Secondary_Mutations_Config = require(ReplicatedStorage.Common.Modules.Secondary_Mutations)
+local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
+local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
+local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 local Teleport_Character = require(ReplicatedFirst.Client.Modules.Teleport_Character)
@@ -65,6 +69,9 @@ local EQUIPPED_IMAGE_ID = "rbxassetid://105827258558873"
 local UNEQUIPPED_IMAGE_ID = "rbxassetid://119691695893621"
 local CANT_REBIRTH_ID = "rbxassetid://89624548762867"
 local CAN_REBIRTH_ID = "rbxassetid://90784618165931"
+local CLAIMABLE_DAILY_REWARD_ID = "rbxassetid://121666171277789"
+local NON_CLAIMABLE_DAILY_REWARD_ID = "rbxassetid://136916422259079"
+local CLAIMED_DAILY_REWARD_ID = "rbxassetid://80526863525449"
 
 local Scope = Fusion.scoped(Fusion)
 
@@ -466,6 +473,117 @@ local function Setup_HUD_Offers(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     end)
 end
 
+local function Setup_HUD_Right_Corner(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+
+    local Right_Corner = Main:WaitForChild("Right_Corner") :: Frame
+    local Event_Template = Right_Corner:WaitForChild("Event_Template") :: ImageButton
+    Event_Template.Visible = false
+
+    local Cash = Right_Corner:WaitForChild("Cash") :: ImageButton
+    local Cash_Text = Cash:WaitForChild("Title") :: TextLabel
+
+    local Luck = Right_Corner:WaitForChild("Luck") :: ImageButton
+    local Luck_Text = Luck:WaitForChild("Title") :: TextLabel
+
+    local Mutation = Right_Corner:WaitForChild("Mutation") :: Frame
+    local Mutation_Text = Mutation:WaitForChild("Title") :: TextLabel
+
+    Hydrate_Button(Cash, function() end)
+    Hydrate_Button(Luck, function() end)
+    Hydrate_Button(Mutation, function() end)
+
+    for _, Inst in { Cash, Luck, Mutation } do
+        Hydrate_Button(Inst, function() end)
+
+        local Hover = Inst:FindFirstChild("Hover") :: TextLabel
+
+        if not Hover then
+            continue
+        end
+
+        Hover.Visible = false
+
+        Scope:Hydrate(Inst)({
+            [OnEvent("MouseEnter")] = function()
+                Hover.Visible = true
+            end,
+            [OnEvent("MouseLeave")] = function()
+                Hover.Visible = false
+            end,
+        })
+    end
+
+    Clock(0.01, function()
+        local Cash_Multiplier = Calculate_Cash_Multiplier(LocalEntity)
+
+        Cash.Visible = Cash_Multiplier ~= 1
+        Cash_Text.Text = `x{Cash_Multiplier}` -- `x{string.format("%.2f", Cash_Multiplier)}`
+
+        local Luck_Multiplier = Calculate_Luck(LocalEntity)
+
+        Luck.Visible = Luck_Multiplier ~= 1
+        Luck_Text.Text = `x{Luck_Multiplier}` -- `x{string.format("%.2f", Luck_Multiplier)}`
+
+        local Mutation_Luck = Calculate_Mutation_Luck(LocalEntity)
+        Mutation.Visible = Mutation_Luck ~= 1
+        Mutation_Text.Text = `x{Mutation_Luck}` -- `x{string.format("%.2f", Mutation_Luck)}`
+    end)
+
+    Scope:Hydrate(Right_Corner)({
+        [Children] = Scope:Computed(function(Use: Fusion.Use, Processor: Fusion.Scope<Fusion.Fusion>)
+            local Active_Events = Use(Fusion_Values.Active_Events)
+
+            local Children = {}
+
+            for Event_Name, Data in Active_Events do
+                local ImageButton = Event_Template:Clone() :: ImageButton
+                ImageButton.LayoutOrder = -Data.Start_Time
+                ImageButton.Name = Event_Name
+                ImageButton.Visible = true
+
+                local Hover = ImageButton:FindFirstChild("Hover") :: TextLabel
+                local Time_Remaining = ImageButton:FindFirstChild("Time_Remaining") :: TextLabel
+                local Image = ImageButton:FindFirstChildOfClass("ImageLabel")
+
+                Hover.Text = `{Event_Name} Event`
+                Hover.Visible = false
+
+                Hydrate_Button(ImageButton, function() end)
+
+                Processor:Hydrate(ImageButton)({
+                    [OnEvent("MouseEnter")] = function()
+                        Hover.Visible = true
+                    end,
+                    [OnEvent("MouseLeave")] = function()
+                        Hover.Visible = false
+                    end,
+                })
+
+                table.insert(
+                    Processor,
+                    RunService.RenderStepped:Connect(function()
+                        local End_Time = Data.End_Time
+
+                        local Seconds_Remaining = math.max(1, End_Time - os.time())
+
+                        local T = Util.BreakdownTime(Seconds_Remaining)
+
+                        Time_Remaining.Text = string.format("%02d:%02d", T.Minutes, T.Seconds)
+                    end)
+                )
+
+                Image.Image = Events[Event_Name].Image
+
+                table.insert(Processor, ImageButton)
+                table.insert(Children, ImageButton)
+            end
+
+            return Children
+        end),
+    })
+end
+
 local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_HUD_Visibility(PlayerGui)
 
@@ -476,6 +594,8 @@ local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_HUD_Cash(PlayerGui)
 
     Setup_HUD_Offers(LocalEntity, PlayerGui)
+
+    Setup_HUD_Right_Corner(LocalEntity, PlayerGui)
 end
 
 local function Setup_Robux_Shop_Visibility(PlayerGui: PlayerGui)
@@ -1448,7 +1568,7 @@ local function Setup_Upgrades_Content(LocalEntity: Types.Entity, PlayerGui: Play
         end)
 
         Scope:Hydrate(RobuxBuy)({
-            Visible = Scope:Computed(function(Use)
+            Visible = Scope:Computed(function(Use: Fusion.Use)
                 local Next_Data = Data.Levels[Use(Level_Computed) + 1]
 
                 if Next_Data then
@@ -1497,8 +1617,80 @@ local function Setup_Daily_Rewards_Visibility(PlayerGui: PlayerGui)
     Setup_Close_Button(Daily_Rewards_Frame:WaitForChild("Close"))
 end
 
+local function Setup_Daily_Rewards_Content(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Daily_Rewards_Frame = Frames:WaitForChild("DailyRewards") :: ImageLabel
+
+    local DAILY_REWARD_ID = Config.DAILY_REWARD_ID
+
+    for Index, Data in Daily_Rewards[DAILY_REWARD_ID] do
+        local ImageLabel = Daily_Rewards_Frame:FindFirstChild(tostring(Index))
+        local Title = ImageLabel:WaitForChild("Title") :: TextLabel
+        local Image = ImageLabel:WaitForChild("Image") :: ImageLabel
+        local Claim = ImageLabel:WaitForChild("Claim") :: ImageLabel
+        local Claim_Title = Claim:WaitForChild("Title") :: TextLabel
+
+        if Data.Type == "Cash" then
+            Title.Text = `${Util.Format_Number_With_Commas(Data.Amount)}`
+
+            UIGradients:WaitForChild("Cash"):Clone().Parent = Title
+
+            Image.Image = "rbxassetid://126731247819551"
+        elseif Data.Type == "Brainrot" then
+            local Brainrot_Rarity = Brainrots[Data.Name].Rarity
+
+            local Formatted_Name = not Data.Primary_Mutation and Data.Name or `{Data.Primary_Mutation} {Data.Name}`
+            Title.Text = Formatted_Name
+
+            UIGradients:WaitForChild(Brainrot_Rarity):Clone().Parent = Title
+
+            Image.Image = Data.Image
+
+            Image:AddTag("ImageFloat")
+        end
+
+        Clock(0.01, function()
+            local Claimed_Daily_Rewards = Peek(Fusion_Values.Claimed_Daily_Rewards)
+            local Elapsed = os.time() - Peek(Fusion_Values.Last_Daily_Reward_Claim)
+            local Remaining_Seconds = math.max(86_400 - Elapsed, 0)
+            local T = Util.BreakdownTime(Remaining_Seconds)
+
+            local NextIndex = #Claimed_Daily_Rewards + 1
+            local CanClaim = (Index == NextIndex) and Remaining_Seconds == 0
+
+            if table.find(Claimed_Daily_Rewards, tostring(Index)) then
+                Claim.Image = CLAIMED_DAILY_REWARD_ID
+                Claim_Title.Text = "Claimed"
+            elseif Index == NextIndex then
+                if CanClaim then
+                    Claim.Image = CLAIMABLE_DAILY_REWARD_ID
+                    Claim_Title.Text = "Claim"
+                else
+                    Claim.Image = NON_CLAIMABLE_DAILY_REWARD_ID
+                    Claim_Title.Text = string.format("%02d:%02d:%02d", T.Hours, T.Minutes, T.Seconds)
+                end
+            else
+                Claim.Image = NON_CLAIMABLE_DAILY_REWARD_ID
+                Claim_Title.Text = "Locked"
+            end
+        end)
+
+        Hydrate_Button(Claim, function()
+            if not Ratelimits.Claim_Daily_Reward() then
+                return
+            end
+
+            Network.Requests.Claim_Daily_Reward.Fire(Index)
+        end)
+    end
+end
+
 local function Setup_Daily_Rewards(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Daily_Rewards_Visibility(PlayerGui)
+
+    Setup_Daily_Rewards_Content(PlayerGui)
 end
 
 local function Setup_Playtime_Rewards_Visibility(PlayerGui: PlayerGui)
@@ -1586,7 +1778,7 @@ local function Setup_Sell_Contents(PlayerGui: PlayerGui)
     Template.Visible = false
 
     Scope:Hydrate(Contents)({
-        [Children] = Scope:Computed(function(Use, Processor: Fusion.Scope<Fusion.Fusion>)
+        [Children] = Scope:Computed(function(Use: Fusion.Use, Processor: Fusion.Scope<Fusion.Fusion>)
             local Brainrot_Inventory = Use(Fusion_Values.Brainrot_Inventory)
             local Groups = Make_Sell_Group(Brainrot_Inventory)
 

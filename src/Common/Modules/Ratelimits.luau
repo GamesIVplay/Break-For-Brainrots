@@ -14,4 +14,5 @@ return table.freeze({
     Gift = Ratelimit(1, 0.5),
     Rebirth = Ratelimit(1, 0.5),
     Claim_Group_Reward = Ratelimit(1, 0.5),
+    Claim_Daily_Reward = Ratelimit(1, 0.5),
 })

@@ -5,7 +5,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local Cash_Leaderboard_Data_Store = DataStoreService:GetOrderedDataStore("Cash")
+local PlayTime_Leaderboard_Data_Store = DataStoreService:GetOrderedDataStore("PlayTime")
 local Open_Leaderboard_Data_Store = DataStoreService:GetOrderedDataStore("Open")
 
 local Types = require(ReplicatedStorage.Common.Types)
@@ -28,10 +28,10 @@ local Registry = require(ReplicatedStorage.Common.Registry)
 local World = require(ReplicatedStorage.Common.World)
 
 local AnimPlayer = require(ReplicatedStorage.Common.Modules.AnimPlayer)
+local Config = require(ReplicatedStorage.Common.Config)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 
-local Gamepass_Query = World:query(Components.Player, Components.Gamepasses):cached()
 local PlayersRemoving = Collect(Players.PlayerRemoving)
 
 local function Update_Character_Collision_Groups(Character: Model)
@@ -117,8 +117,20 @@ local function Handle_New_Player(Player: Player)
     World:set(Player_Entity, Components.Upgrades, Profile_Data.Upgrades)
     World:set(Player_Entity, Components.Brainrot_Inventory, Profile_Data.Brainrot_Inventory)
     World:set(Player_Entity, Components.Pending_Brainrots, Profile_Data.Brainrots)
-    World:set(Player_Entity, Components.LastPlayed, Profile_Data.LastPlayed)
     World:set(Player_Entity, Components.Index, Profile_Data.Index)
+    World:set(Player_Entity, Components.PlayTime, Profile_Data.PlayTime)
+    World:set(Player_Entity, Components.LastPlayed, Profile_Data.LastPlayed)
+
+    if Profile_Data.Daily_Reward_Id == Config.DAILY_REWARD_ID then
+        World:set(Player_Entity, Components.Daily_Reward_Id, Profile_Data.Daily_Reward_Id)
+        World:set(Player_Entity, Components.Last_Daily_Reward_Claim, Profile_Data.Last_Daily_Reward_Claim)
+        World:set(Player_Entity, Components.Claimed_Daily_Rewards, Profile_Data.Claimed_Daily_Rewards)
+    else
+        World:set(Player_Entity, Components.Daily_Reward_Id, Config.DAILY_REWARD_ID)
+        World:set(Player_Entity, Components.Last_Daily_Reward_Claim, 0)
+        World:set(Player_Entity, Components.Claimed_Daily_Rewards, {})
+    end
+
     World:set(Player_Entity, Components.Player, Player)
     World:set(Player_Entity, Components.Cleanup, function()
         Profile.Unload(Player)
@@ -151,7 +163,11 @@ local function Handle_New_Player(Player: Player)
         Profile_Data.Upgrades = World:get(Player_Entity, Components.Upgrades)
         Profile_Data.Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
         Profile_Data.Index = World:get(Player_Entity, Components.Index)
+        Profile_Data.PlayTime = World:get(Player_Entity, Components.PlayTime)
         Profile_Data.LastPlayed = os.time()
+        Profile_Data.Daily_Reward_Id = World:get(Player_Entity, Components.Daily_Reward_Id)
+        Profile_Data.Last_Daily_Reward_Claim = World:get(Player_Entity, Components.Last_Daily_Reward_Claim)
+        Profile_Data.Claimed_Daily_Rewards = World:get(Player_Entity, Components.Claimed_Daily_Rewards)
 
         local Serialized_Brainrots: { [number]: Types.Serialized_Brainrot } = {}
 
@@ -196,6 +212,8 @@ local function Handle_New_Player(Player: Player)
 
     Player.CharacterRemoving:Connect(function()
         World:remove(Player_Entity, Components.Renderable)
+        World:remove(Player_Entity, Pair(Components.Relationships.Previous, Components.Brainrot_Inventory))
+        World:remove(Player_Entity, Pair(Components.Relationships.Previous, Components.Pickaxe))
     end)
 
     Log.Info(`Setup {Player.Name}'s entity`)
@@ -204,12 +222,12 @@ end
 local function Update_Leaderboard_Data(Player_Entity: Types.Entity)
     local Player = World:get(Player_Entity, Components.Player)
 
-    local Cash = World:get(Player_Entity, Components.Cash)
+    local PlayTime = World:get(Player_Entity, Components.PlayTime)
     local Opens = World:get(Player_Entity, Components.Opens)
 
     task.spawn(function()
         local Success, Error = pcall(function()
-            Cash_Leaderboard_Data_Store:SetAsync(Player.UserId, Cash)
+            PlayTime_Leaderboard_Data_Store:SetAsync(Player.UserId, PlayTime)
             Open_Leaderboard_Data_Store:SetAsync(Player.UserId, Opens)
         end)
 
@@ -241,12 +259,6 @@ return {
 
         for Player: Player in PlayersRemoving do
             task.spawn(Handle_Leaving_Player, Player)
-        end
-
-        for _, Player: Player, Gamepasses: { string } in Gamepass_Query:iter() do
-            if table.find(Gamepasses, "VIP") then
-                Player:AddTag("VIP")
-            end
         end
     end,
     runConditions = {},

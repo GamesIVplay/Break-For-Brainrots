@@ -31,8 +31,11 @@ Start({
     require(Systems.Collect),
     require(Systems.Sell),
     require(Systems.Rebirth),
+    require(Systems.Claim_Daily_Reward),
     require(Systems.Claim_Group_Reward),
     require(Systems.Cleanup),
+    require(Systems.PlayTime),
     require(Systems.Leaderstats),
+    require(Systems.Leaderboard),
     require(Systems.Data_Sender),
 })

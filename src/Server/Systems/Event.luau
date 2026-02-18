@@ -93,7 +93,7 @@ local function Start_Event()
     Network.Notification.FireAll({
         Text = `A {Next_Event.Name} Event Started!`,
         Type = "Info",
-        Duration = 5,
+        Duration = 8,
     })
 
     for Player_Entity: Types.Entity, Player: Player, Block_Queue: { string } in Player_Block_Queue_Query:iter() do
@@ -104,6 +104,7 @@ local function Start_Event()
         Network.Notification.Fire(Player, {
             Text = `Added x{Next_Event.Block_Amount} {Next_Event.Block_Name} Blocks to queue!`,
             Type = "Info",
+            Duration = 4,
         })
     end
 

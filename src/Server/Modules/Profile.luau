@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Config = require(ReplicatedStorage.Common.Config)
 local Log = require(ReplicatedStorage.Common.Log)
 local Types = require(ReplicatedStorage.Common.Types)
 
@@ -20,6 +21,10 @@ export type ProfileData = {
     LastPlayed: number,
     Index: { [string]: { string } },
     Claimed_Group_Reward: boolean,
+    PlayTime: number,
+    Daily_Reward_Id: number,
+    Last_Daily_Reward_Claim: number,
+    Claimed_Daily_Rewards: { string },
 }
 
 local ProfileStore = require(ReplicatedStorage.Packages.ProfileStore)
@@ -41,6 +46,10 @@ local PLAYER_DATA_TEMPLATE: ProfileData = {
     LastPlayed = os.time(),
     Index = {},
     Claimed_Group_Reward = false,
+    PlayTime = 0,
+    Daily_Reward_Id = Config.DAILY_REWARD_ID,
+    Last_Daily_Reward_Claim = 0,
+    Claimed_Daily_Rewards = {},
 }
 
 local PlayerProfileStore = ProfileStore.New(not _G.IN_DEV and "Main" or "Dev", PLAYER_DATA_TEMPLATE)

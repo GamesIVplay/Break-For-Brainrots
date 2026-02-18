@@ -23,7 +23,6 @@ local function Pick_Random_Track(Tracks: { Sound })
 end
 
 local function Play_Track(Track: Sound)
-    print(Track)
     if not Track then
         return
     end

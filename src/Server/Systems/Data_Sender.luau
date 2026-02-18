@@ -412,6 +412,41 @@ local function Replicate_Active_Events(Player: Player, Entity: Types.Entity)
     end
 end
 
+local function Replicate_Last_Daily_Reward_Claim(Player: Player, Entity: Types.Entity)
+    local Last_Daily_Reward_Claim = World:get(Entity, Components.Last_Daily_Reward_Claim)
+    local Previous_Last_Daily_Reward_Claim =
+        World:get(Entity, Pair(Components.Relationships.Previous, Components.Last_Daily_Reward_Claim))
+
+    if Last_Daily_Reward_Claim ~= Previous_Last_Daily_Reward_Claim then
+        Network.DataChanged.Last_Daily_Reward_Claim.Fire(Player, Last_Daily_Reward_Claim)
+
+        World:set(
+            Entity,
+            Pair(Components.Relationships.Previous, Components.Last_Daily_Reward_Claim),
+            Last_Daily_Reward_Claim
+        )
+
+        Log.Info(`{Player.Name}'s last daily reward claim changed`)
+    end
+end
+
+local function Replicate_Claimed_Daily_Rewards(Player: Player, Entity: Types.Entity)
+    local Claimed_Daily_Rewards = World:get(Entity, Components.Claimed_Daily_Rewards)
+    local Previous_Claimed_Daily_Rewards =
+        World:get(Entity, Pair(Components.Relationships.Previous, Components.Claimed_Daily_Rewards))
+
+    if not Util.TablesAreEqual(Claimed_Daily_Rewards, Previous_Claimed_Daily_Rewards) then
+        Network.DataChanged.Claimed_Daily_Rewards.Fire(Player, Claimed_Daily_Rewards)
+
+        World:set(
+            Entity,
+            Pair(Components.Relationships.Previous, Components.Claimed_Daily_Rewards),
+            Util.CopyTable(Claimed_Daily_Rewards, true)
+        )
+        Log.Info(`{Player.Name}'s claimed daily rewards were changed`)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.PostUpdate,
@@ -440,6 +475,10 @@ return {
             Replicate_Index(Player, Entity)
 
             Replicate_Active_Events(Player, Entity)
+
+            Replicate_Last_Daily_Reward_Claim(Player, Entity)
+
+            Replicate_Claimed_Daily_Rewards(Player, Entity)
         end
     end,
     runConditions = {},

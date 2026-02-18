@@ -6,16 +6,20 @@ local Max_Weight_Per_Rarity = {
     Common = 0.45,
     Rare = 0.4,
     Epic = 0.3,
-    Legendary = 0.2,
-    Mythical = 0.15,
-    Secret = 0.1,
+    Legendary = 0.1,
+    Mythical = 0.08,
+    Secret = 0.05,
 }
 
-return function(Luck: number): (string, Blocks.Block)
+return function(Luck: number, Exluded: { string }): (string, Blocks.Block)
     local WeightedBlocks = {}
     local TotalWeight = 0
 
     for Name, Block in Blocks do
+        if Exluded and table.find(Exluded, Name) then
+            continue
+        end
+
         local Weight = Block.Chance
 
         local RarityMultiplier = 1

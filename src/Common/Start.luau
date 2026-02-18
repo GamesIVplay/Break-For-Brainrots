@@ -1,6 +1,6 @@
 _G.IN_DEV = true
 _G.JECS_DEBUG = true
-_G.Mock = false
+_G.Mock = true
 
 local ContextActionService = game:GetService("ContextActionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")

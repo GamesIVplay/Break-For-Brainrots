@@ -25,6 +25,7 @@ local function Spawn_Blocks()
         local Owner_Entity = World:target(Plot_Entity, Components.Relationships.Owner)
         local Owner_Player = World:get(Owner_Entity, Components.Player) :: Player
 
+        local Opens = World:get(Owner_Entity, Components.Opens)
         local Block_Queue = World:get(Owner_Entity, Components.Block_Queue)
 
         local Luck = Calculate_Luck(Owner_Entity)
@@ -41,14 +42,7 @@ local function Spawn_Blocks()
                 Type = "Info",
             })
         else
-            Block_Name, Block_Data = Roll_Block(Luck)
-
-            --[[local counts = { Common = 0, Rare = 0, Epic = 0, Legendary = 0, Mythical = 0, Secret = 0 }
-            for i = 1, 100 do
-                local name = Roll_Block(Luck)
-                counts[name] += 1
-            end
-            print(counts)]]
+            Block_Name, Block_Data = Roll_Block(Luck, Opens <= 15 and { "Legendary", "Mythical", "Secret" } or nil)
         end
 
         local Block_Spawn = Plot_Model:FindFirstChild("Block_Spawn", true) :: Attachment

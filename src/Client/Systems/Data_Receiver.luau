@@ -271,6 +271,24 @@ end
 local function Handle_Active_Events()
     for _, Data in Network.DataChanged.Active_Events.Iter() do
         World:set(Components.Singletons.Active_Events, Components.Singletons.Active_Events, Data)
+
+        Fusion_Values.Active_Events:set(Data)
+    end
+end
+
+local function Handle_Last_Daily_Reward_Claim_Changes(Local_Entity: Types.Entity)
+    for _, Data in Network.DataChanged.Last_Daily_Reward_Claim.Iter() do
+        World:set(Local_Entity, Components.Last_Daily_Reward_Claim, Data)
+
+        Fusion_Values.Last_Daily_Reward_Claim:set(Data)
+    end
+end
+
+local function Handle_Claimed_Daily_Rewards_Changes(Local_Entity: Types.Entity)
+    for _, Data in Network.DataChanged.Claimed_Daily_Rewards.Iter() do
+        World:set(Local_Entity, Components.Claimed_Daily_Rewards, Data)
+
+        Fusion_Values.Claimed_Daily_Rewards:set(Data)
     end
 end
 
@@ -323,6 +341,10 @@ return {
         Handle_Robux_Purchase()
 
         Handle_Active_Events()
+
+        Handle_Last_Daily_Reward_Claim_Changes(Local_Entity)
+
+        Handle_Claimed_Daily_Rewards_Changes(Local_Entity)
     end,
     runConditions = {},
 }
