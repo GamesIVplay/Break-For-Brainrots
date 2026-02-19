@@ -22,6 +22,8 @@ local Darkener = require(ReplicatedFirst.Client.Modules.ScreenDarkener).New(5)
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 local Get_Target_Block = require(ReplicatedFirst.Client.Modules.Get_Target_Block)
 
+local Darkener_Active = false
+
 local function Update_Darkener()
     local Local_Entity = Registry.Get("Players", "Local")
 
@@ -87,6 +89,8 @@ local function Update_Darkener()
 
         Darkener:Activate(Touch, 10)
 
+        Darkener_Active = true
+
         local Touch_Attachment = Touch:FindFirstChildOfClass("Attachment")
 
         if not Touch_Attachment then
@@ -97,6 +101,11 @@ local function Update_Darkener()
         Tutorial_VFX.Attachment1 = Touch_Attachment
     elseif Tutorial_Step == 4 then
         local Shops_Spawn = Shops:FindFirstChild("Spawn") :: Part
+
+        if not Darkener_Active then
+            Darkener:Activate()
+            Darkener_Active = true
+        end
 
         if Peek(Fusion_Values.Screen) == "Pickaxes" then
             Darkener:Switch(
