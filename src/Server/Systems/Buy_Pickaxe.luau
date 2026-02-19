@@ -24,6 +24,18 @@ local function Handle_Pickaxe_Purchase_Requests()
             continue
         end
 
+        local Tutorial_Step = World:get(Player_Entity, Components.Tutorial_Step)
+
+        if not Tutorial_Step then
+            continue
+        end
+
+        local Current_Pickaxe = World:get(Player_Entity, Components.Pickaxe)
+
+        if not Current_Pickaxe then
+            continue
+        end
+
         local Pickaxe_Data = Pickaxes[Pickaxe_Name]
 
         if not Pickaxe_Data or not Pickaxe_Data.Price then
@@ -64,9 +76,31 @@ local function Handle_Pickaxe_Purchase_Requests()
             continue
         end
 
+        if Tutorial_Step == 4 then
+            if Pickaxe_Name ~= "Stone" then
+                continue
+            end
+
+            World:set(Player_Entity, Components.Tutorial_Step, 5)
+
+            Network.VFX.Tutorial_Complete.FireAll(Character)
+
+            task.delay(3, function()
+                if not World:contains(Player_Entity) then
+                    return
+                end
+
+                World:set(Player_Entity, Components.Tutorial_Step, 6)
+            end)
+        end
+
         World:set(Player_Entity, Components.Cash, Cash - Pickaxe_Data.Price)
 
         table.insert(Owned_Pickaxes, Pickaxe_Name)
+
+        if Pickaxes[Current_Pickaxe].Power < Pickaxes[Pickaxe_Name].Power then
+            World:set(Player_Entity, Components.Pickaxe, Pickaxe_Name)
+        end
 
         Network.Notification.Fire(Player, {
             Text = `You bought a {Pickaxe_Name} Pickaxe!`,

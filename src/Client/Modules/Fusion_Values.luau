@@ -4,7 +4,7 @@ local Fusion = require(ReplicatedStorage.Packages.Fusion)
 local Scope = Fusion.scoped(Fusion)
 
 return table.freeze({
-    Screen = Scope:Value("DailyRewards"),
+    Screen = Scope:Value("HUD"),
     Cash = Scope:Value(0),
     Rebirth = Scope:Value(0),
     Pickaxe = Scope:Value(nil),
@@ -20,4 +20,5 @@ return table.freeze({
     Last_Daily_Reward_Claim = Scope:Value(0),
     Claimed_Daily_Rewards = Scope:Value({}),
     Plot_Income_Per_Sec = Scope:Value(0),
+    Tutorial_Step = Scope:Value(6),
 })

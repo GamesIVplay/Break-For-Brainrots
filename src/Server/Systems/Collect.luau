@@ -40,6 +40,12 @@ local function Handle_Collect_Requests()
             continue
         end
 
+        local Tutorial_Step = World:get(Player_Entity, Components.Tutorial_Step)
+
+        if not Tutorial_Step then
+            continue
+        end
+
         local Brainrot_Model = World:get(ServerEntity, Components.Renderable)
         local Brainrot_Cash = World:get(ServerEntity, Components.Cash)
         local Brainrot_Offline_Cash = World:get(ServerEntity, Components.Offline_Cash)
@@ -48,7 +54,16 @@ local function Handle_Collect_Requests()
             continue
         end
 
-        World:set(Player_Entity, Components.Cash, Player_Cash + Brainrot_Cash + Brainrot_Offline_Cash)
+        if Tutorial_Step == 3 then
+            World:set(Player_Entity, Components.Tutorial_Step, 4)
+            World:set(
+                Player_Entity,
+                Components.Cash,
+                math.max(500, Player_Cash + Brainrot_Cash + Brainrot_Offline_Cash)
+            )
+        else
+            World:set(Player_Entity, Components.Cash, Player_Cash + Brainrot_Cash + Brainrot_Offline_Cash)
+        end
 
         World:set(ServerEntity, Components.Cash, 0)
         World:set(ServerEntity, Components.Offline_Cash, 0)

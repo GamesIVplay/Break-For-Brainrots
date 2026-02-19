@@ -11,6 +11,7 @@ local World = require(ReplicatedStorage.Common.World)
 
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
+local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 
 local function Handle_Swing_Requests()
     for _, Player: Player, Block_Entity: Types.Entity? in Network.Requests.Swing.Iter() do
@@ -65,8 +66,44 @@ local function Handle_Swing_Requests()
             continue
         end
 
+        local Tutorial_Step = World:get(Player_Entity, Components.Tutorial_Step)
+
+        if not Tutorial_Step then
+            continue
+        end
+
+        if Tutorial_Step ~= 1 and Tutorial_Step < #Tutorial_Steps then
+            Network.Notification.Fire(Player, {
+                Text = "Complete the tutorial first",
+                Type = "Error",
+            })
+            continue
+        end
+
         local Block_Plot_Entity = World:target(Block_Entity, Components.Relationships.Owner)
         local Is_Own_Block = Block_Plot_Entity == Plot_Entity
+
+        if not Is_Own_Block then
+            local Plot_Owner_Entity = World:target(Block_Plot_Entity, Components.Relationships.Owner)
+
+            if not Plot_Owner_Entity then
+                continue
+            end
+
+            local Plot_Owner_Tutorial_Step = World:get(Plot_Owner_Entity, Components.Tutorial_Step)
+
+            if not Plot_Owner_Tutorial_Step then
+                continue
+            end
+
+            if Plot_Owner_Tutorial_Step < #Tutorial_Steps then
+                Network.Notification.Fire(Player, {
+                    Text = "Owner is still in the tutorial",
+                    Type = "Error",
+                })
+                continue
+            end
+        end
 
         local Damage = Pickaxes[Pickaxe].Power
 

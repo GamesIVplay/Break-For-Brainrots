@@ -51,7 +51,6 @@ local function Setup_VFX_Parts(
         end
     end
 
-    -- 🔒 Only load lighting if it actually changed
     if Latest_Event_Name ~= Last_Loaded_Event_Name then
         if Latest_Event_Name then
             local Latest_Event_Data = Events[Latest_Event_Name]
@@ -59,8 +58,6 @@ local function Setup_VFX_Parts(
             Lighting.Load(Latest_Event_Data.Lighting)
             Grass.Color = Latest_Event_Data.Grass_Color or GRASS_NORMAL_COLOR
             Water.Color = Latest_Event_Data.Water_Color or WATER_NORMAL_COLOR
-
-            print("LOADED LIGHTING")
         else
             Lighting.Load(Lightings:WaitForChild("Normal"))
             Grass.Color = GRASS_NORMAL_COLOR

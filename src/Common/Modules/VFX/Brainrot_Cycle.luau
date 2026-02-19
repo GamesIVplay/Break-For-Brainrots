@@ -29,10 +29,36 @@ local FINAL_BOUNCE_TIME = 0.15
 local CYCLE_INTERVAL = BOUNCE_TIME
 local CYCLE_COUNT = math.floor(CYCLE_DURATION / CYCLE_INTERVAL + 0.5)
 local FINAL_BOUNCE_SCALE_MULTIPLIER = 1.5
+local CHAIN_TIMEOUT = 1.25 -- Seconds before chain resets
+local PITCH_MIN = 1.0
+local PITCH_MAX = 1.75
+local PITCH_STEPS = CYCLE_COUNT -- How many collects to reach max pitch
 
 local Brainrot_Tween_Info = TweenInfo.new(BOUNCE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 local Final_Brainrot_Tween_Info = TweenInfo.new(FINAL_BOUNCE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 local Final_Highlight_Tween_Info = TweenInfo.new(FINAL_BOUNCE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+
+local ChainCount = 0
+local LastCycleTime = os.clock()
+
+local function Get_Cycle_Pitch(): number
+    local now = os.clock()
+
+    if LastCycleTime + CHAIN_TIMEOUT < now then
+        ChainCount = 0
+    end
+
+    LastCycleTime = now
+    ChainCount = ChainCount + 1
+
+    local pitch = math.clamp(ChainCount / PITCH_STEPS + PITCH_MIN, PITCH_MIN, PITCH_MAX)
+
+    if math.clamp((ChainCount + 1) / PITCH_STEPS + PITCH_MIN, PITCH_MIN, PITCH_MAX) == PITCH_MAX then
+        ChainCount = 0
+    end
+
+    return pitch
+end
 
 local function Spawn_Spin_VFX(CF: CFrame)
     local Part = Instance.new("Part")
@@ -114,6 +140,7 @@ local function Spawn_Cycle_Brainrot(
 
     if not Result then
         Sound = Cycle:Clone()
+        Sound.PlaybackSpeed = Get_Cycle_Pitch()
     else
         Sound = Cycle_Result:Clone()
     end

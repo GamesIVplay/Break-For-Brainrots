@@ -476,6 +476,19 @@ local function Replicate_Plot_Income_Per_Sec(Player: Player, Entity: Types.Entit
     end
 end
 
+local function Replicate_Tutorial_Step(Player: Player, Entity: Types.Entity)
+    local Tutorial_Step = World:get(Entity, Components.Tutorial_Step)
+    local Previous_Tutorial_Step = World:get(Entity, Pair(Components.Relationships.Previous, Components.Tutorial_Step))
+
+    if Tutorial_Step ~= Previous_Tutorial_Step then
+        Network.DataChanged.Tutorial_Step.Fire(Player, Tutorial_Step)
+
+        World:set(Entity, Pair(Components.Relationships.Previous, Components.Tutorial_Step), Tutorial_Step)
+
+        Log.Info(`{Player.Name}'s tutorial step changed to {Tutorial_Step}`)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.PostUpdate,
@@ -510,6 +523,8 @@ return {
             Replicate_Claimed_Daily_Rewards(Player, Entity)
 
             Replicate_Plot_Income_Per_Sec(Player, Entity)
+
+            Replicate_Tutorial_Step(Player, Entity)
         end
     end,
     runConditions = {},

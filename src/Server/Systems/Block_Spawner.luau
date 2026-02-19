@@ -66,7 +66,7 @@ local function Spawn_Blocks()
             Block_Model:PivotTo(Block_Spawn.WorldCFrame * CFrame.new(0, 0.25, 0))
         end
 
-        Block_Model:SetAttribute("Owner", Owner_Player.UserId)
+        Block_Model:AddTag(Plot_Model.Name .. "_Block")
         Block_Model.Parent = workspace:FindFirstChild("Blocks")
 
         if Block_Data.Floats then

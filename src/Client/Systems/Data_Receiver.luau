@@ -1,8 +1,8 @@
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+--[[local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")]]
 
 local ImpactHaptic = Instance.new("HapticEffect")
 ImpactHaptic.Position = Vector3.new(0, 0, 0)
@@ -368,6 +368,24 @@ local function Handle_Plot_Income_Per_Sec_Changes()
     end
 end
 
+local function Handle_Tutorial_Step_Changes(Local_Entity: Types.Entity)
+    for _, Data in Network.DataChanged.Tutorial_Step.Iter() do
+        World:set(Local_Entity, Components.Tutorial_Step, Data)
+
+        Fusion_Values.Tutorial_Step:set(Data)
+    end
+end
+
+local function Handle_Tutorial_Completes()
+    for _, Model: Model in Network.VFX.Tutorial_Complete.Iter() do
+        if not Model:IsDescendantOf(game.Workspace) then
+            continue
+        end
+
+        task.spawn(require(VFX.Tutorial_Complete), Model)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.First,
@@ -423,6 +441,10 @@ return {
         Handle_Claimed_Daily_Rewards_Changes(Local_Entity)
 
         Handle_Plot_Income_Per_Sec_Changes()
+
+        Handle_Tutorial_Step_Changes(Local_Entity)
+
+        Handle_Tutorial_Completes()
     end,
     runConditions = {},
 }

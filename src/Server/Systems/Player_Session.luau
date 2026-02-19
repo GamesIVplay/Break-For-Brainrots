@@ -121,6 +121,12 @@ local function Handle_New_Player(Player: Player)
     World:set(Player_Entity, Components.PlayTime, Profile_Data.PlayTime)
     World:set(Player_Entity, Components.LastPlayed, Profile_Data.LastPlayed)
 
+    if Profile_Data.Tutorial_Step == 5 then
+        World:set(Player_Entity, Components.Tutorial_Step, 6)
+    else
+        World:set(Player_Entity, Components.Tutorial_Step, Profile_Data.Tutorial_Step)
+    end
+
     if Profile_Data.Daily_Reward_Id == Config.DAILY_REWARD_ID then
         World:set(Player_Entity, Components.Daily_Reward_Id, Profile_Data.Daily_Reward_Id)
         World:set(Player_Entity, Components.Last_Daily_Reward_Claim, Profile_Data.Last_Daily_Reward_Claim)
@@ -168,6 +174,7 @@ local function Handle_New_Player(Player: Player)
         Profile_Data.Daily_Reward_Id = World:get(Player_Entity, Components.Daily_Reward_Id)
         Profile_Data.Last_Daily_Reward_Claim = World:get(Player_Entity, Components.Last_Daily_Reward_Claim)
         Profile_Data.Claimed_Daily_Rewards = World:get(Player_Entity, Components.Claimed_Daily_Rewards)
+        Profile_Data.Tutorial_Step = World:get(Player_Entity, Components.Tutorial_Step)
 
         local Serialized_Brainrots: { [number]: Types.Serialized_Brainrot } = {}
 

@@ -28,6 +28,7 @@ local Components: {
     Daily_Reward_Id: Types.Id<number>,
     Last_Daily_Reward_Claim: Types.Id<number>,
     Claimed_Daily_Rewards: Types.Id<{ string }>,
+    Tutorial_Step: Types.Id<number>,
 
     Plot_Model: Types.Id<Model>,
 
@@ -97,6 +98,7 @@ local Components: {
         Daily_Reward_Id = World:component(),
         Last_Daily_Reward_Claim = World:component(),
         Claimed_Daily_Rewards = World:component(),
+        Tutorial_Step = World:component(),
 
         Plot_Model = World:component(),
 

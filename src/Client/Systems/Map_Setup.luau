@@ -33,8 +33,7 @@ local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Pr
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Proximity = require(ReplicatedStorage.Common.Modules.Proximity)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
-local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
-local Util = require(ReplicatedStorage.Common.Modules.Util)
+local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 
@@ -152,6 +151,17 @@ local function Setup_Shops(Local_Player: Player)
             end
 
             if Peek(Fusion_Values.Screen) == Inst.Name then
+                return
+            end
+
+            if
+                not (Peek(Fusion_Values.Tutorial_Step) >= #Tutorial_Steps)
+                and (Peek(Fusion_Values.Tutorial_Step) ~= 4 or Inst.Name ~= "Pickaxes")
+            then
+                local Entity = World:entity()
+                World:set(Entity, Components.Text, "Complete the tutorial first")
+                World:set(Entity, Components.NotificationType, "Error")
+                World:add(Entity, Components.Tags.Notification)
                 return
             end
 

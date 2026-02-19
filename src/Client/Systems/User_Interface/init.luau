@@ -17,6 +17,7 @@ local CashChange = UISounds:WaitForChild("CashChange") :: Sound
 local Activate = UISounds:WaitForChild("Activate") :: Sound
 local Hover = UISounds:WaitForChild("Hover") :: Sound
 local Frame_Open = UISounds:WaitForChild("Frame_Open") :: Sound
+local TypeWriter = UISounds:WaitForChild("TypeWriter") :: Sound
 
 local Network = require(ReplicatedFirst.Network)
 
@@ -54,6 +55,7 @@ local Rarities = require(ReplicatedStorage.Common.Modules.Rarities)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 local Secondary_Mutations_Config = require(ReplicatedStorage.Common.Modules.Secondary_Mutations)
+local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
 local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
@@ -76,6 +78,17 @@ local CLAIMED_DAILY_REWARD_ID = "rbxassetid://80526863525449"
 local Scope = Fusion.scoped(Fusion)
 
 local DeviceType = require(script.Components.DeviceType)(Scope)
+
+local Tutorial_Completed_Computed = Scope:Computed(function(Use)
+    local Tutorial_Step = Use(Fusion_Values.Tutorial_Step)
+    local Total_Steps = #Tutorial_Steps
+
+    return Tutorial_Step >= Total_Steps
+end)
+
+local Tutorial_Text_Computed = Scope:Computed(function(Use)
+    return Tutorial_Steps[Use(Fusion_Values.Tutorial_Step)]
+end)
 
 local ActivateHaptic = Instance.new("HapticEffect")
 ActivateHaptic.Position = Vector3.new(0, 0, 0)
@@ -282,25 +295,40 @@ local function Setup_HUD_Visibility(PlayerGui: PlayerGui)
     local Left = Main:WaitForChild("Left") :: Frame
     local Offers = Main:WaitForChild("Offers") :: Frame
     local Plot_Income_Per_Sec = Main:WaitForChild("Plot_Income_Per_Sec") :: Frame
+    local Tutorial = Main:WaitForChild("Tutorial") :: ImageLabel
 
     local Visible_Computed = Scope:Computed(function(Use)
         return Use(Fusion_Values.Screen) == "HUD"
     end)
 
     Scope:Hydrate(Top)({
-        Visible = Visible_Computed,
+        Visible = Scope:Computed(function(Use)
+            return (Use(Visible_Computed) and Use(Fusion_Values.Tutorial_Step) >= 4)
+        end),
     })
 
     Scope:Hydrate(Left)({
-        Visible = Visible_Computed,
+        Visible = Scope:Computed(function(Use)
+            return (Use(Visible_Computed) and Use(Tutorial_Completed_Computed))
+        end),
     })
 
     Scope:Hydrate(Offers)({
-        Visible = Visible_Computed,
+        Visible = Scope:Computed(function(Use)
+            return (Use(Visible_Computed) and Use(Tutorial_Completed_Computed))
+        end),
     })
 
     Scope:Hydrate(Plot_Income_Per_Sec)({
-        Visible = Visible_Computed,
+        Visible = Scope:Computed(function(Use)
+            return (Use(Visible_Computed) and Use(Tutorial_Text_Computed) == nil)
+        end),
+    })
+
+    Scope:Hydrate(Tutorial)({
+        Visible = Scope:Computed(function(Use)
+            return (Use(Visible_Computed) and Use(Tutorial_Text_Computed) ~= nil)
+        end),
     })
 end
 
@@ -334,6 +362,35 @@ local function Setup_HUD_Top_Buttons(LocalEntity: Types.Entity, PlayerGui: Playe
         local Sell_Spawn = Map:WaitForChild("Shops"):WaitForChild("Sell_Spawn") :: Part
 
         Teleport_Character(Sell_Spawn.CFrame)
+    end)
+
+    local Shop_Arrow = Shops:WaitForChild("Arrow")
+
+    local Shop_Arrow_Start_Position = UDim2.fromScale(0.5, 1.684)
+    local Shop_Arrow_End_Position = UDim2.fromScale(0.5, 1.435)
+
+    local Shop_Arrow_Tween_Info = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+
+    local Shop_Arrow_Position = Scope:Value(Shop_Arrow_Start_Position)
+    local Shop_Arrow_Position_Tween = Scope:Tween(Shop_Arrow_Position, Shop_Arrow_Tween_Info)
+
+    Scope:Hydrate(Shop_Arrow)({
+        Position = Shop_Arrow_Position_Tween,
+        Visible = Scope:Computed(function(Use)
+            return Use(Fusion_Values.Tutorial_Step) == 4
+        end),
+    })
+
+    Clock(0.5, function()
+        if Peek(Fusion_Values.Tutorial_Step) ~= 4 then
+            return
+        end
+
+        if Peek(Shop_Arrow_Position) == Shop_Arrow_Start_Position then
+            Shop_Arrow_Position:set(Shop_Arrow_End_Position)
+        else
+            Shop_Arrow_Position:set(Shop_Arrow_Start_Position)
+        end
     end)
 end
 
@@ -610,6 +667,66 @@ local function Setup_HUD_Plot_Income_Per_Sec(PlayerGui: PlayerGui)
     })
 end
 
+local function Setup_HUD_Tutorial(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Tutorial = Main:WaitForChild("Tutorial") :: ImageLabel
+
+    local Text_Value = Scope:Value(nil)
+
+    local Type_Writer_Task: thread?
+
+    Scope:Observer(Tutorial_Text_Computed):onChange(function()
+        local Tutorial_Text = Peek(Tutorial_Text_Computed)
+
+        if Type_Writer_Task then
+            task.cancel(Type_Writer_Task)
+        end
+
+        if not Tutorial_Text then
+            Text_Value:set(nil)
+            return
+        end
+
+        if Peek(Fusion_Values.Tutorial_Step) == #Tutorial_Steps then
+            local Plot_Model = World:get(LocalEntity, Components.Plot_Model)
+
+            if not Plot_Model then
+                return
+            end
+
+            local Spawn = Plot_Model:WaitForChild("Spawn") :: Part
+
+            Teleport_Character(Spawn.CFrame)
+        end
+
+        Type_Writer_Task = task.spawn(function()
+            for i = 1, #Tutorial_Text do
+                Text_Value:set(string.sub(Tutorial_Text, 1, i))
+
+                TypeWriter:Play()
+
+                task.wait(0.05)
+            end
+        end)
+    end)
+
+    Scope:Hydrate(Tutorial)({
+        Position = Scope:Computed(function(Use)
+            if Use(DeviceType) ~= "Mobile" then
+                return UDim2.fromScale(0.5, 0.85)
+            else
+                return UDim2.fromScale(0.5, 0.75)
+            end
+        end),
+    })
+
+    Scope:Hydrate(Tutorial:WaitForChild("Title"))({
+        Text = Scope:Computed(function(Use)
+            return Use(Text_Value) or ""
+        end),
+    })
+end
+
 local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_HUD_Visibility(PlayerGui)
 
@@ -624,6 +741,8 @@ local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_HUD_Right_Corner(LocalEntity, PlayerGui)
 
     Setup_HUD_Plot_Income_Per_Sec(PlayerGui)
+
+    Setup_HUD_Tutorial(LocalEntity, PlayerGui)
 end
 
 local function Setup_Robux_Shop_Visibility(PlayerGui: PlayerGui)
@@ -1212,11 +1331,19 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
                     return true
                 end
 
+                if not Use(Tutorial_Completed_Computed) and Name ~= "Stone" then
+                    return false
+                end
+
                 return Use(Has_Rebirth_Required_Computed)
             end),
             Interactable = Scope:Computed(function(Use)
                 if Use(Owned_Computed) == true then
                     return true
+                end
+
+                if not Use(Tutorial_Completed_Computed) and Name ~= "Stone" then
+                    return false
                 end
 
                 return Use(Has_Rebirth_Required_Computed)
@@ -1329,11 +1456,57 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
                     return false
                 end
 
+                if not Use(Tutorial_Completed_Computed) and Name ~= "Stone" then
+                    return true
+                end
+
                 return not Use(Has_Rebirth_Required_Computed)
             end),
         })
 
-        Rebirth_Requirement_Title.Text = `Requires Rebirth {Data.Rebirth}`
+        Scope:Hydrate(Rebirth_Requirement_Title)({
+            Text = Scope:Computed(function(Use)
+                if not Use(Tutorial_Completed_Computed) and Name ~= "Stone" then
+                    return "Comple the tutorial"
+                end
+
+                return `Requires Rebirth {Data.Rebirth}`
+            end),
+        })
+
+        local Tutorial_Arrow = ImageLabel:WaitForChild("Tutorial_Arrow")
+
+        if Name ~= "Stone" then
+            Tutorial_Arrow:Destroy()
+            continue
+        end
+
+        local Tutorial_Arrow_Start_Position = UDim2.fromScale(0.682, 0.709)
+        local Tutorial_Arrow_End_Position = UDim2.fromScale(0.71, 0.709)
+
+        local Tutorial_Arrow_Tween_Info = TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+
+        local Tutorial_Arrow_Position = Scope:Value(Tutorial_Arrow_Start_Position)
+        local Tutorial_Arrow_Position_Tween = Scope:Tween(Tutorial_Arrow_Position, Tutorial_Arrow_Tween_Info)
+
+        Scope:Hydrate(Tutorial_Arrow)({
+            Position = Tutorial_Arrow_Position_Tween,
+            Visible = Scope:Computed(function(Use)
+                return Use(Fusion_Values.Tutorial_Step) == 4
+            end),
+        })
+
+        Clock(0.5, function()
+            if Peek(Fusion_Values.Tutorial_Step) ~= 4 then
+                return
+            end
+
+            if Peek(Tutorial_Arrow_Position) == Tutorial_Arrow_Start_Position then
+                Tutorial_Arrow_Position:set(Tutorial_Arrow_End_Position)
+            else
+                Tutorial_Arrow_Position:set(Tutorial_Arrow_Start_Position)
+            end
+        end)
     end
 
     Template.Visible = false
@@ -1932,9 +2105,17 @@ local function Setup_Topbar_Daily_Rewards()
 
         Toggle_Screen("DailyRewards")
     end)
+
+    Scope:Observer(Tutorial_Completed_Computed):onBind(function()
+        if Peek(Tutorial_Completed_Computed) == true then
+            Icon:setEnabled(true)
+        else
+            Icon:setEnabled(false)
+        end
+    end)
 end
 
-local function Setup_Topbar_Playtime_Rewards()
+--[[local function Setup_Topbar_Playtime_Rewards()
     local Icon = TopbarPlus.new()
         :setImage("rbxassetid://87992968703996")
         :setImageScale(0.8)
@@ -1957,7 +2138,7 @@ local function Setup_Topbar_Playtime_Rewards()
 
         Toggle_Screen("PlaytimeRewards")
     end)
-end
+end]]
 
 local function Setup_Topbar()
     TopbarPlus.modifyBaseTheme(require(script.Icon_Themes.Default))

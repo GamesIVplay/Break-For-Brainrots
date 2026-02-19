@@ -25,6 +25,7 @@ export type ProfileData = {
     Daily_Reward_Id: number,
     Last_Daily_Reward_Claim: number,
     Claimed_Daily_Rewards: { string },
+    Tutorial_Step: number,
 }
 
 local ProfileStore = require(ReplicatedStorage.Packages.ProfileStore)
@@ -50,6 +51,7 @@ local PLAYER_DATA_TEMPLATE: ProfileData = {
     Daily_Reward_Id = Config.DAILY_REWARD_ID,
     Last_Daily_Reward_Claim = 0,
     Claimed_Daily_Rewards = {},
+    Tutorial_Step = 1,
 }
 
 local PlayerProfileStore = ProfileStore.New(not _G.IN_DEV and "Main" or "Dev", PLAYER_DATA_TEMPLATE)

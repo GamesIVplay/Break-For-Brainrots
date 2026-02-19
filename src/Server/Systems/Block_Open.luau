@@ -39,6 +39,7 @@ local function Open_Blocks()
         end
 
         local Player = World:get(Player_Entity, Components.Player)
+        local Tutorial_Step = World:get(Player_Entity, Components.Tutorial_Step)
         local Gamepasses = World:get(Player_Entity, Components.Gamepasses)
         local Opens = World:get(Player_Entity, Components.Opens)
         local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
@@ -70,9 +71,17 @@ local function Open_Blocks()
             },
         })
 
+        if Tutorial_Step == 1 then
+            World:set(Player_Entity, Components.Tutorial_Step, 2)
+        end
+
         task.delay(3.8, function()
             if not World:contains(Block_Entity) or not World:contains(Player_Entity) then
                 return
+            end
+
+            if Tutorial_Step == 1 then
+                World:set(Player_Entity, Components.Tutorial_Step, 3)
             end
 
             local Plot_Model = World:get(Plot_Entity, Components.Renderable) :: Model
