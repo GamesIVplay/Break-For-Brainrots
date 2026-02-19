@@ -17,6 +17,7 @@ local World = require(ReplicatedStorage.Common.World)
 local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
 local Calculate_Sell_Price = require(ReplicatedStorage.Common.Modules.Calculate_Sell_Price)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
+local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local function Normalize_Secondary(List: { string }): string
@@ -43,6 +44,18 @@ local function Handle_Sell_Requests()
         local Player_Entity = Registry.Get("Players", Player)
 
         if not Player_Entity then
+            continue
+        end
+
+        local Tutorial_Step = World:get(Player_Entity, Components.Tutorial_Step)
+
+        if not Tutorial_Step then
+            continue
+        end
+
+        if Tutorial_Step < #Tutorial_Steps then
+            Network.Notification.Fire(Player, { Text = "Complete the tutorial first", Type = "Error" })
+
             continue
         end
 

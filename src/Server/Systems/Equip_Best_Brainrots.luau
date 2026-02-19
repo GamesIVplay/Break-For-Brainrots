@@ -17,6 +17,7 @@ local World = require(ReplicatedStorage.Common.World)
 local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
 local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
+local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local function Handle_Equip_Best_Brainrots_Requests()
     for _, Player: Player in Network.Requests.Equip_Best_Brainrots.Iter() do
@@ -26,6 +27,12 @@ local function Handle_Equip_Best_Brainrots_Requests()
 
         local Player_Entity = Registry.Get("Players", Player)
         if not Player_Entity then
+            continue
+        end
+
+        local Player_Cash = World:get(Player_Entity, Components.Cash)
+
+        if not Player_Cash then
             continue
         end
 
@@ -56,6 +63,8 @@ local function Handle_Equip_Best_Brainrots_Requests()
 
         local Stands = Plot_Model:FindFirstChild("Stands")
 
+        local Gained_Cash = 0
+
         for
             Brainrot_Entity,
             Brainrot_Name: string,
@@ -85,14 +94,19 @@ local function Handle_Equip_Best_Brainrots_Requests()
                 Primary_Mutation = Primary_Mutation,
                 Secondary_Mutations = Secondary_Mutations,
                 Weight = Weight,
-                Cash = Cash,
-                Offline_Cash = Offline_Cash,
+                Cash = 0,
+                Offline_Cash = 0,
             }
+
+            Gained_Cash += Cash
+            Gained_Cash += Offline_Cash
 
             Brainrot_Inventory[Slot] = Brainrot_Item
 
             World:delete(Brainrot_Entity)
         end
+
+        World:set(Player_Entity, Components.Cash, Player_Cash + Gained_Cash)
 
         local Sorted_By_Income = {}
 
@@ -153,6 +167,11 @@ local function Handle_Equip_Best_Brainrots_Requests()
                 break
             end
         end
+
+        Network.Notification.Fire(Player, {
+            Text = `Equipped best and Collected ${Util.Abbreviate_Number(Gained_Cash, 2)}`,
+            Type = "Success",
+        })
     end
 end
 

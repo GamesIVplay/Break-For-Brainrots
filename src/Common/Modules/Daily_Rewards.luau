@@ -16,8 +16,8 @@ local Daily_Rewards: {
         },
         [2] = {
             Type = "Brainrot",
-            Image = "rbxassetid://95042058688319",
-            Name = "Chef Crabracadabra",
+            Image = "rbxassetid://138322655283019",
+            Name = "Los Tralaleritos",
         },
         [3] = {
             Type = "Cash",
@@ -39,8 +39,8 @@ local Daily_Rewards: {
         },
         [7] = {
             Type = "Brainrot",
-            Image = "rbxassetid://102764460131471",
-            Name = "Strawberrelli Flamingelli",
+            Image = "rbxassetid://86636033880234",
+            Name = "Six Seven",
         },
     },
 }

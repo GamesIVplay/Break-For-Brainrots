@@ -73,7 +73,7 @@ local Brainrots: { [string]: Brainrot } = {
     -- Secret (2,600 → 3,400)
     ["Pakrahmatmatina"] = { Rarity = "Secret", IncomePerSec = 2_600 },
     ["Espresso Signora"] = { Rarity = "Secret", IncomePerSec = 2_680 },
-    ["Los Tralaleritos"] = { Rarity = "Secret", IncomePerSec = 2_760 },
+    ["Los Tralaleritos"] = { Rarity = "Secret", IncomePerSec = 400 },
     ["Karkerkar Kurkur"] = { Rarity = "Secret", IncomePerSec = 2_840 },
     ["Six Seven"] = { Rarity = "Secret", IncomePerSec = 2_920 },
     ["Agarrini La Pallini"] = { Rarity = "Secret", IncomePerSec = 3_000 },

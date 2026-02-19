@@ -295,7 +295,7 @@ local function Setup_HUD_Visibility(PlayerGui: PlayerGui)
     local Left = Main:WaitForChild("Left") :: Frame
     local Offers = Main:WaitForChild("Offers") :: Frame
     local Plot_Income_Per_Sec = Main:WaitForChild("Plot_Income_Per_Sec") :: Frame
-    local Tutorial = Main:WaitForChild("Tutorial") :: ImageLabel
+    local Tutorial = PlayerGui:WaitForChild("Visuals"):WaitForChild("Tutorial") :: ImageLabel
 
     local Visible_Computed = Scope:Computed(function(Use)
         return Use(Fusion_Values.Screen) == "HUD"
@@ -668,26 +668,21 @@ local function Setup_HUD_Plot_Income_Per_Sec(PlayerGui: PlayerGui)
 end
 
 local function Setup_HUD_Tutorial(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
-    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
-    local Tutorial = Main:WaitForChild("Tutorial") :: ImageLabel
+    local Tutorial = PlayerGui:WaitForChild("Visuals"):WaitForChild("Tutorial") :: ImageLabel
 
     local Text_Value = Scope:Value(nil)
 
     local Type_Writer_Task: thread?
 
-    Scope:Observer(Tutorial_Text_Computed):onChange(function()
+    Scope:Observer(Fusion_Values.Tutorial_Step):onChange(function()
+        local Tutorial_Step = Peek(Fusion_Values.Tutorial_Step)
         local Tutorial_Text = Peek(Tutorial_Text_Computed)
 
         if Type_Writer_Task then
             task.cancel(Type_Writer_Task)
         end
 
-        if not Tutorial_Text then
-            Text_Value:set(nil)
-            return
-        end
-
-        if Peek(Fusion_Values.Tutorial_Step) == #Tutorial_Steps then
+        if Tutorial_Step == #Tutorial_Steps then
             local Plot_Model = World:get(LocalEntity, Components.Plot_Model)
 
             if not Plot_Model then
@@ -697,6 +692,17 @@ local function Setup_HUD_Tutorial(LocalEntity: Types.Entity, PlayerGui: PlayerGu
             local Spawn = Plot_Model:WaitForChild("Spawn") :: Part
 
             Teleport_Character(Spawn.CFrame)
+        elseif Tutorial_Step == 1 then
+            Fusion_Values.Screen:set("HUD")
+        end
+
+        if Tutorial_Step > #Tutorial_Steps then
+            Fusion_Values.Screen:set("DailyRewards")
+        end
+
+        if not Tutorial_Text then
+            Text_Value:set(nil)
+            return
         end
 
         Type_Writer_Task = task.spawn(function()

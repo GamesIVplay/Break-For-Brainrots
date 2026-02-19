@@ -14,48 +14,6 @@ local World = require(ReplicatedStorage.Common.World)
 
 local Darkener = require(ReplicatedFirst.Client.Modules.ScreenDarkener).New(5)
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
-local Get_Target_Block = require(ReplicatedFirst.Client.Modules.Get_Target_Block)
-
---[[local function Setup_Tutorial_Darkener(LocalEntity: Types.Entity)
-    local Darkener = ScreenDarkener.New(0, 8)
-    Darkener:Activate()
-
-    RunService.RenderStepped:Connect(function()
-        local Plot_Model = World:get(LocalEntity, Components.Plot_Model)
-
-        if not Plot_Model then
-            return
-        end
-
-        local Target_Block: Model?
-
-        for _, Model in CollectionService:GetTagged(Plot_Model.Name .. "_Block") do
-            Target_Block = Model
-            break
-        end
-
-        local Tutorial_Step = Peek(Fusion_Values.Tutorial_Step)
-
-        if Tutorial_Step == 1 and Target_Block then
-            -- Darkener:Set(Target_Block.PrimaryPart, 500)
-
-            print(1)
-        elseif Tutorial_Step == 3 and Plot_Model then
-            local Stands = Plot_Model:FindFirstChild("Stands")
-            local Stand_One = Stands:FindFirstChild("1")
-            local Touch = Stand_One:FindFirstChild("Touch")
-
-            Darkener:Set(Touch, 200)
-
-            print(2)
-        elseif Tutorial_Step == 4 then
-            Darkener:Set(workspace.Map.Shops.Pickaxes.Touch, 300)
-            print(3)
-        elseif Tutorial_Step >= #Tutorial_Steps then
-            Darkener:Deactivate()
-        end
-    end)
-end]]
 
 local function Update_Darkener()
     local Local_Entity = Registry.Get("Players", "Local")

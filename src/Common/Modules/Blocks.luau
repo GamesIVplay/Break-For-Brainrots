@@ -7,16 +7,22 @@ local Brainrots = require(ReplicatedStorage.Common.Modules.Brainrots)
 
 local Types = require(ReplicatedStorage.Common.Types)
 
-local function New_Rarity_Brainrot_Roll(Rarity: Types.Rarity)
+local function New_Rarity_Brainrot_Roll(Rarity: Types.Rarity, Exclusions: { string }?, Additions: { string }?)
     local Choices = {}
+
     for Name, Data in Brainrots do
-        if Data.Rarity == Rarity then
-            table.insert(Choices, Name)
+        local IsExcluded = Exclusions and table.find(Exclusions, Name)
+        local IsAdded = Additions and table.find(Additions, Name)
+
+        if not IsExcluded then
+            if Data.Rarity == Rarity or IsAdded then
+                table.insert(Choices, Name)
+            end
         end
     end
 
     return function()
-        return Choices[math.random(1, #Choices)]
+        return Choices[math.random(#Choices)]
     end
 end
 
@@ -115,7 +121,7 @@ local Blocks: { [string]: Block } = {
         Developer_Product = 3524816292,
         Model = Block_Models:WaitForChild("Secret"),
         Floats = true,
-        Roll_Brainrot = New_Rarity_Brainrot_Roll("Secret"),
+        Roll_Brainrot = New_Rarity_Brainrot_Roll("Secret", { "Los Tralaleritos" }),
     },
 }
 

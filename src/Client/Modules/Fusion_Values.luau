@@ -20,5 +20,5 @@ return table.freeze({
     Last_Daily_Reward_Claim = Scope:Value(0),
     Claimed_Daily_Rewards = Scope:Value({}),
     Plot_Income_Per_Sec = Scope:Value(0),
-    Tutorial_Step = Scope:Value(6),
+    Tutorial_Step = Scope:Value(0),
 })
