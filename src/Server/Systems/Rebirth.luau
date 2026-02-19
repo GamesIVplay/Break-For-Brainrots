@@ -1,3 +1,4 @@
+local AnalyticsService = game:GetService("AnalyticsService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -97,6 +98,14 @@ local function Handle_Rebirth_Requests()
             Text = "You successfully rebirthed!",
             Type = "Success",
         })
+
+        AnalyticsService:LogFunnelStepEvent(
+            Player,
+            "Rebirth",
+            tostring(Player.UserId),
+            Rebirth + 1,
+            `Rebirth {Rebirth + 1}`
+        )
     end
 end
 

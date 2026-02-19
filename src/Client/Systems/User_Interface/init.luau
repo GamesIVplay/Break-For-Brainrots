@@ -674,6 +674,8 @@ local function Setup_HUD_Tutorial(LocalEntity: Types.Entity, PlayerGui: PlayerGu
 
     local Type_Writer_Task: thread?
 
+    local Daily_Opened = false
+
     Scope:Observer(Fusion_Values.Tutorial_Step):onChange(function()
         local Tutorial_Step = Peek(Fusion_Values.Tutorial_Step)
         local Tutorial_Text = Peek(Tutorial_Text_Computed)
@@ -696,8 +698,10 @@ local function Setup_HUD_Tutorial(LocalEntity: Types.Entity, PlayerGui: PlayerGu
             Fusion_Values.Screen:set("HUD")
         end
 
-        if Tutorial_Step > #Tutorial_Steps then
+        if Tutorial_Step >= #Tutorial_Steps and not Daily_Opened then
             Fusion_Values.Screen:set("DailyRewards")
+
+            Daily_Opened = true
         end
 
         if not Tutorial_Text then
@@ -1853,7 +1857,9 @@ local function Setup_Daily_Rewards_Content(PlayerGui: PlayerGui)
             local Formatted_Name = not Data.Primary_Mutation and Data.Name or `{Data.Primary_Mutation} {Data.Name}`
             Title.Text = Formatted_Name
 
-            UIGradients:WaitForChild(Brainrot_Rarity):Clone().Parent = Title
+            if Index ~= 7 then
+                UIGradients:WaitForChild(Brainrot_Rarity):Clone().Parent = Title
+            end
 
             Image.Image = Data.Image
 

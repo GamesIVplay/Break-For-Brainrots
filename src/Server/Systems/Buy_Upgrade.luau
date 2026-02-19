@@ -1,3 +1,4 @@
+local AnalyticsService = game:GetService("AnalyticsService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -76,6 +77,14 @@ local function Handle_Upgrade_Purchase_Requests()
         })
 
         Network.VFX.Buy.FireAll(Character)
+
+        AnalyticsService:LogFunnelStepEvent(
+            Player,
+            Upgrade_Name,
+            tostring(Player.UserId),
+            Upgrades[Upgrade_Name],
+            `Level {Upgrades[Upgrade_Name]}`
+        )
     end
 end
 

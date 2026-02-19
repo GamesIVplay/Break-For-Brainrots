@@ -15,27 +15,26 @@ return function(Luck: number, Excluded: { string }): (string, Blocks.Block)
     local TotalWeight = 0
 
     for Name, Block in Blocks do
-        if Excluded and table.find(Excluded, Name) then
-            continue
+        local Weight = 0
+        local RarityToUse = Block.Rarity
+
+        if not (Excluded and table.find(Excluded, Name)) then
+            Weight = Block.Chance
+            -- Apply Luck multiplier per rarity
+            if RarityToUse == "Rare" then
+                Weight *= 1 + 0.25 * math.sqrt(Luck)
+            elseif RarityToUse == "Epic" then
+                Weight *= 1 + 0.375 * math.sqrt(Luck)
+            elseif RarityToUse == "Legendary" then
+                Weight *= 1 + 0.5 * math.sqrt(Luck)
+            elseif RarityToUse == "Mythical" then
+                Weight *= 1 + 0.625 * math.sqrt(Luck)
+            elseif RarityToUse == "Secret" then
+                Weight *= 1 + 0.75 * math.sqrt(Luck)
+            end
+
+            Weight = math.min(Weight, Max_Weight_Per_Rarity[RarityToUse])
         end
-
-        local Weight = Block.Chance
-        local RarityMultiplier = 1
-
-        if Block.Rarity == "Rare" then
-            RarityMultiplier = 1 + 0.25 * math.sqrt(Luck)
-        elseif Block.Rarity == "Epic" then
-            RarityMultiplier = 1 + 0.375 * math.sqrt(Luck)
-        elseif Block.Rarity == "Legendary" then
-            RarityMultiplier = 1 + 0.5 * math.sqrt(Luck)
-        elseif Block.Rarity == "Mythical" then
-            RarityMultiplier = 1 + 0.625 * math.sqrt(Luck)
-        elseif Block.Rarity == "Secret" then
-            RarityMultiplier = 1 + 0.75 * math.sqrt(Luck)
-        end
-
-        Weight *= RarityMultiplier
-        Weight = math.min(Weight, Max_Weight_Per_Rarity[Block.Rarity])
 
         table.insert(WeightedBlocks, { Name = Name, Weight = Weight })
         TotalWeight += Weight

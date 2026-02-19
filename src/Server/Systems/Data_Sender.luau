@@ -1,3 +1,4 @@
+local AnalyticsService = game:GetService("AnalyticsService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -18,6 +19,7 @@ local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capa
 local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
+local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update_Brainrot_Overhead)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
@@ -481,6 +483,12 @@ local function Replicate_Tutorial_Step(Player: Player, Entity: Types.Entity)
     local Previous_Tutorial_Step = World:get(Entity, Pair(Components.Relationships.Previous, Components.Tutorial_Step))
 
     if Tutorial_Step ~= Previous_Tutorial_Step then
+        local Step_Text = Tutorial_Steps[Tutorial_Step]
+
+        if Step_Text then
+            AnalyticsService:LogOnboardingFunnelStepEvent(Player, Tutorial_Step + 1, Step_Text)
+        end
+
         Network.DataChanged.Tutorial_Step.Fire(Player, Tutorial_Step)
 
         World:set(Entity, Pair(Components.Relationships.Previous, Components.Tutorial_Step), Tutorial_Step)

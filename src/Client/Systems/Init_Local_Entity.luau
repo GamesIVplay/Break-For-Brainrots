@@ -36,7 +36,10 @@ return {
         World:set(Local_Entity, Components.Gamepasses, {})
         World:set(Local_Entity, Components.Stock, {})
         World:set(Local_Entity, Components.Last_Restock, 0)
-        World:set(Local_Entity, Components.Tutorial_Step, 6)
+        World:set(Local_Entity, Components.Rebirth, 0)
+        World:set(Local_Entity, Components.Tutorial_Step, 0)
+        World:set(Local_Entity, Components.Owned_Pickaxes, {})
+        World:set(Local_Entity, Components.Plot_Income_Per_Sec, 0)
 
         if Local_Player.Character then
             task.spawn(function()

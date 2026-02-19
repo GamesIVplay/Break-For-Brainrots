@@ -7,21 +7,52 @@ local Brainrots = require(ReplicatedStorage.Common.Modules.Brainrots)
 
 local Types = require(ReplicatedStorage.Common.Types)
 
+local RarityOrder = {
+    "Common",
+    "Rare",
+    "Epic",
+    "Legendary",
+    "Mythical",
+    "Secret",
+}
+
+local function GetLowerRarity(Rarity)
+    local Index = table.find(RarityOrder, Rarity)
+
+    if not Index or Index == 1 then
+        return Rarity
+    end
+
+    return RarityOrder[Index - 1]
+end
+
+local DowngradeChance = {
+    Rare = 0.05,
+    Epic = 0.10,
+    Legendary = 0.15,
+    Mythical = 0.20,
+    Secret = 0.30,
+}
+
 local function New_Rarity_Brainrot_Roll(Rarity: Types.Rarity, Exclusions: { string }?, Additions: { string }?)
-    local Choices = {}
+    return function()
+        local RolledRarity = Rarity
 
-    for Name, Data in Brainrots do
-        local IsExcluded = Exclusions and table.find(Exclusions, Name)
-        local IsAdded = Additions and table.find(Additions, Name)
+        if DowngradeChance[RolledRarity] and math.random() <= DowngradeChance[RolledRarity] then
+            RolledRarity = GetLowerRarity(RolledRarity)
+        end
 
-        if not IsExcluded then
-            if Data.Rarity == Rarity or IsAdded then
+        local Choices = {}
+
+        for Name, Data in Brainrots do
+            local IsExcluded = Exclusions and table.find(Exclusions, Name)
+            local IsAdded = Additions and table.find(Additions, Name)
+
+            if not IsExcluded and (Data.Rarity == RolledRarity or IsAdded) then
                 table.insert(Choices, Name)
             end
         end
-    end
 
-    return function()
         return Choices[math.random(#Choices)]
     end
 end

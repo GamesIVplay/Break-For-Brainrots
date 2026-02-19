@@ -47,6 +47,7 @@ Start({
     require(Systems.Event),
     require(Systems.Music),
     require(Systems.Tutorial),
+    require(Systems.Action_Notifier),
 })
 
 require(game:GetService("ReplicatedFirst").Network).ClientLoaded.Fire()

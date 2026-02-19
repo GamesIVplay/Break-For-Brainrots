@@ -362,8 +362,10 @@ local function Handle_Claimed_Daily_Rewards_Changes(Local_Entity: Types.Entity)
     end
 end
 
-local function Handle_Plot_Income_Per_Sec_Changes()
+local function Handle_Plot_Income_Per_Sec_Changes(Local_Entity: Types.Entity)
     for _, Data in Network.DataChanged.Plot_Income_Per_Sec.Iter() do
+        World:set(Local_Entity, Components.Plot_Income_Per_Sec, Data)
+
         Fusion_Values.Plot_Income_Per_Sec:set(Data)
     end
 end
@@ -440,7 +442,7 @@ return {
 
         Handle_Claimed_Daily_Rewards_Changes(Local_Entity)
 
-        Handle_Plot_Income_Per_Sec_Changes()
+        Handle_Plot_Income_Per_Sec_Changes(Local_Entity)
 
         Handle_Tutorial_Step_Changes(Local_Entity)
 

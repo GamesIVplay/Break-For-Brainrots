@@ -38,10 +38,7 @@ local function Spawn_Blocks()
         elseif Opens == 2 then
             Block_Name = "Rare"
             Block_Data = Blocks["Rare"]
-        elseif Opens == 6 then
-            Block_Name = "Epic"
-            Block_Data = Blocks["Epic"]
-        elseif #Block_Queue > 0 then
+        elseif #Block_Queue > 0 and Opens > 9 then
             Block_Name, Block_Data = Block_Queue[1], Blocks[Block_Queue[1]]
 
             table.remove(Block_Queue, 1)
@@ -51,7 +48,7 @@ local function Spawn_Blocks()
                 Type = "Info",
             })
         else
-            local Excluded = Opens <= 9 and { "Mythical", "Secret" } or {}
+            local Excluded = Opens <= 9 and { "Legendary", "Mythical", "Secret" } or {}
 
             Block_Name, Block_Data = Roll_Block(Luck, Excluded)
         end
