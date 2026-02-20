@@ -88,5 +88,8 @@ return function(
         Sell_Price = Sell_Price,
     })
 
+    Brainrot_Model:SetAttribute("Owner", Player.UserId)
+    Brainrot_Model:AddTag("Pending_VFX_Removal")
+
     return Brainrot_Entity, Brainrot_Model
 end
