@@ -66,7 +66,7 @@ local function Handle_Claim_Daily_Reward_Requests()
         end
 
         local Elapsed = os.time() - Last_Daily_Reward_Claim
-        if Elapsed < 86_400 then
+        if Elapsed < (86_400 / 2) then
             Network.Notification.Fire(Player, {
                 Text = "You can't claim this yet",
                 Type = "Error",

@@ -92,8 +92,6 @@ local function Handle_New_Player(Player: Player)
 
         if not Current_Upgrades[Name] then
             Current_Upgrades[Name] = 1
-
-            AnalyticsService:LogFunnelStepEvent(Player, Name, tostring(Player.UserId), 1, `Level 1`)
         end
 
         local Max_Level = #Data.Levels
@@ -267,7 +265,6 @@ return {
     system = function()
         for _, Player: Player in Network.ClientLoaded.Iter() do
             AnalyticsService:LogOnboardingFunnelStepEvent(Player, 1, "Player Joined")
-            AnalyticsService:LogFunnelStepEvent(Player, "Rebirth", tostring(Player.UserId), 1, `Rebirth 0`)
 
             task.spawn(Handle_New_Player, Player)
         end

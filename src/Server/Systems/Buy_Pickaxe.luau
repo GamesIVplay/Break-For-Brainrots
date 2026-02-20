@@ -1,3 +1,4 @@
+local AnalyticsService = game:GetService("AnalyticsService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -33,6 +34,12 @@ local function Handle_Pickaxe_Purchase_Requests()
         local Current_Pickaxe = World:get(Player_Entity, Components.Pickaxe)
 
         if not Current_Pickaxe then
+            continue
+        end
+
+        local Upgrades = World:get(Player_Entity, Components.Upgrades)
+
+        if not Upgrades then
             continue
         end
 
@@ -80,6 +87,12 @@ local function Handle_Pickaxe_Purchase_Requests()
             if Pickaxe_Name ~= "Stone" then
                 continue
             end
+
+            for Name, Level in Upgrades do
+                AnalyticsService:LogFunnelStepEvent(Player, Name, tostring(Player.UserId), Level, `Level {Level}`)
+            end
+
+            AnalyticsService:LogFunnelStepEvent(Player, "Rebirth", tostring(Player.UserId), 1, `Rebirth 0`)
 
             World:set(Player_Entity, Components.Tutorial_Step, 5)
 

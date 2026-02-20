@@ -25,7 +25,7 @@ local Secondary_Mutations: { [string]: Secondary_Mutation } = {
         Required_Weather = "YinYang",
         Chance = 0.15,
         Cash_Multiplier = 1.5,
-        Image = "rbxassetid://135371654931726",
+        Image = "rbxassetid://138317915035795",
     },
     ["Hacker"] = {
         Required_Weather = "Hacker",

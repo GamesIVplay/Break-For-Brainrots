@@ -16,6 +16,7 @@ local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Player_Block_Queue_Query = World:query(Components.Player, Components.Block_Queue):cached()
 
+local Last_Event_Name: string? = nil
 local Started_Event = false
 
 local Next_Event: {
@@ -37,13 +38,19 @@ local function Choose_Next_Event()
         return
     end
 
+    local Chosen_Name
+    repeat
+        Chosen_Name = Event_Names[math.random(1, #Event_Names)]
+    until Chosen_Name ~= Last_Event_Name
+
     Next_Event = {
-        Name = Event_Names[math.random(1, #Event_Names)],
+        Name = Chosen_Name,
         Block_Name = Block_Names[math.random(1, #Block_Names)],
         Block_Amount = math.random(2, 3),
         Luck_Multiplier = math.random(2, 3),
     }
 end
+
 local function Update_Admin_Machine_Display()
     for _, Model: Model in CollectionService:GetTagged("Admin Machine") do
         local Event_Title = Model:FindFirstChild("Event_Title", true) :: TextLabel
@@ -83,6 +90,7 @@ local function Start_Event()
     end
 
     Started_Event = true
+    Last_Event_Name = Next_Event.Name
 
     Active_Events[Next_Event.Name] = {
         Start_Time = os.time(),

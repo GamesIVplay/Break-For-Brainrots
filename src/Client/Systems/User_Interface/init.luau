@@ -1869,7 +1869,7 @@ local function Setup_Daily_Rewards_Content(PlayerGui: PlayerGui)
         Clock(0.01, function()
             local Claimed_Daily_Rewards = Peek(Fusion_Values.Claimed_Daily_Rewards)
             local Elapsed = os.time() - Peek(Fusion_Values.Last_Daily_Reward_Claim)
-            local Remaining_Seconds = math.max(86_400 - Elapsed, 0)
+            local Remaining_Seconds = math.max((86_400 / 2) - Elapsed, 0)
             local T = Util.BreakdownTime(Remaining_Seconds)
 
             local NextIndex = #Claimed_Daily_Rewards + 1

@@ -17,8 +17,8 @@ type Event = {
 
 local Events: { [string]: Event } = {
     ["YinYang"] = {
-        Duration = 60 * 5,
-        Image = "rbxassetid://135371654931726",
+        Duration = 60 * 8,
+        Image = "rbxassetid://138317915035795",
         Lighting = Lightings:WaitForChild("YinYang"),
         VFX = Event_VFX:WaitForChild("YinYang"),
         Music = Music:WaitForChild("YinYang"):GetChildren(),
@@ -26,7 +26,7 @@ local Events: { [string]: Event } = {
         Water_Color = Color3.fromRGB(212, 212, 212),
     },
     ["Hacker"] = {
-        Duration = 60 * 5,
+        Duration = 60 * 8,
         Image = "rbxassetid://140099576560562",
         Lighting = Lightings:WaitForChild("Hacker"),
         VFX = Event_VFX:WaitForChild("Hacker"),
@@ -35,7 +35,7 @@ local Events: { [string]: Event } = {
         Water_Color = Color3.fromRGB(29, 29, 29),
     },
     ["Volcanic"] = {
-        Duration = 60 * 5,
+        Duration = 60 * 8,
         Image = "rbxassetid://112422836214373",
         Lighting = Lightings:WaitForChild("Volcanic"),
         VFX = Event_VFX:WaitForChild("Volcanic"),
@@ -44,7 +44,7 @@ local Events: { [string]: Event } = {
         Water_Color = Color3.fromRGB(212, 174, 58),
     },
     ["Candy"] = {
-        Duration = 60 * 5,
+        Duration = 60 * 8,
         Image = "rbxassetid://127536426524827",
         Lighting = Lightings:WaitForChild("Candy"),
         VFX = Event_VFX:WaitForChild("Candy"),
@@ -53,7 +53,7 @@ local Events: { [string]: Event } = {
         Water_Color = Color3.fromRGB(212, 150, 171),
     },
     ["Toxic"] = {
-        Duration = 60 * 5,
+        Duration = 60 * 8,
         Image = "rbxassetid://73251144399969",
         Lighting = Lightings:WaitForChild("Toxic"),
         VFX = Event_VFX:WaitForChild("Toxic"),

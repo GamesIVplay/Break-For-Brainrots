@@ -38,6 +38,12 @@ local function Open_Blocks()
             continue
         end
 
+        local Character = World:get(Player_Entity, Components.Renderable)
+
+        if not Character then
+            continue
+        end
+
         local Player = World:get(Player_Entity, Components.Player)
         local Tutorial_Step = World:get(Player_Entity, Components.Tutorial_Step)
         local Gamepasses = World:get(Player_Entity, Components.Gamepasses)
@@ -51,7 +57,7 @@ local function Open_Blocks()
         local Mutation_Luck = Calculate_Mutation_Luck(Player_Entity)
 
         local Rolled_Brainrot = Blocks[Block_Name].Roll_Brainrot()
-        local Rolled_Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck)
+        local Rolled_Primary_Mutation = Roll_Primary_Mutation(Tutorial_Step ~= 1 and Mutation_Luck or 300)
         local Rolled_Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck)
         local Rolled_Weight = Weight.Roll_Weight()
 
@@ -72,6 +78,8 @@ local function Open_Blocks()
         })
 
         if Tutorial_Step == 1 then
+            Network.VFX.Tutorial_Complete.FireAll(Character)
+
             World:set(Player_Entity, Components.Tutorial_Step, 2)
         end
 
