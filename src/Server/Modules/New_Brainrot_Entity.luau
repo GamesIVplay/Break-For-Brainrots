@@ -38,7 +38,6 @@ return function(
         Weight = Weight,
     })
 
-    Brainrot_Model:AddTag("Idle")
     Brainrot_Model.Parent = workspace:FindFirstChild("Brainrots")
 
     Brainrot_Model:PivotTo(Attachment.WorldCFrame * Offset * CFrame.new(Brainrot_Offset))

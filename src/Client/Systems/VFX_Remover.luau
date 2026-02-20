@@ -16,6 +16,7 @@ return {
 
         for _, Brainrot_Model in CollectionService:GetTagged("Pending_VFX_Removal") do
             if Brainrot_Model:GetAttribute("Owner") == Local_Player.UserId then
+                Brainrot_Model:AddTag("Idle")
                 Brainrot_Model:RemoveTag("Pending_VFX_Removal")
                 continue
             end
