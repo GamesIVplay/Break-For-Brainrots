@@ -103,7 +103,7 @@ local function Handle_Rebirth_Requests()
             Player,
             "Rebirth",
             tostring(Player.UserId),
-            Rebirth + 1,
+            Rebirth + 2,
             `Rebirth {Rebirth + 1}`
         )
     end

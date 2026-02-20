@@ -267,7 +267,7 @@ return {
     system = function()
         for _, Player: Player in Network.ClientLoaded.Iter() do
             AnalyticsService:LogOnboardingFunnelStepEvent(Player, 1, "Player Joined")
-            AnalyticsService:LogFunnelStepEvent(Player, "Rebirth", tostring(Player.UserId), 0, `Rebirth 0`)
+            AnalyticsService:LogFunnelStepEvent(Player, "Rebirth", tostring(Player.UserId), 1, `Rebirth 0`)
 
             task.spawn(Handle_New_Player, Player)
         end

@@ -188,7 +188,13 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
                         continue
                     end
 
-                    if (RootPart.Position - Block_Model.PrimaryPart.Position).Magnitude <= 12 then
+                    local PrimaryPart = Block_Model.PrimaryPart
+
+                    if not PrimaryPart then
+                        continue
+                    end
+
+                    if (RootPart.Position - PrimaryPart.Position).Magnitude <= 12 then
                         local Hit_Block_Entity = Block_Model:GetAttribute("ServerEntity")
 
                         Block_Hit(Block_Model)
