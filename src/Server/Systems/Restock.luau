@@ -27,7 +27,7 @@ return {
                 World:set(Player_Entity, Components.Last_Restock, os.time())
 
                 Network.Notification.Fire(Player, {
-                    Text = "The shop has been restocked!",
+                    Text = "The Blocks Shop has been restocked!",
                     Type = "Info",
                     Duration = 4,
                 })
