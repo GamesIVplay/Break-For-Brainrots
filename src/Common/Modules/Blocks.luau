@@ -28,10 +28,10 @@ end
 
 local DowngradeChance = {
     Rare = 0.05,
-    Epic = 0.10,
-    Legendary = 0.15,
-    Mythical = 0.20,
-    Secret = 0.30,
+    Epic = 0.15,
+    Legendary = 0.30,
+    Mythical = 0.40,
+    Secret = 0.40,
 }
 
 local function New_Rarity_Brainrot_Roll(Rarity: Types.Rarity, Exclusions: { string }?, Additions: { string }?)

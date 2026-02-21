@@ -4,10 +4,10 @@ local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
 local Max_Weight_Per_Rarity = {
     Common = 0.45,
     Rare = 0.4,
-    Epic = 0.3,
-    Legendary = 0.1,
-    Mythical = 0.08,
-    Secret = 0.05,
+    Epic = 0.15,
+    Legendary = 0.8,
+    Mythical = 0.04,
+    Secret = 0.02,
 }
 
 return function(Luck: number, Excluded: { string }): (string, Blocks.Block)
