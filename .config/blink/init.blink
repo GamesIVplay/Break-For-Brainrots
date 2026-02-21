@@ -128,6 +128,19 @@ scope VFX {
 		Poll: true,
         Data: Instance(Model) 
 	}
+
+	event Spawn_Debris {
+		From: Server,
+        Type: Reliable,
+        Call: SingleSync,
+		Poll: true,
+        Data: struct {
+			Position: vector,
+			Color: Color3,
+			Count: u8,
+			Use_Rainbow_Colors: boolean?
+		}
+	}
 }
 
 scope Requests {

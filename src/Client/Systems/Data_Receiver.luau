@@ -394,6 +394,12 @@ local function Handle_Tutorial_Completes()
     end
 end
 
+local function Handle_Spawn_Debris()
+    for _, Data in Network.VFX.Spawn_Debris.Iter() do
+        task.spawn(require(VFX.Spawn_Debris), Data.Position, Data.Color, Data.Count, Data.Use_Rainbow_Colors)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.First,
@@ -453,6 +459,8 @@ return {
         Handle_Tutorial_Step_Changes(Local_Entity)
 
         Handle_Tutorial_Completes()
+
+        Handle_Spawn_Debris()
     end,
     runConditions = {},
 }

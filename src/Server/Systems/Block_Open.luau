@@ -54,6 +54,13 @@ local function Open_Blocks()
 
         Block_Model.Parent = ReplicatedStorage:FindFirstChild("Temp")
 
+        Network.VFX.Spawn_Debris.FireAll({
+            Position = Block_Model.PrimaryPart.Position,
+            Color = Blocks[Block_Name].Part_Color,
+            Count = 6,
+            Use_Rainbow_Colors = Block_Name == "Mythical",
+        })
+
         local Mutation_Luck = Calculate_Mutation_Luck(Player_Entity)
 
         local Rolled_Brainrot = Blocks[Block_Name].Roll_Brainrot()

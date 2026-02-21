@@ -70,6 +70,7 @@ export type Block = {
     Model: Model,
     Floats: boolean,
     Roll_Brainrot: () -> string,
+    Part_Color: Color3,
 }
 
 local Blocks: { [string]: Block } = {
@@ -85,6 +86,7 @@ local Blocks: { [string]: Block } = {
         Developer_Product = 3524815548,
         Model = Block_Models:WaitForChild("Common"),
         Roll_Brainrot = New_Rarity_Brainrot_Roll("Common"),
+        Part_Color = Color3.fromRGB(128, 129, 138),
     },
     ["Rare"] = {
         Health = 30,
@@ -98,6 +100,7 @@ local Blocks: { [string]: Block } = {
         Developer_Product = 3524815699,
         Model = Block_Models:WaitForChild("Rare"),
         Roll_Brainrot = New_Rarity_Brainrot_Roll("Rare"),
+        Part_Color = Color3.fromRGB(33, 84, 185),
     },
     ["Epic"] = {
         Health = 250,
@@ -112,6 +115,7 @@ local Blocks: { [string]: Block } = {
         Model = Block_Models:WaitForChild("Epic"),
         Floats = true,
         Roll_Brainrot = New_Rarity_Brainrot_Roll("Epic"),
+        Part_Color = Color3.fromRGB(255, 176, 0),
     },
     ["Legendary"] = {
         Health = 600,
@@ -126,6 +130,7 @@ local Blocks: { [string]: Block } = {
         Model = Block_Models:WaitForChild("Legendary"),
         Floats = true,
         Roll_Brainrot = New_Rarity_Brainrot_Roll("Legendary"),
+        Part_Color = Color3.fromRGB(171, 23, 23),
     },
     ["Mythical"] = {
         Health = 1250,
@@ -139,6 +144,7 @@ local Blocks: { [string]: Block } = {
         Developer_Product = 3524816198,
         Model = Block_Models:WaitForChild("Mythical"),
         Roll_Brainrot = New_Rarity_Brainrot_Roll("Mythical"),
+        Part_Color = Color3.fromRGB(255, 255, 255),
     },
     ["Secret"] = {
         Health = 2500,
@@ -153,6 +159,7 @@ local Blocks: { [string]: Block } = {
         Model = Block_Models:WaitForChild("Secret"),
         Floats = true,
         Roll_Brainrot = New_Rarity_Brainrot_Roll("Secret", { "Los Tralaleritos" }),
+        Part_Color = Color3.fromRGB(0, 0, 0),
     },
 }
 
