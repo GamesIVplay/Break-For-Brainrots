@@ -1,5 +1,5 @@
 local EstOffset = -5 * 3600
-local IntervalMinutes = 60 -- change this to 15, 10, 5, etc.
+local IntervalMinutes = 30 -- change this to 15, 10, 5, etc.
 
 local IntervalSeconds = IntervalMinutes * 60
 

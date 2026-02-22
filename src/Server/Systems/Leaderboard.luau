@@ -101,7 +101,7 @@ local function Update_PlayTime_Leaderboard()
         Clone.Rank.ImageLabel.Image = Data.Image
         Clone.Rank.TextLabel.Text = Rank .. "."
         Clone.Username.TextLabel.Text = Data.Name
-        Clone.Amount.TextLabel.Text = string.format("%02d%02d:%02d", T.Hours, T.Minutes, T.Seconds)
+        Clone.Amount.TextLabel.Text = string.format("%02d:%02d:%02d", T.Hours, T.Minutes, T.Seconds)
         Clone:AddTag("Can_Delete")
 
         Clone.Visible = true

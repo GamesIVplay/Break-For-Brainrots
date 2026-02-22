@@ -1,3 +1,4 @@
+local PolicyService = game:GetService("PolicyService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -15,6 +16,22 @@ local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capa
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
+local Trade_Allowed = {}
+
+game.Players.PlayerAdded:Connect(function(Player)
+    task.spawn(function()
+        local Success, PolicyInfo = pcall(function()
+            return PolicyService:GetPolicyInfoForPlayerAsync(Player)
+        end)
+
+        Trade_Allowed[Player] = Success and PolicyInfo and PolicyInfo.IsPaidItemTradingAllowed ~= false
+    end)
+end)
+
+game.Players.PlayerRemoving:Connect(function(Player)
+    Trade_Allowed[Player] = nil
+end)
+
 local function Handle_Gift_Requests()
     for _, Player: Player, Target_Player_Entity: Types.Entity in Network.Requests.Gift.Iter() do
         if not Ratelimits.Gift(Player) then
@@ -28,6 +45,22 @@ local function Handle_Gift_Requests()
         local Target_Player = World:get(Target_Player_Entity, Components.Player)
 
         if not Target_Player then
+            continue
+        end
+
+        if not Trade_Allowed[Player] then
+            Network.Notification.Fire(Player, {
+                Text = "Gifting is not available in your region",
+                Type = "Error",
+            })
+            continue
+        end
+
+        if not Trade_Allowed[Target_Player] then
+            Network.Notification.Fire(Player, {
+                Text = "This player cannot receive gifts in their region",
+                Type = "Error",
+            })
             continue
         end
 
