@@ -211,7 +211,7 @@ local function Setup_Gold_Ballerina_Cappuccina(Local_Player: Player)
         local Main = Inst:FindFirstChild("Main", true) :: Attachment
         local Rarity_Text_Label = Main:FindFirstChild("Rarity", true) :: TextLabel
 
-        Proximity(Main, { ActionText = "Purchase" }, function()
+        Proximity(Main, { ActionText = "Purchase", MaxActivationDistance = 10 }, function()
             MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Gold Ballerina Cappuccina"])
         end)
 
@@ -228,7 +228,7 @@ local function Setup_Diamond_Bananita_Dolphinita(Local_Player: Player)
         local Main = Inst:FindFirstChild("Main", true) :: Attachment
         local Rarity_Text_Label = Main:FindFirstChild("Rarity", true) :: TextLabel
 
-        Proximity(Main, { ActionText = "Purchase" }, function()
+        Proximity(Main, { ActionText = "Purchase", MaxActivationDistance = 10 }, function()
             MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Diamond Bananita Dolphinita"])
         end)
 
