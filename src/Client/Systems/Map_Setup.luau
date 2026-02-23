@@ -2,6 +2,7 @@ local CollectionService = game:GetService("CollectionService")
 local MarketPlaceService = game:GetService("MarketplaceService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local SocialService = game:GetService("SocialService")
 local TweenService = game:GetService("TweenService")
 
 local Map = workspace:WaitForChild("Map") :: Folder
@@ -23,7 +24,11 @@ local Network = require(ReplicatedFirst.Network)
 local Fusion = require(ReplicatedStorage.Packages.Fusion)
 local Peek = Fusion.peek
 
+local Clock = require(ReplicatedStorage.Packages.Clock)
+
 local Components = require(ReplicatedStorage.Common.Components)
+local Config = require(ReplicatedStorage.Common.Config)
+local Log = require(ReplicatedStorage.Common.Log)
 local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
 local Types = require(ReplicatedStorage.Common.Types)
@@ -202,7 +207,7 @@ local function Setup_Free_Rewards()
     end
 end
 
-local function Setup_Gold_Ballerina_Cappuccina(Local_Player: Player)
+--[[local function Setup_Gold_Ballerina_Cappuccina(Local_Player: Player)
     for _, Inst in CollectionService:GetTagged("Gold Ballerina Cappuccina") do
         if not Inst:IsA("Model") then
             continue
@@ -217,7 +222,7 @@ local function Setup_Gold_Ballerina_Cappuccina(Local_Player: Player)
 
         UIGradients.Legendary:Clone().Parent = Rarity_Text_Label
     end
-end
+end]]
 
 local function Setup_Diamond_Bananita_Dolphinita(Local_Player: Player)
     for _, Inst in CollectionService:GetTagged("Diamond Bananita Dolphinita") do
@@ -286,6 +291,87 @@ local function Setup_x2_Luck_Parts(Local_Player: Player)
     end
 end
 
+local function Setup_Update_Signs(Local_Player: Player)
+    local Event_Info = SocialService:GetExperienceEventAsync(Config.UPDATE_EVENT_ID)
+
+    if not Event_Info then
+        Log.Warn("Failed to retrieve update event data")
+        return
+    end
+
+    for _, Inst in CollectionService:GetTagged("Update Sign") do
+        if not Inst:IsA("Model") then
+            continue
+        end
+
+        local Display = Inst:FindFirstChild("Display")
+
+        if not Display then
+            continue
+        end
+
+        Proximity(
+            Display,
+            { ObjectText = "Next Update!", ActionText = "Sign Up", MaxActivationDistance = 8 },
+            function()
+                SocialService:PromptRsvpToEventAsync(Config.UPDATE_EVENT_ID)
+            end
+        )
+    end
+
+    local StartInfo = Event_Info.StartTime
+    local EndInfo = Event_Info.EndTime
+
+    local StartDateTime = DateTime.fromUniversalTime(
+        StartInfo.Year,
+        StartInfo.Month,
+        StartInfo.Day,
+        StartInfo.Hour,
+        StartInfo.Minute,
+        StartInfo.Second,
+        StartInfo.Millisecond
+    )
+
+    local EndDateTime = DateTime.fromUniversalTime(
+        EndInfo.Year,
+        EndInfo.Month,
+        EndInfo.Day,
+        EndInfo.Hour,
+        EndInfo.Minute,
+        EndInfo.Second,
+        EndInfo.Millisecond
+    )
+
+    Clock(1, function()
+        for _, Inst in CollectionService:GetTagged("Update Sign") do
+            local Timer = Inst:FindFirstChild("Timer", true) :: TextLabel
+            if not Timer then
+                continue
+            end
+
+            local NowDateTime = DateTime.now()
+
+            if NowDateTime.UnixTimestamp >= EndDateTime.UnixTimestamp then
+                Timer.Text = "Ended"
+                continue
+            end
+
+            if NowDateTime.UnixTimestamp >= StartDateTime.UnixTimestamp then
+                Timer.Text = "00:00:00"
+                continue
+            end
+
+            local Remaining = StartDateTime.UnixTimestamp - NowDateTime.UnixTimestamp
+
+            local Hours = math.floor(Remaining / 3600)
+            local Minutes = math.floor((Remaining % 3600) / 60)
+            local Seconds = Remaining % 60
+
+            Timer.Text = string.format("%02d:%02d:%02d", Hours, Minutes, Seconds)
+        end
+    end)
+end
+
 return {
     name = script.Name,
     phase = Phases.InitPhases.Init,
@@ -301,13 +387,13 @@ return {
 
         Setup_Free_Rewards()
 
-        Setup_Gold_Ballerina_Cappuccina(Local_Player)
-
         Setup_Diamond_Bananita_Dolphinita(Local_Player)
 
         Setup_x2_Cash_Parts(Local_Player)
 
         Setup_x2_Luck_Parts(Local_Player)
+
+        task.spawn(Setup_Update_Signs, Local_Player)
     end,
     runConditions = {},
 }
