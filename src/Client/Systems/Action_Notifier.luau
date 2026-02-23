@@ -22,8 +22,8 @@ local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 
 local PICKAXE_NOTIFY_INTERVAL = 30
-local UPGRADE_NOTIFY_INTERVAL = 40
-local REBIRTH_NOTIFY_INTERVAL = 40
+local UPGRADE_NOTIFY_INTERVAL = 60
+local REBIRTH_NOTIFY_INTERVAL = 45
 
 local LastPickaxeNotify = 0
 local LastUpgradeNotify = 0
@@ -146,7 +146,7 @@ local function Action_Notifier()
 
     if Can_Upgrade(Local_Entity) then
         if currentTime - LastUpgradeNotify >= UPGRADE_NOTIFY_INTERVAL and Should_Notify then
-            Notify("An upgrade is available!")
+            -- Notify("An upgrade is available!")
             LastUpgradeNotify = currentTime
         end
         Upgrades_Exclamation.Visible = true
