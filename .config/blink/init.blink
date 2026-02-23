@@ -422,4 +422,12 @@ scope DataChanged {
 		Poll: true,
         Data: u8 
     }
+
+	event Group_Reward_Claimed {
+		From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: boolean 
+	}
 }

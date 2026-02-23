@@ -92,11 +92,11 @@ local function Handle_Pickaxe_Purchase_Requests()
                 AnalyticsService:LogFunnelStepEvent(Player, Name, tostring(Player.UserId), Level, `Level {Level}`)
             end
 
+            Network.VFX.Tutorial_Complete.FireAll(Character)
+
             AnalyticsService:LogFunnelStepEvent(Player, "Rebirth", tostring(Player.UserId), 1, `Rebirth 0`)
 
             World:set(Player_Entity, Components.Tutorial_Step, 5)
-
-            Network.VFX.Tutorial_Complete.FireAll(Character)
 
             task.delay(3, function()
                 if not World:contains(Player_Entity) then

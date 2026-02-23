@@ -14,6 +14,7 @@ local World = require(ReplicatedStorage.Common.World)
 local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
 local GroupId = require(ReplicatedStorage.Common.Modules.GroupId)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
+local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 
 local function Handle_Claim_Group_Reward_Requests()
     for _, Player: Player in Network.Requests.Claim_Group_Reward.Iter() do
@@ -28,9 +29,23 @@ local function Handle_Claim_Group_Reward_Requests()
                 return
             end
 
+            local Tutorial_Step = World:get(Player_Entity, Components.Tutorial_Step)
+
+            if not Tutorial_Step then
+                return
+            end
+
+            if Tutorial_Step < #Tutorial_Steps then
+                Network.Notification.Fire(Player, {
+                    Text = "Complete the tutorial first",
+                    Type = "Error",
+                })
+                return
+            end
+
             if not Player:IsInGroupAsync(GroupId) then
                 Network.Notification.Fire(Player, {
-                    Text = "Join the group and like the game to claim!",
+                    Text = "Like the game and join our group to claim!",
                     Type = "Info",
                 })
                 return
@@ -44,7 +59,6 @@ local function Handle_Claim_Group_Reward_Requests()
                 return
             end
 
-            local Cash = World:get(Player_Entity, Components.Cash)
             local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
 
             local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
@@ -59,10 +73,9 @@ local function Handle_Claim_Group_Reward_Requests()
 
             World:add(Player_Entity, Components.Tags.Claimed_Group_Reward)
 
-            World:set(Player_Entity, Components.Cash, Cash + 10000)
-
             Brainrot_Inventory[Open_Slot] = {
-                Name = "Brr Brr Patapim",
+                Name = "Cappuccino Assassino",
+                Primary_Mutation = "Diamond",
                 Secondary_Mutations = {},
                 Weight = 10,
                 Cash = 0,
@@ -70,7 +83,7 @@ local function Handle_Claim_Group_Reward_Requests()
             } :: Types.Brainrot_Item
 
             Network.Notification.Fire(Player, {
-                Text = "Thanks for joining the group! Rewards Claimed",
+                Text = "Thanks for liking the game and joining our group!",
                 Type = "Success",
             })
         end)

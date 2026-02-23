@@ -23,7 +23,7 @@ return function(Player_Entity: Types.Entity)
 
     if Player_Upgrades then
         for _, Upgrade_Name in { "Luck Multiplier", "Better Luck" } do
-            local Level = Player_Upgrades[Upgrade_Name]
+            local Level = Player_Upgrades[Upgrade_Name] or 1
             local Multiplier = Upgrades[Upgrade_Name].Levels[Level].Multiplier
 
             Luck *= Multiplier
@@ -36,5 +36,6 @@ return function(Player_Entity: Types.Entity)
         Luck *= 2
     end
 
+    Luck = math.round(Luck * 100) / 100
     return Luck
 end

@@ -17,7 +17,7 @@ return function(Player_Entity: Types.Entity)
 
     if Player_Upgrades then
         for _, Upgrade_Name in { "Cash Multiplier" } do
-            local Level = Player_Upgrades[Upgrade_Name]
+            local Level = Player_Upgrades[Upgrade_Name] or 1
             local Multiplier = Upgrades[Upgrade_Name].Levels[Level].Multiplier
 
             Cash_Multiplier *= Multiplier
@@ -30,5 +30,6 @@ return function(Player_Entity: Types.Entity)
         Cash_Multiplier *= 2
     end
 
+    Cash_Multiplier = math.round(Cash_Multiplier * 100) / 100
     return Cash_Multiplier
 end

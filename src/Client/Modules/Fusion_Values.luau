@@ -21,4 +21,5 @@ return table.freeze({
     Claimed_Daily_Rewards = Scope:Value({}),
     Plot_Income_Per_Sec = Scope:Value(0),
     Tutorial_Step = Scope:Value(0),
+    Group_Reward_Claimed = Scope:Value(false),
 })

@@ -8,6 +8,8 @@ local TweenService = game:GetService("TweenService")
 local Camera = workspace.CurrentCamera
 local Map = workspace:WaitForChild("Map")
 
+local Satchel = require(ReplicatedStorage:FindFirstChild("Satchel", true))
+
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 local UIGradients = Assets:WaitForChild("UIGradients")
 
@@ -402,6 +404,7 @@ local function Setup_HUD_Left_Buttons(LocalEntity: Types.Entity, PlayerGui: Play
     local Index = Left:WaitForChild("Index") :: ImageButton
     local Rebirth = Left:WaitForChild("Rebirth") :: ImageButton
     local Upgrades = Left:WaitForChild("Upgrades") :: ImageButton
+    local FreeReward = Left:WaitForChild("FreeReward") :: ImageButton
 
     Hydrate_Button(RobuxShop, function()
         Toggle_Screen("RobuxShop")
@@ -417,6 +420,20 @@ local function Setup_HUD_Left_Buttons(LocalEntity: Types.Entity, PlayerGui: Play
 
     Hydrate_Button(Upgrades, function()
         Toggle_Screen("Upgrades")
+    end)
+
+    Scope:Hydrate(FreeReward)({
+        Visible = Scope:Computed(function(Use)
+            if Use(Fusion_Values.Group_Reward_Claimed) == true then
+                return false
+            end
+
+            return true
+        end),
+    })
+
+    Hydrate_Button(FreeReward, function()
+        Toggle_Screen("FreeReward")
     end)
 end
 
@@ -2094,6 +2111,28 @@ local function Setup_Sell(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Sell_Contents(PlayerGui)
 end
 
+local function Setup_Free_Reward(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local FreeReward = Frames:WaitForChild("FreeReward") :: ImageLabel
+    local Claim = FreeReward:WaitForChild("Claim") :: ImageButton
+
+    Hydrate_Frame_Visibility(FreeReward, "FreeReward")
+
+    Setup_Close_Button(FreeReward:WaitForChild("Close"))
+
+    Hydrate_Button(Claim, function()
+        Network.Requests.Claim_Group_Reward.Fire()
+    end)
+
+    Scope:Observer(Fusion_Values.Group_Reward_Claimed):onBind(function()
+        if Peek(Fusion_Values.Group_Reward_Claimed) == true and Peek(Fusion_Values.Screen) == "FreeReward" then
+            Fusion_Values.Screen:set("HUD")
+        end
+    end)
+end
+
 local function Setup_Topbar_Daily_Rewards()
     local Icon = TopbarPlus.new()
         :setImage("rbxassetid://122975945860743")
@@ -2219,6 +2258,7 @@ return {
             Setup_Daily_Rewards(Local_Entity, PlayerGui)
             Setup_Playtime_Rewards(Local_Entity, PlayerGui)
             Setup_Sell(Local_Entity, PlayerGui)
+            Setup_Free_Reward(PlayerGui)
 
             Setup_Topbar()
 
@@ -2228,11 +2268,13 @@ return {
                 if Peek(Fusion_Values.Screen) == "HUD" then
                     TweenFov(0.15, 70)
                     Remove_Blur()
+                    Satchel:SetBackpackEnabled(true)
                 else
                     Frame_Open:Play()
 
                     TweenFov(0.15, 50)
                     Add_Blur(30)
+                    Satchel:SetBackpackEnabled(false)
                 end
             end)
 

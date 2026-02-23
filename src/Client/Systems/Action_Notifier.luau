@@ -1,5 +1,15 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Map = workspace:WaitForChild("Map")
+
+local Shops = Map:WaitForChild("Shops")
+
+local Pickaxes_Shop = Shops:WaitForChild("Pickaxes")
+local Pickaxes_Exclamation_Billboard = Pickaxes_Shop:WaitForChild("Touch"):FindFirstChildOfClass("BillboardGui")
+
+local Upgrades_Shop = Shops:WaitForChild("Upgrades")
+local Upgrades_Exclamation_Billboard = Upgrades_Shop:WaitForChild("Touch"):FindFirstChildOfClass("BillboardGui")
+
 local Components = require(ReplicatedStorage.Common.Components)
 local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
@@ -9,10 +19,14 @@ local World = require(ReplicatedStorage.Common.World)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
 local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
+local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 
-local PICKAXE_NOTIFY_INTERVAL = 40
-local REBIRTH_NOTIFY_INTERVAL = 60
+local PICKAXE_NOTIFY_INTERVAL = 30
+local UPGRADE_NOTIFY_INTERVAL = 40
+local REBIRTH_NOTIFY_INTERVAL = 40
+
 local LastPickaxeNotify = 0
+local LastUpgradeNotify = 0
 local LastRebirthNotify = 0
 
 local function Notify(Text: string)
@@ -51,6 +65,27 @@ local function Can_Upgrade_Pickaxe(Local_Entity: Types.Entity)
     return Next_Pickaxe ~= nil
 end
 
+local function Can_Upgrade(Local_Entity: Types.Entity)
+    local Cash = World:get(Local_Entity, Components.Cash)
+    local Rebirth = World:get(Local_Entity, Components.Rebirth)
+    local Player_Upgrades = World:get(Local_Entity, Components.Upgrades)
+
+    for Upgrade_Name, Upgrade_Data in Upgrades do
+        if Rebirth < Upgrade_Data.Rebirth then
+            continue
+        end
+
+        local Current_Level = Player_Upgrades[Upgrade_Name] or 1
+        local Next_Level_Data = Upgrade_Data.Levels[Current_Level + 1]
+
+        if Next_Level_Data and Cash >= Next_Level_Data.Price then
+            return true
+        end
+    end
+
+    return false
+end
+
 local function Can_Rebirth(Local_Entity: Types.Entity)
     local Rebirth = World:get(Local_Entity, Components.Rebirth)
     local Plot_Income_Per_Sec = World:get(Local_Entity, Components.Plot_Income_Per_Sec)
@@ -74,30 +109,52 @@ local function Action_Notifier()
         return
     end
 
-    local Tutorial_Step = World:get(Local_Entity, Components.Tutorial_Step)
+    local Local_Player = World:get(Local_Entity, Components.Player)
 
-    if Tutorial_Step < #Tutorial_Steps then
-        return
-    end
+    local Main = Local_Player.PlayerGui:WaitForChild("Main") :: ScreenGui
+
+    local Left = Main:WaitForChild("Left") :: Frame
+    local Rebirth_Exclamation = Left:FindFirstChild("Rebirth"):FindFirstChild("Exclamation") :: Frame
+    local Upgrades_Exclamation = Left:FindFirstChild("Upgrades"):FindFirstChild("Exclamation") :: Frame
+
+    local Tutorial_Step = World:get(Local_Entity, Components.Tutorial_Step)
+    local Should_Notify = Tutorial_Step >= #Tutorial_Steps
 
     local currentTime = tick()
 
     if Can_Upgrade_Pickaxe(Local_Entity) then
-        if currentTime - LastPickaxeNotify >= PICKAXE_NOTIFY_INTERVAL then
-            Notify("New pickaxe available!")
+        if currentTime - LastPickaxeNotify >= PICKAXE_NOTIFY_INTERVAL and Should_Notify then
+            Notify("Stronger pickaxe available!")
             LastPickaxeNotify = currentTime
         end
+        Pickaxes_Exclamation_Billboard.Enabled = true
     else
         LastPickaxeNotify = 0
+        Pickaxes_Exclamation_Billboard.Enabled = false
     end
 
     if Can_Rebirth(Local_Entity) then
-        if currentTime - LastRebirthNotify >= REBIRTH_NOTIFY_INTERVAL then
+        if currentTime - LastRebirthNotify >= REBIRTH_NOTIFY_INTERVAL and Should_Notify then
             Notify("You can rebirth!")
             LastRebirthNotify = currentTime
         end
+        Rebirth_Exclamation.Visible = true
     else
         LastRebirthNotify = 0
+        Rebirth_Exclamation.Visible = false
+    end
+
+    if Can_Upgrade(Local_Entity) then
+        if currentTime - LastUpgradeNotify >= UPGRADE_NOTIFY_INTERVAL and Should_Notify then
+            Notify("An upgrade is available!")
+            LastUpgradeNotify = currentTime
+        end
+        Upgrades_Exclamation.Visible = true
+        Upgrades_Exclamation_Billboard.Enabled = true
+    else
+        LastUpgradeNotify = 0
+        Upgrades_Exclamation.Visible = false
+        Upgrades_Exclamation_Billboard.Enabled = false
     end
 end
 

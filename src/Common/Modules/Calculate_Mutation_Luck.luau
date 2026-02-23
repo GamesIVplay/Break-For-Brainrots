@@ -17,12 +17,13 @@ return function(Player_Entity: Types.Entity)
 
     if Player_Upgrades then
         for _, Upgrade_Name in { "Mutation Luck" } do
-            local Level = Player_Upgrades[Upgrade_Name]
+            local Level = Player_Upgrades[Upgrade_Name] or 1
             local Multiplier = Upgrades[Upgrade_Name].Levels[Level].Multiplier
 
             Mutation_Luck *= Multiplier
         end
     end
 
+    Mutation_Luck = math.round(Mutation_Luck * 100) / 100
     return Mutation_Luck
 end

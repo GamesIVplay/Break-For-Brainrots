@@ -497,6 +497,25 @@ local function Replicate_Tutorial_Step(Player: Player, Entity: Types.Entity)
     end
 end
 
+local function Replicate_Group_Reward_Claimed(Player: Player, Entity: Types.Entity)
+    local Group_Reward_Claimed = World:has(Entity, Components.Tags.Claimed_Group_Reward)
+
+    local Previous_Group_Reward_Claimed =
+        World:has(Entity, Pair(Components.Relationships.Previous, Components.Tags.Claimed_Group_Reward))
+
+    if Group_Reward_Claimed ~= Previous_Group_Reward_Claimed then
+        Network.DataChanged.Group_Reward_Claimed.Fire(Player, Group_Reward_Claimed)
+
+        if Group_Reward_Claimed then
+            World:add(Entity, Pair(Components.Relationships.Previous, Components.Tags.Claimed_Group_Reward))
+        else
+            World:remove(Entity, Pair(Components.Relationships.Previous, Components.Tags.Claimed_Group_Reward))
+        end
+
+        Log.Info(`{Player.Name}'s group reward claimed state changed to {Group_Reward_Claimed}`)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.PostUpdate,
@@ -533,6 +552,8 @@ return {
             Replicate_Plot_Income_Per_Sec(Player, Entity)
 
             Replicate_Tutorial_Step(Player, Entity)
+
+            Replicate_Group_Reward_Claimed(Player, Entity)
         end
     end,
     runConditions = {},

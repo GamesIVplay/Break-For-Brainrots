@@ -84,12 +84,6 @@ local function Open_Blocks()
             },
         })
 
-        if Tutorial_Step == 1 then
-            Network.VFX.Tutorial_Complete.FireAll(Character)
-
-            World:set(Player_Entity, Components.Tutorial_Step, 2)
-        end
-
         task.delay(3.8, function()
             if not World:contains(Block_Entity) or not World:contains(Player_Entity) then
                 return

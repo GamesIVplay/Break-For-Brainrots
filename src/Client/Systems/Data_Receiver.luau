@@ -400,6 +400,18 @@ local function Handle_Spawn_Debris()
     end
 end
 
+local function Handle_Group_Reward_Claimed(Local_Entity: Types.Entity)
+    for _, Data in Network.DataChanged.Group_Reward_Claimed.Iter() do
+        if Data == true then
+            World:add(Local_Entity, Components.Tags.Claimed_Group_Reward)
+        else
+            World:remove(Local_Entity, Components.Tags.Claimed_Group_Reward)
+        end
+
+        Fusion_Values.Group_Reward_Claimed:set(Data)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.First,
@@ -461,6 +473,8 @@ return {
         Handle_Tutorial_Completes()
 
         Handle_Spawn_Debris()
+
+        Handle_Group_Reward_Claimed(Local_Entity)
     end,
     runConditions = {},
 }
