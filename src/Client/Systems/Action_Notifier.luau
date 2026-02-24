@@ -1,3 +1,4 @@
+local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Map = workspace:WaitForChild("Map")
@@ -9,6 +10,11 @@ local Pickaxes_Exclamation_Billboard = Pickaxes_Shop:WaitForChild("Touch"):FindF
 
 local Upgrades_Shop = Shops:WaitForChild("Upgrades")
 local Upgrades_Exclamation_Billboard = Upgrades_Shop:WaitForChild("Touch"):FindFirstChildOfClass("BillboardGui")
+
+local Assets = ReplicatedStorage:WaitForChild("Assets")
+
+local VFX = Assets:WaitForChild("VFX")
+local ArrowBeam = VFX:WaitForChild("ArrowBeam") :: Beam
 
 local Components = require(ReplicatedStorage.Common.Components)
 local Phases = require(ReplicatedStorage.Common.Phases)
@@ -103,6 +109,45 @@ local function Can_Rebirth(Local_Entity: Types.Entity)
     return true
 end
 
+local function Toggle_Pickaxe_Beam(Local_Entity: Types.Entity, Enabled: boolean)
+    local Character = World:get(Local_Entity, Components.Renderable)
+
+    if not Character then
+        return
+    end
+
+    local RootPart = Character:FindFirstChild("HumanoidRootPart") :: Part
+
+    if not RootPart then
+        return
+    end
+
+    local RootAttachment = RootPart:FindFirstChild("RootAttachment") :: Attachment
+
+    if not RootAttachment then
+        return
+    end
+
+    local Can_Upgrade = Can_Upgrade_Pickaxe(Local_Entity)
+
+    local Pickaxe_Beam = CollectionService:GetTagged("Pickaxe_Beam")[1] :: Beam
+
+    if not Pickaxe_Beam and Can_Upgrade then
+        Pickaxe_Beam = ArrowBeam:Clone()
+        Pickaxe_Beam.Attachment0 = RootAttachment
+        Pickaxe_Beam.Parent = RootPart
+        Pickaxe_Beam:AddTag("Pickaxe_Beam")
+    elseif Pickaxe_Beam and not Can_Upgrade then
+        Pickaxe_Beam:Destroy()
+    end
+
+    if not Can_Upgrade then
+        return
+    end
+
+    Pickaxe_Beam.Attachment1 = Pickaxes_Shop:FindFirstChild("Touch"):FindFirstChildOfClass("Attachment")
+end
+
 local function Action_Notifier()
     local Local_Entity = Registry.Get("Players", "Local")
     if not Local_Entity then
@@ -128,9 +173,11 @@ local function Action_Notifier()
             LastPickaxeNotify = currentTime
         end
         Pickaxes_Exclamation_Billboard.Enabled = true
+        Toggle_Pickaxe_Beam(Local_Entity, true)
     else
         LastPickaxeNotify = 0
         Pickaxes_Exclamation_Billboard.Enabled = false
+        Toggle_Pickaxe_Beam(Local_Entity, false)
     end
 
     if Can_Rebirth(Local_Entity) then
