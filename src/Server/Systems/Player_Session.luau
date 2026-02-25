@@ -12,6 +12,9 @@ local Open_Leaderboard_Data_Store = DataStoreService:GetOrderedDataStore("Open")
 local Types = require(ReplicatedStorage.Common.Types)
 
 PhysicsService:RegisterCollisionGroup("Character")
+PhysicsService:RegisterCollisionGroup("Debris")
+
+PhysicsService:CollisionGroupSetCollidable("Character", "Debris", false)
 PhysicsService:CollisionGroupSetCollidable("Character", "Character", false)
 
 local Network = require(ServerScriptService.Network)

@@ -126,7 +126,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     },
     ["Electro"] = {
         Rarity = "Mythical",
-        Price = 20_000_000,
+        Price = 25_000_000,
         Rebirth = 2,
         Power = 98,
         Image = "rbxassetid://81403123319089",
@@ -137,7 +137,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     -- Secret
     ["Angel"] = {
         Rarity = "Secret",
-        Price = 25_000_000,
+        Price = 50_000_000,
         Rebirth = 2,
         Power = 108,
         Image = "rbxassetid://103777101628861",

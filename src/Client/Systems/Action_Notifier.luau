@@ -27,9 +27,9 @@ local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 
-local PICKAXE_NOTIFY_INTERVAL = 30
-local UPGRADE_NOTIFY_INTERVAL = 60
-local REBIRTH_NOTIFY_INTERVAL = 45
+local PICKAXE_NOTIFY_INTERVAL = 60
+local UPGRADE_NOTIFY_INTERVAL = 60 * 2
+local REBIRTH_NOTIFY_INTERVAL = 60 * 2
 
 local LastPickaxeNotify = 0
 local LastUpgradeNotify = 0
@@ -38,12 +38,12 @@ local LastRebirthNotify = 0
 local function Notify(Text: string)
     local Entity = World:entity()
     World:set(Entity, Components.Text, Text)
-    World:set(Entity, Components.NotificationType, "Reward")
+    World:set(Entity, Components.NotificationType, "Success")
     World:set(Entity, Components.Duration, 6)
     World:add(Entity, Components.Tags.Notification)
 end
 
-local function Can_Upgrade_Pickaxe(Local_Entity: Types.Entity)
+local function Get_Affordable_Pickaxe(Local_Entity: Types.Entity)
     local Cash = World:get(Local_Entity, Components.Cash)
     local Rebirth = World:get(Local_Entity, Components.Rebirth)
     local Owned_Pickaxes = World:get(Local_Entity, Components.Owned_Pickaxes)
@@ -56,7 +56,8 @@ local function Can_Upgrade_Pickaxe(Local_Entity: Types.Entity)
         end
     end
 
-    local Next_Pickaxe = nil
+    local Best_Pickaxe = nil
+    local Best_Power = Highest_Power
 
     for Name, Data in Pickaxes do
         if table.find(Owned_Pickaxes, Name) then
@@ -64,11 +65,14 @@ local function Can_Upgrade_Pickaxe(Local_Entity: Types.Entity)
         end
 
         if Data.Power > Highest_Power and Data.Price and Cash >= Data.Price and Rebirth >= Data.Rebirth then
-            Next_Pickaxe = Name
+            if Data.Power > Best_Power then
+                Best_Pickaxe = Name
+                Best_Power = Data.Power
+            end
         end
     end
 
-    return Next_Pickaxe ~= nil
+    return Best_Pickaxe
 end
 
 local function Can_Upgrade(Local_Entity: Types.Entity)
@@ -128,7 +132,8 @@ local function Toggle_Pickaxe_Beam(Local_Entity: Types.Entity, Enabled: boolean)
         return
     end
 
-    local Can_Upgrade = Can_Upgrade_Pickaxe(Local_Entity)
+    local Affordable_Pickaxe = Get_Affordable_Pickaxe(Local_Entity)
+    local Can_Upgrade = Affordable_Pickaxe ~= nil
 
     local Pickaxe_Beam = CollectionService:GetTagged("Pickaxe_Beam")[1] :: Beam
 
@@ -167,9 +172,11 @@ local function Action_Notifier()
 
     local currentTime = tick()
 
-    if Can_Upgrade_Pickaxe(Local_Entity) then
+    local Affordable_Pickaxe = Get_Affordable_Pickaxe(Local_Entity)
+
+    if Affordable_Pickaxe then
         if currentTime - LastPickaxeNotify >= PICKAXE_NOTIFY_INTERVAL and Should_Notify then
-            Notify("Stronger pickaxe available!")
+            Notify(`You can afford a {Affordable_Pickaxe} Pickaxe!`)
             LastPickaxeNotify = currentTime
         end
         Pickaxes_Exclamation_Billboard.Enabled = true
@@ -182,7 +189,7 @@ local function Action_Notifier()
 
     if Can_Rebirth(Local_Entity) then
         if currentTime - LastRebirthNotify >= REBIRTH_NOTIFY_INTERVAL and Should_Notify then
-            Notify("You can rebirth!")
+            Notify(`You can afford a {Affordable_Pickaxe} Pickaxe!`)
             LastRebirthNotify = currentTime
         end
         Rebirth_Exclamation.Visible = true
@@ -193,7 +200,6 @@ local function Action_Notifier()
 
     if Can_Upgrade(Local_Entity) then
         if currentTime - LastUpgradeNotify >= UPGRADE_NOTIFY_INTERVAL and Should_Notify then
-            -- Notify("An upgrade is available!")
             LastUpgradeNotify = currentTime
         end
         Upgrades_Exclamation.Visible = true
