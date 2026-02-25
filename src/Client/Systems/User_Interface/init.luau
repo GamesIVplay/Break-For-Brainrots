@@ -1189,7 +1189,7 @@ local function Setup_Rebirth_Contents(PlayerGui: PlayerGui)
     Scope:Hydrate(Old_Multiplier_Title)({
         Text = Scope:Computed(function(Use)
             local value = Rebirths[Use(Fusion_Values.Rebirth)].Multiplier
-            return `x{string.format("%.1f", value)}`
+            return `x{string.format("%.2f", value)}`
         end),
     })
 
@@ -1201,7 +1201,7 @@ local function Setup_Rebirth_Contents(PlayerGui: PlayerGui)
                 return "?"
             end
 
-            return `x{string.format("%.1f", Next_Rebirth.Multiplier)}`
+            return `x{string.format("%.2f", Next_Rebirth.Multiplier)}`
         end),
     })
 
