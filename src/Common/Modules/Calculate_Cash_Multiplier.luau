@@ -4,6 +4,7 @@ local Components = require(ReplicatedStorage.Common.Components)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
+local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 
 return function(Player_Entity: Types.Entity)
@@ -28,6 +29,12 @@ return function(Player_Entity: Types.Entity)
 
     if Gamepasses and table.find(Gamepasses, "x2 Cash") then
         Cash_Multiplier *= 2
+    end
+
+    local Rebirth = World:get(Player_Entity, Components.Rebirth)
+
+    if Rebirth then
+        Cash_Multiplier *= Rebirths[Rebirth].Multiplier
     end
 
     Cash_Multiplier = math.round(Cash_Multiplier * 100) / 100
