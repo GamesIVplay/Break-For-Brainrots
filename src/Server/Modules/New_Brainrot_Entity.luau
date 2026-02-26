@@ -87,6 +87,7 @@ return function(
         Sell_Price = Sell_Price,
     })
 
+    Brainrot_Model:AddTag("Brainrot")
     Brainrot_Model:SetAttribute("Owner", Player.UserId)
 
     return Brainrot_Entity, Brainrot_Model

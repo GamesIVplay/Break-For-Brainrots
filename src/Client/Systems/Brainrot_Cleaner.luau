@@ -33,11 +33,17 @@ local function ProcessModel(Brainrot_Model: Model, Local_UserId: number)
         return
     end
 
-    for _, inst in Brainrot_Model:GetDescendants() do
+    local function RemoveIfVFX(inst)
         if VFX_CLASSES[inst.ClassName] then
             inst:Destroy()
         end
     end
+
+    for _, inst in Brainrot_Model:GetDescendants() do
+        RemoveIfVFX(inst)
+    end
+
+    Brainrot_Model.DescendantAdded:Connect(RemoveIfVFX)
 end
 
 return {
