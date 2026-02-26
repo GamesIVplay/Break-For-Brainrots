@@ -185,7 +185,7 @@ local function Setup_Shops(Local_Player: Player)
     end
 end
 
-local function Setup_Free_Rewards()
+--[[local function Setup_Free_Rewards()
     for _, Inst in CollectionService:GetTagged("FreeReward") do
         if not Inst:IsA("Model") then
             continue
@@ -205,7 +205,7 @@ local function Setup_Free_Rewards()
             Network.Requests.Claim_Group_Reward.Fire()
         end)
     end
-end
+end]]
 
 --[[local function Setup_Gold_Ballerina_Cappuccina(Local_Player: Player)
     for _, Inst in CollectionService:GetTagged("Gold Ballerina Cappuccina") do
@@ -384,8 +384,6 @@ return {
         end)
 
         Setup_Shops(Local_Player)
-
-        Setup_Free_Rewards()
 
         Setup_Diamond_Bananita_Dolphinita(Local_Player)
 

@@ -10,9 +10,6 @@ local Network = require(ServerScriptService.Network)
 
 local Slot_Util = require(ServerScriptService.Server.Modules.Slot_Util)
 
-local Jecs = require(ReplicatedStorage.Packages.Jecs)
-local Pair = Jecs.pair
-
 local Components = require(ReplicatedStorage.Common.Components)
 local Log = require(ReplicatedStorage.Common.Log)
 local Phases = require(ReplicatedStorage.Common.Phases)

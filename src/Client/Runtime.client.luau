@@ -39,6 +39,7 @@ until Success == true
 Start({
     require(Systems.Cmdr),
     require(Systems.Init_Local_Entity),
+    require(Systems.Brainrot_Cleaner),
     require(Systems.Map_Setup),
     require(Systems.User_Interface),
     require(Systems.Notification),
@@ -48,7 +49,6 @@ Start({
     require(Systems.Music),
     require(Systems.Tutorial),
     require(Systems.Action_Notifier),
-    require(Systems.VFX_Remover),
 })
 
 require(game:GetService("ReplicatedFirst").Network).ClientLoaded.Fire()
