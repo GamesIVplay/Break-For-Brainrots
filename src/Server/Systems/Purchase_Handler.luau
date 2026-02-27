@@ -5,7 +5,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local PurchaseHistoryStore = DataStoreService:GetDataStore("PurchaseHistory")
-local StockStore = DataStoreService:GetDataStore("StockStore")
 
 local Network = require(ServerScriptService.Network)
 
@@ -22,6 +21,8 @@ local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
 local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
+local Roll_Primary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Primary_Mutation)
+local Roll_Secondary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Secondary_Mutation)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Upgrades_Config = require(ReplicatedStorage.Common.Modules.Upgrades)
 local Weight = require(ReplicatedStorage.Common.Modules.Weight)
@@ -199,25 +200,32 @@ local Grant_Purchase_By_Product_Id = {
             return false
         end
 
-        local Block_Options = {
-            "Common",
-            "Rare",
-        }
+        local Roll = math.random()
 
-        if math.random() < 0.15 then
-            table.insert(Block_Options, "Epic")
-            table.insert(Block_Options, "Legendary")
-            table.insert(Block_Options, "Mythical")
-            table.insert(Block_Options, "Secret")
+        local Random_Block
+
+        if Roll < 0.005 then
+            Random_Block = "Secret"
+        elseif Roll < 0.01 then
+            Random_Block = "Mythical"
+        elseif Roll < 0.04 then
+            Random_Block = "Legendary"
+        elseif Roll < 0.11 then
+            Random_Block = "Epic"
+        elseif Roll < 0.36 then
+            Random_Block = "Rare"
+        else
+            Random_Block = "Common"
         end
-
-        local Random_Block = Block_Options[math.random(1, #Block_Options)]
 
         local Rolled_Name = Blocks[Random_Block].Roll_Brainrot()
 
+        local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
+
         Brainrot_Inventory[Open_Slot] = {
             Name = Rolled_Name,
-            Secondary_Mutations = {},
+            Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
+            Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
             Weight = Weight.Roll_Weight(),
             Cash = 0,
             Offline_Cash = 0,
@@ -268,9 +276,12 @@ local Grant_Purchase_By_Product_Id = {
             return false
         end
 
+        local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
+
         Brainrot_Inventory[Open_Slot] = {
             Name = "Tung Sahur",
-            Secondary_Mutations = {},
+            Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
+            Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
             Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
@@ -280,31 +291,6 @@ local Grant_Purchase_By_Product_Id = {
     end,
 
     -- Map Offers
-    [Developer_Products["Gold Ballerina Cappuccina"]] = function(PlayerEntity: Types.Entity)
-        local Player = World:get(PlayerEntity, Components.Player)
-        local Brainrot_Inventory = World:get(PlayerEntity, Components.Brainrot_Inventory)
-
-        local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
-
-        if not Open_Slot then
-            Network.Notification.Fire(Player, {
-                Text = "Inventory full! Gold Ballerina Cappuccina not claimed. Free up a slot and rejoin.",
-                Type = "Error",
-            })
-            return false
-        end
-
-        Brainrot_Inventory[Open_Slot] = {
-            Name = "Ballerina Cappuccina",
-            Primary_Mutation = "Gold",
-            Secondary_Mutations = {},
-            Weight = math.max(10, Weight.Roll_Weight()),
-            Cash = 0,
-            Offline_Cash = 0,
-        } :: Types.Brainrot_Item
-
-        return true
-    end,
     [Developer_Products["Gold Ballerina Cappuccina"]] = function(PlayerEntity: Types.Entity)
         local Player = World:get(PlayerEntity, Components.Player)
         local Brainrot_Inventory = World:get(PlayerEntity, Components.Brainrot_Inventory)
@@ -386,9 +372,12 @@ local Grant_Purchase_By_Product_Id = {
             return false
         end
 
+        local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
+
         Brainrot_Inventory[Open_Slot] = {
             Name = "Troll Face",
-            Secondary_Mutations = {},
+            Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
+            Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
             Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
@@ -410,9 +399,12 @@ local Grant_Purchase_By_Product_Id = {
             return false
         end
 
+        local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
+
         Brainrot_Inventory[Open_Slot] = {
             Name = "La Grande Combinasion",
-            Secondary_Mutations = {},
+            Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
+            Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
             Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
@@ -434,9 +426,12 @@ local Grant_Purchase_By_Product_Id = {
             return false
         end
 
+        local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
+
         Brainrot_Inventory[Open_Slot] = {
             Name = "Skibidi Toilet",
-            Secondary_Mutations = {},
+            Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
+            Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
             Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,

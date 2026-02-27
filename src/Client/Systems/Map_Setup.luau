@@ -1,4 +1,5 @@
 local CollectionService = game:GetService("CollectionService")
+local Debris = game:GetService("Debris")
 local MarketPlaceService = game:GetService("MarketplaceService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -34,6 +35,7 @@ local World = require(ReplicatedStorage.Common.World)
 
 local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
+local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Proximity = require(ReplicatedStorage.Common.Modules.Proximity)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
@@ -41,12 +43,26 @@ local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
+local Brainrot_Offset = Stat_Calculator.Get_Brainrot_Offset()
+
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 
 local TOUCH_PART_BOUNCE_TIME = 0.08
 local TOUCH_PART_TWEEN_INFO = TweenInfo.new(TOUCH_PART_BOUNCE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 local STOCK_START_TIMESTAMP = 1772190287
 local STOCK_FULL_TIME = 2 * 7 * 86400
+local RANDOM_BRAINROT_CYCLE_TWEEN_INFO = TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+local RANDOM_BRAINROT_OPTIONS = {
+    "Six Seven",
+    "Dragon Cannelloni",
+    "Esok Sekolah",
+    "Espresso Signora",
+    "Pakrahmatmatina",
+    "Pot Hotspot",
+    "Torrtuginni Dragonfrutini",
+    "Frigo Camelo",
+    "Rhino Toasterino",
+}
 
 local function BindFakeStock(Count: TextLabel, Max_Count: number)
     local CurrentStock = 0
@@ -371,7 +387,7 @@ local function Setup_Troll_Face(Local_Player: Player)
 
         local Prompt = Inst:FindFirstChild("Prompt", true) :: Attachment
 
-        Proximity(Prompt, { ActionText = "Purchase", ObjectText = "Troll Face", MaxActivationDistance = 15 }, function()
+        Proximity(Prompt, { ActionText = "Purchase", ObjectText = "Troll Face", MaxActivationDistance = 10 }, function()
             if Get_Stock() >= 750 then
                 local Entity = World:entity()
                 World:set(Entity, Components.Text, "This is sold Out")
@@ -419,7 +435,7 @@ local function Setup_La_Grande_Combinasion(Local_Player: Player)
 
         Proximity(
             Prompt,
-            { ActionText = "Purchase", ObjectText = "La Grande Combinasion", MaxActivationDistance = 15 },
+            { ActionText = "Purchase", ObjectText = "La Grande Combinasion", MaxActivationDistance = 10 },
             function()
                 if Get_Stock() >= 250 then
                     local Entity = World:entity()
@@ -469,7 +485,7 @@ local function Setup_Skibidi_Toilet(Local_Player: Player)
 
         Proximity(
             Prompt,
-            { ActionText = "Purchase", ObjectText = "Skibidi Toilet", MaxActivationDistance = 15 },
+            { ActionText = "Purchase", ObjectText = "Skibidi Toilet", MaxActivationDistance = 10 },
             function()
                 if Get_Stock() >= 500 then
                     local Entity = World:entity()
@@ -482,6 +498,75 @@ local function Setup_Skibidi_Toilet(Local_Player: Player)
                 MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Skibidi Toilet"])
             end
         )
+    end
+end
+
+local function Setup_Random_Brainrot(Local_Player: Player)
+    for _, Inst: Attachment in CollectionService:GetTagged("Random Brainrot Prompt Attachment") do
+        if not Inst:IsA("Attachment") then
+            continue
+        end
+
+        Proximity(
+            Inst,
+            { ActionText = "Purchase", ObjectText = "Random Brainrot", MaxActivationDistance = 10 },
+            function()
+                MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Random Brainrot"])
+            end
+        )
+    end
+
+    for _, Inst: Attachment in CollectionService:GetTagged("Random Brainrot Spawn Attachment") do
+        if not Inst:IsA("Attachment") then
+            continue
+        end
+
+        local LastRolledBrainrot = nil
+
+        Clock(1, function()
+            local Rolled_Brainrot
+
+            repeat
+                Rolled_Brainrot = RANDOM_BRAINROT_OPTIONS[math.random(1, #RANDOM_BRAINROT_OPTIONS)]
+            until Rolled_Brainrot ~= LastRolledBrainrot
+
+            LastRolledBrainrot = Rolled_Brainrot
+
+            local Rolled_Primary_Mutation = nil
+            local Rolled_Secondary_Mutations = {}
+            local Rolled_Weight = 12.5
+
+            local Brainrot_Model, Offset = Generate_Brainrot_Model(
+                Rolled_Brainrot,
+                Rolled_Primary_Mutation,
+                Rolled_Secondary_Mutations,
+                Rolled_Weight
+            )
+
+            local Highlight = Instance.new("Highlight")
+            Highlight.FillColor = Color3.fromRGB(0, 0, 0)
+            Highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+            Highlight.FillTransparency = 0
+            Highlight.OutlineTransparency = 0.5
+            Highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+            Highlight.Parent = Brainrot_Model
+
+            Brainrot_Model:AddTag("Idle")
+
+            Brainrot_Model.Parent = workspace:FindFirstChild("Debris")
+
+            local Brainrot_CF = Inst.WorldCFrame * Offset * CFrame.new(Brainrot_Offset)
+            Brainrot_Model:PivotTo(Brainrot_CF)
+
+            local Original_Scale = Brainrot_Model:GetScale()
+            local Target_Scale = Original_Scale / 2
+
+            Brainrot_Model:ScaleTo(Target_Scale)
+
+            Util.Tween_Model_Scale(Target_Scale, Original_Scale, RANDOM_BRAINROT_CYCLE_TWEEN_INFO, Brainrot_Model)
+
+            Debris:AddItem(Brainrot_Model, 1)
+        end)
     end
 end
 
@@ -509,6 +594,8 @@ return {
         Setup_La_Grande_Combinasion(Local_Player)
 
         Setup_Skibidi_Toilet(Local_Player)
+
+        Setup_Random_Brainrot(Local_Player)
     end,
     runConditions = {},
 }
