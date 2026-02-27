@@ -7,8 +7,8 @@ local Billboards = Assets:WaitForChild("Billboards")
 local Brainrot_Overhead = Billboards:WaitForChild("Brainrot_Overhead") :: BillboardGui
 
 local Brainrots = require(ReplicatedStorage.Common.Modules.Brainrots)
-local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
 local Secondary_Mutations = require(ReplicatedStorage.Common.Modules.Secondary_Mutations)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 return function(
@@ -91,7 +91,7 @@ return function(
 
     local Earnings = Billboard:FindFirstChild("Earnings") :: TextLabel
 
-    local Income_Per_Sec = Calculate_Income_Per_Sec({
+    local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
         Brainrot_Name = Data.Brainrot_Name,
         Primary_Mutation = Data.Primary_Mutation,
         Secondary_Mutations = Data.Secondary_Mutations,

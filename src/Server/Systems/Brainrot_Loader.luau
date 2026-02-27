@@ -13,8 +13,7 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
-local Calculate_Cash_Multiplier = require(ReplicatedStorage.Common.Modules.Calculate_Cash_Multiplier)
-local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Pending_Brainrot_Query = World:query(
@@ -58,7 +57,7 @@ local function Load_Brainrots()
             local Cash = Serialized_Brainrot.Cash
             local Offline_Cash = Serialized_Brainrot.Offline_Cash
 
-            local Income_Per_Sec = Calculate_Income_Per_Sec({
+            local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
                 Brainrot_Name = Serialized_Brainrot.Name,
                 Primary_Mutation = Serialized_Brainrot.Primary_Mutation,
                 Secondary_Mutations = Serialized_Brainrot.Secondary_Mutations,
@@ -66,7 +65,7 @@ local function Load_Brainrots()
             })
 
             local New_Offline_Cash =
-                math.round((Time_Offline * Income_Per_Sec * Calculate_Cash_Multiplier(Player_Entity)) * 0.01) -- 1% of what u would make
+                math.round((Time_Offline * Income_Per_Sec * Stat_Calculator.Get_Cash_Multiplier(Player_Entity)) * 0.01) -- 1% of what u would make
 
             Offline_Cash += New_Offline_Cash
 

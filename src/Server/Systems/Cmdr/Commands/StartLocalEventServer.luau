@@ -6,7 +6,7 @@ local Network = require(ServerScriptService.Network)
 local Components = require(ReplicatedStorage.Common.Components)
 local World = require(ReplicatedStorage.Common.World)
 
-return function(context, eventName: string, luck_multiplier: number, duration: number)
+return function(context, eventName: string, duration: number)
     local Executor = context.Executor :: Player
 
     local Active_Events = World:get(Components.Singletons.Active_Events, Components.Singletons.Active_Events)
@@ -14,7 +14,7 @@ return function(context, eventName: string, luck_multiplier: number, duration: n
     Active_Events[eventName] = {
         Start_Time = os.time(),
         End_Time = os.time() + duration,
-        Luck_Multiplier = luck_multiplier,
+        Luck_Bonus = math.random(25, 100),
     }
 
     Network.Notification.FireAll({

@@ -12,8 +12,8 @@ local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
-local Calculate_Luck = require(ReplicatedStorage.Common.Modules.Calculate_Luck)
 local Roll_Block = require(ReplicatedStorage.Common.Modules.Roll_Block)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 
 local Block_Spawner_Query = World:query(Components.Renderable)
     :with(Components.Tags.Plot, Pair(Components.Relationships.Owner, Jecs.Wildcard))
@@ -28,7 +28,7 @@ local function Spawn_Blocks()
         local Opens = World:get(Owner_Entity, Components.Opens)
         local Block_Queue = World:get(Owner_Entity, Components.Block_Queue)
 
-        local Luck = Calculate_Luck(Owner_Entity)
+        local Luck = Stat_Calculator.Get_Luck(Owner_Entity)
 
         local Block_Name, Block_Data
 

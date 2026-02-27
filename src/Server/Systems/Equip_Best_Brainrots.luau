@@ -14,9 +14,8 @@ local Registry = require(ReplicatedStorage.Common.Registry)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
-local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
-local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local function Handle_Equip_Best_Brainrots_Requests()
@@ -64,6 +63,8 @@ local function Handle_Equip_Best_Brainrots_Requests()
         local Stands = Plot_Model:FindFirstChild("Stands")
 
         local Gained_Cash = 0
+
+        local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
 
         for
             Brainrot_Entity,
@@ -114,7 +115,7 @@ local function Handle_Equip_Best_Brainrots_Requests()
             table.insert(Sorted_By_Income, {
                 Index = Index,
                 Data = Item,
-                Income = Calculate_Income_Per_Sec({
+                Income = Stat_Calculator.Calculate_Income_Per_Sec({
                     Brainrot_Name = Item.Name,
                     Primary_Mutation = Item.Primary_Mutation,
                     Secondary_Mutations = Item.Secondary_Mutations,

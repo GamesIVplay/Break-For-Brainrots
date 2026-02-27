@@ -9,16 +9,20 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
-local Calculate_Time_Till_Legendary_Reward =
-    require(ReplicatedStorage.Common.Modules.Calculate_Time_Till_Legendary_Reward)
-local Calculate_Time_Till_Mythical_Reward =
-    require(ReplicatedStorage.Common.Modules.Calculate_Time_Till_Mythical_Reward)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Player_Block_Queue_Query = World:query(Components.Player, Components.Block_Queue):cached()
 
 local Gave_Mythical = false
 local Gave_Legendary = false
+
+local function Calculate_Time_Till_Mythical_Reward()
+    return Util.Get_Seconds_Until_Next_Interval_Est(30)
+end
+
+local function Calculate_Time_Till_Legendary_Reward()
+    return Util.Get_Seconds_Until_Next_Interval_Est(10)
+end
 
 local function Update_Block_Countdown_Display()
     for _, Part: Part in CollectionService:GetTagged("Block Countdown") do

@@ -12,9 +12,10 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
 local World = require(ReplicatedStorage.Common.World)
 
-local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
+local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local function Handle_Rebirth_Requests()
     for _, Player: Player in Network.Requests.Rebirth.Iter() do
@@ -70,17 +71,19 @@ local function Handle_Rebirth_Requests()
         do
             local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
 
-            Plot_Income_Per_Sec += Calculate_Income_Per_Sec({
+            Plot_Income_Per_Sec += math.round(Stat_Calculator.Calculate_Income_Per_Sec({
                 Brainrot_Name = Brainrot_Name,
                 Primary_Mutation = Primary_Mutation,
                 Secondary_Mutations = Secondary_Mutations,
                 Weight = Weight,
-            })
+            }) * Stat_Calculator.Get_Cash_Multiplier(Player_Entity))
         end
 
         if Plot_Income_Per_Sec < Next_Rebirth_Data.Requirement then
             Network.Notification.Fire(Player, {
-                Text = "Requirements not met",
+                Text = `Requirements not met (${Util.Format_Number_With_Commas(Plot_Income_Per_Sec)}/${Util.Format_Number_With_Commas(
+                    Next_Rebirth_Data.Requirement
+                )})`,
                 Type = "Error",
             })
             continue

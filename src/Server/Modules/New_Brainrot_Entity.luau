@@ -10,9 +10,8 @@ local Components = require(ReplicatedStorage.Common.Components)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
-local Brainrot_Offset = require(ReplicatedStorage.Common.Modules.Brainrot_Offset)
-local Calculate_Sell_Price = require(ReplicatedStorage.Common.Modules.Calculate_Sell_Price)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update_Brainrot_Overhead)
 
 return function(
@@ -40,7 +39,7 @@ return function(
 
     Brainrot_Model.Parent = workspace:FindFirstChild("Brainrots")
 
-    Brainrot_Model:PivotTo(Attachment.WorldCFrame * Offset * CFrame.new(Brainrot_Offset))
+    Brainrot_Model:PivotTo(Attachment.WorldCFrame * Offset * CFrame.new(Stat_Calculator.Get_Brainrot_Offset()))
 
     Network.VFX.Bounce_Brainrot.FireAll(Brainrot_Model)
 
@@ -73,7 +72,7 @@ return function(
         Open_Stand:SetAttribute("ServerEntity", nil)
     end)
 
-    local Sell_Price = Calculate_Sell_Price({
+    local Sell_Price = Stat_Calculator.Calculate_Sell_Price({
         Brainrot_Name = Brainrot_Name,
         Primary_Mutation = Primary_Mutation,
         Secondary_Mutations = Secondary_Mutations,

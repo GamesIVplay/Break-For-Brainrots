@@ -12,11 +12,12 @@ local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
-local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
-local Calculate_Mutation_Luck = require(ReplicatedStorage.Common.Modules.Calculate_Mutation_Luck)
 local Roll_Primary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Primary_Mutation)
 local Roll_Secondary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Secondary_Mutation)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Weight = require(ReplicatedStorage.Common.Modules.Weight)
+
+local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
 
 local Block_Open_Query = World:query(Components.Name, Components.Renderable, Components.Health)
     :with(Components.Tags.Block)
@@ -61,7 +62,7 @@ local function Open_Blocks()
             Use_Rainbow_Colors = Block_Name == "Mythical",
         })
 
-        local Mutation_Luck = Calculate_Mutation_Luck(Player_Entity)
+        local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(Player_Entity)
 
         local Rolled_Brainrot = Blocks[Block_Name].Roll_Brainrot()
         local Rolled_Primary_Mutation = Roll_Primary_Mutation(Tutorial_Step ~= 1 and Mutation_Luck or 300)

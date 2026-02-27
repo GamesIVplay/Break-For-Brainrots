@@ -11,6 +11,25 @@ local World = require(ReplicatedStorage.Common.World)
 
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
 
+local Ranked_Pickaxes = {}
+
+for Name, Data in Pickaxes do
+    table.insert(Ranked_Pickaxes, {
+        Name = Name,
+        Power = Data.Power,
+    })
+end
+
+table.sort(Ranked_Pickaxes, function(a, b)
+    return a.Power < b.Power
+end)
+
+local PickaxeRank = {}
+
+for index, entry in ipairs(Ranked_Pickaxes) do
+    PickaxeRank[entry.Name] = index
+end
+
 local function Handle_Pickaxe_Purchase_Requests()
     for _, Player: Player, Pickaxe_Name: string in Network.Requests.Buy_Pickaxe.Iter() do
         local Player_Entity = Registry.Get("Players", Player)
@@ -121,6 +140,14 @@ local function Handle_Pickaxe_Purchase_Requests()
         })
 
         Network.VFX.Buy.FireAll(Character)
+
+        AnalyticsService:LogFunnelStepEvent(
+            Player,
+            "Pickaxe Progression",
+            tostring(Player.UserId),
+            PickaxeRank[Pickaxe_Name] or 1,
+            `{Pickaxe_Name} (Power {Pickaxe_Data.Power})`
+        )
     end
 end
 

@@ -533,4 +533,70 @@ function Util.Abbreviate_Number(Number: number, Decimals: number?)
     end
 end
 
+function Util.Format_Percent(Percent: number): string
+    Percent = math.floor(Percent + 0.5)
+
+    if Percent > 0 then
+        return `+{Percent}%`
+    elseif Percent < 0 then
+        return `{Percent}%`
+    else
+        return "0%"
+    end
+end
+
+function Util.Is_Us_Dst(UtcTime: number): boolean
+    local Year = tonumber(os.date("!%Y", UtcTime))
+
+    local function GetNthSunday(Month: number, N: number)
+        local FirstOfMonth = os.time({
+            year = Year,
+            month = Month,
+            day = 1,
+            hour = 0,
+            min = 0,
+            sec = 0,
+            isdst = false,
+        })
+
+        local FirstWeekday = tonumber(os.date("!%w", FirstOfMonth)) -- 0 = Sunday
+        local FirstSundayOffset = (7 - FirstWeekday) % 7
+        local Day = 1 + FirstSundayOffset + (7 * (N - 1))
+
+        return os.time({
+            year = Year,
+            month = Month,
+            day = Day,
+            hour = 2,
+            min = 0,
+            sec = 0,
+            isdst = false,
+        })
+    end
+
+    local DstStart = GetNthSunday(3, 2) -- March (2nd Sunday)
+    local DstEnd = GetNthSunday(11, 1) -- November (1st Sunday)
+
+    return UtcTime >= DstStart and UtcTime < DstEnd
+end
+
+function Util.Get_Est_Offset(): number
+    local NowUtc = os.time()
+    return Util.Is_Us_Dst(NowUtc) and (-4 * 3600) or (-5 * 3600)
+end
+
+function Util.Get_Seconds_Until_Next_Interval_Est(IntervalMinutes: number): number
+    local IntervalSeconds = IntervalMinutes * 60
+    local NowUtc = os.time()
+
+    local EstTime = NowUtc + Util.Get_Est_Offset()
+    local Remainder = EstTime % IntervalSeconds
+
+    if Remainder == 0 then
+        return 0
+    end
+
+    return IntervalSeconds - Remainder
+end
+
 return Util

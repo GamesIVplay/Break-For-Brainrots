@@ -386,7 +386,7 @@ scope DataChanged {
 			[string]: struct {
 				Start_Time: f64,
 				End_Time: f64,
-				Luck_Multiplier: u8
+				Luck_Bonus: u8
 			}
 		}
 	}
@@ -429,5 +429,13 @@ scope DataChanged {
         Call: SingleSync, 
 		Poll: true,
         Data: boolean 
+	}
+
+	event Friend_Boost {
+		From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: f64 
 	}
 }

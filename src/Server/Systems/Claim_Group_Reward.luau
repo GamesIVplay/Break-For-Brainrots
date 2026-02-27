@@ -11,9 +11,9 @@ local Registry = require(ReplicatedStorage.Common.Registry)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
-local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
 local GroupId = require(ReplicatedStorage.Common.Modules.GroupId)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 
 local function Handle_Claim_Group_Reward_Requests()
@@ -61,6 +61,7 @@ local function Handle_Claim_Group_Reward_Requests()
 
             local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
 
+            local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
             local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
 
             if not Open_Slot then

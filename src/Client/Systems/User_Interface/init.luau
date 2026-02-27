@@ -13,7 +13,11 @@ local Satchel = require(ReplicatedStorage:FindFirstChild("Satchel", true))
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 local UIGradients = Assets:WaitForChild("UIGradients")
 
-local UISounds = Assets:WaitForChild("Sounds"):WaitForChild("UI")
+local Sounds = Assets:WaitForChild("Sounds")
+
+local Music = Sounds:WaitForChild("Music") :: SoundGroup
+
+local UISounds = Sounds:WaitForChild("UI")
 local Shop_Open = UISounds:WaitForChild("Shop_Open") :: Sound
 local CashChange = UISounds:WaitForChild("CashChange") :: Sound
 local Activate = UISounds:WaitForChild("Activate") :: Sound
@@ -44,10 +48,6 @@ local World = require(ReplicatedStorage.Common.World)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
 local Brainrots = require(ReplicatedStorage.Common.Modules.Brainrots)
-local Calculate_Cash_Multiplier = require(ReplicatedStorage.Common.Modules.Calculate_Cash_Multiplier)
-local Calculate_Luck = require(ReplicatedStorage.Common.Modules.Calculate_Luck)
-local Calculate_Mutation_Luck = require(ReplicatedStorage.Common.Modules.Calculate_Mutation_Luck)
-local Calculate_Sell_Price = require(ReplicatedStorage.Common.Modules.Calculate_Sell_Price)
 local Daily_Rewards = require(ReplicatedStorage.Common.Modules.Daily_Rewards)
 local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
 local Events = require(ReplicatedStorage.Common.Modules.Events)
@@ -57,6 +57,7 @@ local Rarities = require(ReplicatedStorage.Common.Modules.Rarities)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 local Secondary_Mutations_Config = require(ReplicatedStorage.Common.Modules.Secondary_Mutations)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
 local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
@@ -277,7 +278,7 @@ local function Make_Sell_Group(Brainrot_Inventory: { Types.Brainrot_Item })
             }
         end
 
-        local Sell_Price = Calculate_Sell_Price({
+        local Sell_Price = Stat_Calculator.Calculate_Sell_Price({
             Brainrot_Name = Brainrot_Item.Name,
             Primary_Mutation = Brainrot_Item.Primary_Mutation,
             Secondary_Mutations = Brainrot_Item.Secondary_Mutations,
@@ -466,11 +467,24 @@ local function Setup_HUD_Cash(PlayerGui: PlayerGui)
         Text = Scope:Computed(function(Use)
             return `${Util.Format_Number_With_Commas(Use(Fusion_Values.Cash))}`
         end),
-        [Children] = {
-            Scope:New("UIScale")({
-                Scale = MoneySizeMultiplierSpring,
-            }),
-        },
+    })
+
+    Scope:New("UIScale")({
+        Parent = Corner,
+        Scale = MoneySizeMultiplierSpring,
+    })
+end
+
+local function Setup_HUD_Friend_Boost(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+
+    local Corner = Main:WaitForChild("Corner") :: Frame
+    local FriendBoost = Corner:WaitForChild("FriendBoost") :: TextLabel
+
+    Scope:Hydrate(FriendBoost)({
+        Text = Scope:Computed(function(Use)
+            return `Friend Boost: +{Use(Fusion_Values.Friend_Boost)}%`
+        end),
     })
 end
 
@@ -593,20 +607,24 @@ local function Setup_HUD_Right_Corner(LocalEntity: Types.Entity, PlayerGui: Play
         })
     end
 
-    Clock(0.01, function()
-        local Cash_Multiplier = Calculate_Cash_Multiplier(LocalEntity)
+    Clock(0.1, function()
+        local Cash_Multiplier = Stat_Calculator.Get_Cash_Multiplier(LocalEntity)
+        local Cash_Percent = (Cash_Multiplier - 1) * 100
 
-        Cash.Visible = Cash_Multiplier ~= 1
-        Cash_Text.Text = `x{Cash_Multiplier}` -- `x{string.format("%.2f", Cash_Multiplier)}`
+        Cash.Visible = Cash_Percent ~= 0
+        Cash_Text.Text = Util.Format_Percent(Cash_Percent)
 
-        local Luck_Multiplier = Calculate_Luck(LocalEntity)
+        local Luck_Multiplier = Stat_Calculator.Get_Luck(LocalEntity)
+        local Luck_Percent = (Luck_Multiplier - 1) * 100
 
-        Luck.Visible = Luck_Multiplier ~= 1
-        Luck_Text.Text = `x{Luck_Multiplier}` -- `x{string.format("%.2f", Luck_Multiplier)}`
+        Luck.Visible = Luck_Percent ~= 0
+        Luck_Text.Text = Util.Format_Percent(Luck_Percent)
 
-        local Mutation_Luck = Calculate_Mutation_Luck(LocalEntity)
-        Mutation.Visible = Mutation_Luck ~= 1
-        Mutation_Text.Text = `x{Mutation_Luck}` -- `x{string.format("%.2f", Mutation_Luck)}`
+        local Mutation_Multiplier = Stat_Calculator.Get_Mutation_Luck(LocalEntity)
+        local Mutation_Percent = (Mutation_Multiplier - 1) * 100
+
+        Mutation.Visible = Mutation_Percent ~= 0
+        Mutation_Text.Text = Util.Format_Percent(Mutation_Percent)
     end)
 
     Scope:Hydrate(Right_Corner)({
@@ -762,6 +780,8 @@ local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_HUD_Left_Buttons(LocalEntity, PlayerGui)
 
     Setup_HUD_Cash(PlayerGui)
+
+    Setup_HUD_Friend_Boost(PlayerGui)
 
     Setup_HUD_Offers(LocalEntity, PlayerGui)
 
@@ -1743,19 +1763,27 @@ local function Setup_Upgrades_Content(LocalEntity: Types.Entity, PlayerGui: Play
 
         Scope:Hydrate(Original_Text_Label)({
             Text = Scope:Computed(function(Use)
-                return `x{string.format("%.2f", Data.Levels[Use(Level_Computed)].Multiplier)}`
+                local Level = Use(Level_Computed)
+                local Current_Data = Data.Levels[Level]
+
+                if Current_Data then
+                    return Util.Format_Percent(Current_Data.Percent)
+                end
+
+                return "+0%"
             end),
         })
 
         Scope:Hydrate(New_Text_Label)({
             Text = Scope:Computed(function(Use)
-                local Next_Data = Data.Levels[Use(Level_Computed) + 1]
+                local Level = Use(Level_Computed)
+                local Next_Data = Data.Levels[Level + 1]
 
                 if Next_Data then
-                    return `x{string.format("%.2f", Next_Data.Multiplier)}`
+                    return Util.Format_Percent(Next_Data.Percent)
                 end
 
-                return "?"
+                return "Max"
             end),
         })
 
@@ -1975,7 +2003,7 @@ local function Setup_Sell_Total_Value(PlayerGui: PlayerGui)
             local Total_Value = 0
 
             for _, Brainrot_Item: Types.Brainrot_Item in Brainrot_Inventory do
-                local Sell_Price = Calculate_Sell_Price({
+                local Sell_Price = Stat_Calculator.Calculate_Sell_Price({
                     Brainrot_Name = Brainrot_Item.Name,
                     Primary_Mutation = Brainrot_Item.Primary_Mutation,
                     Secondary_Mutations = Brainrot_Item.Secondary_Mutations,
@@ -2140,7 +2168,7 @@ local function Setup_Topbar_Daily_Rewards()
         :oneClick(true)
         :align("Right")
         :setCaption("Daily Rewards")
-        :setOrder(2)
+        :setOrder(0)
         :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
 
     if Peek(DeviceType) ~= "Mobile" then
@@ -2166,37 +2194,49 @@ local function Setup_Topbar_Daily_Rewards()
     end)
 end
 
---[[local function Setup_Topbar_Playtime_Rewards()
+local function Setup_Topbar_Toggle_Music()
     local Icon = TopbarPlus.new()
-        :setImage("rbxassetid://87992968703996")
+        :setImage("rbxassetid://134056990643242", "Selected")
+        :setImage("rbxassetid://99028625406197", "Deselected")
         :setImageScale(0.8)
-        :oneClick(true)
         :align("Right")
-        :setCaption("Playtime Rewards")
+        :setCaption("Toggle Music")
         :setOrder(1)
         :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
 
     if Peek(DeviceType) ~= "Mobile" then
-        Icon:setLabel("Playtime Rewards")
+        Icon:setLabel("Toggle Music")
 
         Icon.viewingStarted:Connect(function()
             Hover:Play()
         end)
     end
 
-    Icon.selected:Connect(function()
+    Icon.toggled:Connect(function(IsSelected)
         Activate:Play()
 
-        Toggle_Screen("PlaytimeRewards")
+        if IsSelected then
+            Music.Volume = 0
+        else
+            Music.Volume = 1
+        end
     end)
-end]]
+
+    Scope:Observer(Tutorial_Completed_Computed):onBind(function()
+        if Peek(Tutorial_Completed_Computed) == true then
+            Icon:setEnabled(true)
+        else
+            Icon:setEnabled(false)
+        end
+    end)
+end
 
 local function Setup_Topbar()
     TopbarPlus.modifyBaseTheme(require(script.Icon_Themes.Default))
 
     Setup_Topbar_Daily_Rewards()
 
-    -- Setup_Topbar_Playtime_Rewards()
+    Setup_Topbar_Toggle_Music()
 end
 
 local function Setup_Stroke_Fixer(PlayerGui: PlayerGui)

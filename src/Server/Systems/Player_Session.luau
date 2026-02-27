@@ -65,6 +65,50 @@ local function Character_Appearance_Loaded(Player_Entity: Types.Entity, Characte
     World:set(Player_Entity, Components.Renderable, Character)
 end
 
+local Updating_Friend_Boosts = false
+local Pending_Friend_Boost_Update = false
+
+local function Update_Friend_Boosts()
+    if Updating_Friend_Boosts then
+        Pending_Friend_Boost_Update = true
+        return
+    end
+
+    Updating_Friend_Boosts = true
+
+    repeat
+        Pending_Friend_Boost_Update = false
+
+        local PlayersList = Players:GetPlayers()
+
+        for _, Player in PlayersList do
+            local PlayerEntity = Registry.Get("Players", Player)
+            if not PlayerEntity or not World:contains(PlayerEntity) then
+                continue
+            end
+
+            local Friends = 0
+
+            for _, TargetPlayer in PlayersList do
+                if TargetPlayer ~= Player then
+                    local success, isFriend = pcall(function()
+                        return Player:IsFriendsWithAsync(TargetPlayer.UserId)
+                    end)
+
+                    if success and isFriend then
+                        Friends += 1
+                    end
+                end
+            end
+
+            World:set(PlayerEntity, Components.Friend_Boost, Friends * 5)
+        end
+
+    until not Pending_Friend_Boost_Update
+
+    Updating_Friend_Boosts = false
+end
+
 local function Handle_New_Player(Player: Player)
     if Registry.Get("Players", Player) ~= nil then
         return
@@ -87,6 +131,18 @@ local function Handle_New_Player(Player: Player)
             and MarketplaceService:UserOwnsGamePassAsync(Player.UserId, Id)
         then
             table.insert(Profile_Data.Gamepasses, Name)
+        end
+    end
+
+    for Name, Level in Profile_Data.Upgrades do
+        if not Upgrades[Name] then
+            Profile_Data.Upgrades[Name] = nil
+        end
+
+        if Name == "Luck Multiplier" then
+            Profile_Data.Upgrades["Luck Boost"] = Level
+        elseif Name == "Cash Multiplier" then
+            Profile_Data.Upgrades["Cash Boost"] = Level
         end
     end
 
@@ -124,6 +180,7 @@ local function Handle_New_Player(Player: Player)
     World:set(Player_Entity, Components.Index, Profile_Data.Index)
     World:set(Player_Entity, Components.PlayTime, Profile_Data.PlayTime)
     World:set(Player_Entity, Components.LastPlayed, Profile_Data.LastPlayed)
+    World:set(Player_Entity, Components.Friend_Boost, 0)
 
     if Profile_Data.Tutorial_Step == 5 then
         World:set(Player_Entity, Components.Tutorial_Step, 6)
@@ -229,6 +286,8 @@ local function Handle_New_Player(Player: Player)
         World:remove(Player_Entity, Pair(Components.Relationships.Previous, Components.Pickaxe))
     end)
 
+    task.spawn(Update_Friend_Boosts)
+
     Log.Info(`Setup {Player.Name}'s entity`)
 end
 
@@ -260,6 +319,8 @@ local function Handle_Leaving_Player(Player: Player)
     end
 
     Registry.Delete("Players", Player)
+
+    task.spawn(Update_Friend_Boosts)
 end
 
 return {

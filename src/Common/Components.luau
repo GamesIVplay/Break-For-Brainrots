@@ -30,6 +30,8 @@ local Components: {
     Claimed_Daily_Rewards: Types.Id<{ string }>,
     Tutorial_Step: Types.Id<number>,
 
+    Friend_Boost: Types.Id<number>,
+
     Plot_Model: Types.Id<Model>,
 
     Text: Types.Id<string>,
@@ -52,7 +54,7 @@ local Components: {
             [string]: {
                 Start_Time: number,
                 End_Time: number,
-                Luck_Multiplier: number,
+                Luck_Bonus: number,
             },
         }>,
     },
@@ -99,6 +101,8 @@ local Components: {
         Last_Daily_Reward_Claim = World:component(),
         Claimed_Daily_Rewards = World:component(),
         Tutorial_Step = World:component(),
+
+        Friend_Boost = World:component(),
 
         Plot_Model = World:component(),
 

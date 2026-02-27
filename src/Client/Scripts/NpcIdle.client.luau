@@ -23,15 +23,15 @@ local PRESETS = {
 
     -- Skip / Break
     Tiny = {
-        Distance = 0.3,
+        Distance = 0.2,
         Duration = 4.0,
         BobHeight = 0.01,
         BobSpeed = 0.4,
         GlideHeight = 0.02,
         GlideSpeed = 0.8,
         WagSpeed = 0.2,
-        YawAngleDegrees = 1,
-        RollAngleDegrees = 0.5,
+        YawAngleDegrees = 3,
+        RollAngleDegrees = 2,
     },
 
     -- Brainrot but less movement

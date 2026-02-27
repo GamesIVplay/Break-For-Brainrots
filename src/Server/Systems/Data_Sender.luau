@@ -15,13 +15,14 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
-local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
-local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update_Brainrot_Overhead)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
+
+local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
 
 local Player_Entities = World:query(Components.Player):cached()
 
@@ -461,12 +462,12 @@ local function Replicate_Plot_Income_Per_Sec(Player: Player, Entity: Types.Entit
     do
         local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
 
-        Plot_Income_Per_Sec += Calculate_Income_Per_Sec({
+        Plot_Income_Per_Sec += math.round(Stat_Calculator.Calculate_Income_Per_Sec({
             Brainrot_Name = Brainrot_Name,
             Primary_Mutation = Primary_Mutation,
             Secondary_Mutations = Secondary_Mutations,
             Weight = Weight,
-        })
+        }) * Stat_Calculator.Get_Cash_Multiplier(Entity))
     end
 
     if Plot_Income_Per_Sec ~= Previous_Plot_Income_Per_Sec then
@@ -516,6 +517,23 @@ local function Replicate_Group_Reward_Claimed(Player: Player, Entity: Types.Enti
     end
 end
 
+local function Replicate_Friend_Boost(Player: Player, Entity: Types.Entity)
+    local Friend_Boost = World:get(Entity, Components.Friend_Boost)
+    local Previous_Friend_Boost = World:get(Entity, Pair(Components.Relationships.Previous, Components.Friend_Boost))
+
+    if Friend_Boost ~= Previous_Friend_Boost then
+        Network.DataChanged.Friend_Boost.Fire(Player, Friend_Boost)
+
+        if Friend_Boost > 0 then
+            Network.Notification.Fire(Player, { Text = `Friend boost changed to +{Friend_Boost}%`, Type = "Success" })
+        end
+
+        World:set(Entity, Pair(Components.Relationships.Previous, Components.Friend_Boost), Friend_Boost)
+
+        Log.Info(`{Player.Name}'s friend boost changed to {Friend_Boost}`)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.PostUpdate,
@@ -554,6 +572,8 @@ return {
             Replicate_Tutorial_Step(Player, Entity)
 
             Replicate_Group_Reward_Claimed(Player, Entity)
+
+            Replicate_Friend_Boost(Player, Entity)
         end
     end,
     runConditions = {},

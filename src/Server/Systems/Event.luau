@@ -10,7 +10,6 @@ local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
-local Calculate_Time_Till_Next_Event = require(ReplicatedStorage.Common.Modules.Calculate_Time_Till_Next_Event)
 local Events = require(ReplicatedStorage.Common.Modules.Events)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
@@ -23,7 +22,7 @@ local Next_Event: {
     Name: string,
     Block_Name: string,
     Block_Amount: number,
-    Luck_Multiplier: number,
+    Luck_Bonus: number,
 }?
 
 local Event_Names = {}
@@ -31,7 +30,7 @@ for Name in Events do
     table.insert(Event_Names, Name)
 end
 
-local Block_Names = { "Rare", "Epic", "Legendary" }
+local Block_Names = { "Rare", "Epic", "Legendary", "Mythical" }
 
 local function Choose_Next_Event()
     if Next_Event then
@@ -46,9 +45,13 @@ local function Choose_Next_Event()
     Next_Event = {
         Name = Chosen_Name,
         Block_Name = Block_Names[math.random(1, #Block_Names)],
-        Block_Amount = math.random(2, 3),
-        Luck_Multiplier = math.random(2, 3),
+        Block_Amount = math.random(1, 2),
+        Luck_Bonus = math.random(25, 100),
     }
+end
+
+local function Calculate_Time_Till_Next_Event()
+    return Util.Get_Seconds_Until_Next_Interval_Est(30)
 end
 
 local function Update_Admin_Machine_Display()
@@ -65,7 +68,7 @@ local function Update_Admin_Machine_Display()
         Event_Image.Image = Events[Next_Event.Name].Image
         Event_Block_Image.Image = Blocks[Next_Event.Block_Name].Image
         Event_Block_Amount.Text = `x{Next_Event.Block_Amount}`
-        Event_Luck_Amount.Text = `x{Next_Event.Luck_Multiplier}`
+        Event_Luck_Amount.Text = `+{Next_Event.Luck_Bonus}%`
 
         local T = Util.BreakdownTime(Calculate_Time_Till_Next_Event())
 
@@ -95,7 +98,7 @@ local function Start_Event()
     Active_Events[Next_Event.Name] = {
         Start_Time = os.time(),
         End_Time = os.time() + Events[Next_Event.Name].Duration,
-        Luck_Multiplier = Next_Event.Luck_Multiplier,
+        Luck_Bonus = Next_Event.Luck_Bonus,
     }
 
     Network.Notification.FireAll({

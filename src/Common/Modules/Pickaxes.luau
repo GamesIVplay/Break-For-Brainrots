@@ -35,13 +35,22 @@ local Pickaxes: { [string]: Pickaxe } = {
         Developer_Product = 3529374574,
         Tool = Pickaxe_Tools:WaitForChild("Stone"),
     },
+    ["Ruby"] = {
+        Rarity = "Common",
+        Price = 2_500,
+        Rebirth = 0,
+        Power = 4,
+        Image = "rbxassetid://123344566248684",
+        Developer_Product = 3545777765,
+        Tool = Pickaxe_Tools:WaitForChild("Ruby"),
+    },
 
     -- Rare
     ["Iron"] = {
         Rarity = "Rare",
         Price = 5_000,
         Rebirth = 0,
-        Power = 4,
+        Power = 6,
         Image = "rbxassetid://81526194453089",
         Developer_Product = 3529456216,
         Tool = Pickaxe_Tools:WaitForChild("Iron"),
@@ -50,10 +59,19 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rarity = "Rare",
         Price = 15_000,
         Rebirth = 0,
-        Power = 8,
+        Power = 7,
         Image = "rbxassetid://85995206766563",
         Developer_Product = 3529456554,
         Tool = Pickaxe_Tools:WaitForChild("Gold"),
+    },
+    ["Yin Yang"] = {
+        Rarity = "Rare",
+        Price = 25_000,
+        Rebirth = 0,
+        Power = 8,
+        Image = "rbxassetid://72067973931657",
+        Developer_Product = 3545777868,
+        Tool = Pickaxe_Tools:WaitForChild("Yin Yang"),
     },
 
     -- Epic
@@ -65,6 +83,15 @@ local Pickaxes: { [string]: Pickaxe } = {
         Image = "rbxassetid://126085895816695",
         Developer_Product = 3529456696,
         Tool = Pickaxe_Tools:WaitForChild("Candy"),
+    },
+    ["Shark"] = {
+        Rarity = "Epic",
+        Price = 60_000,
+        Rebirth = 0,
+        Power = 14,
+        Image = "rbxassetid://133332192468677",
+        Developer_Product = 3545777942,
+        Tool = Pickaxe_Tools:WaitForChild("Shark"),
     },
     ["Toxic"] = {
         Rarity = "Epic",
@@ -143,6 +170,26 @@ local Pickaxes: { [string]: Pickaxe } = {
         Image = "rbxassetid://103777101628861",
         Developer_Product = 3529457565,
         Tool = Pickaxe_Tools:WaitForChild("Angel"),
+    },
+
+    ["Dragon"] = {
+        Rarity = "Secret",
+        Price = 100_000_000,
+        Rebirth = 3,
+        Power = 116,
+        Image = "rbxassetid://131641452173182",
+        Developer_Product = 3545778050,
+        Tool = Pickaxe_Tools:WaitForChild("Dragon"),
+    },
+
+    ["Hacker"] = {
+        Rarity = "Secret",
+        Price = 200_000_000,
+        Rebirth = 4,
+        Power = 124,
+        Image = "rbxassetid://112078578632696",
+        Developer_Product = 3545778098,
+        Tool = Pickaxe_Tools:WaitForChild("Hacker"),
     },
 }
 

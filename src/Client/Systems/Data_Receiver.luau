@@ -1,8 +1,9 @@
 local CollectionService = game:GetService("CollectionService")
+local GuiService = game:GetService("GuiService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
---[[local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")]]
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local ImpactHaptic = Instance.new("HapticEffect")
 ImpactHaptic.Position = Vector3.new(0, 0, 0)
@@ -157,13 +158,18 @@ local function Handle_Bounce_Brainrot()
     end
 end
 
+local function Is_Swing_Input(InputObject: InputObject)
+    return InputObject.UserInputType == Enum.UserInputType.MouseButton1
+        or (InputObject.UserInputType == Enum.UserInputType.Gamepad1 and InputObject.KeyCode == Enum.KeyCode.ButtonR2)
+end
+
 local function Handle_Tool_Setup(Local_Entity: Types.Entity)
     for _, Tool: Tool in Network.Setup_Tool.Iter() do
         local Connnections: { RBXScriptConnection } = {}
 
-        --[[local Equipped = false
+        local Equipped = false
         local Holding_Input = false
-        local Starting_Holding_Input = 0]]
+        local Starting_Holding_Input = 0
 
         local function Swing()
             local Character = World:get(Local_Entity, Components.Renderable) :: Model?
@@ -211,7 +217,7 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
             end)
         end
 
-        --[[table.insert(
+        table.insert(
             Connnections,
             Tool.Equipped:Connect(function()
                 Equipped = true
@@ -227,12 +233,28 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
 
         table.insert(
             Connnections,
-            UserInputService.InputBegan:Connect(function(InputObject, GPE)
+            UserInputService.TouchLongPress:Connect(function(_, State, GPE)
                 if GPE then
                     return
                 end
 
-                if InputObject.UserInputType ~= Enum.UserInputType.MouseButton1 then
+                if State == Enum.UserInputState.Begin then
+                    Starting_Holding_Input = os.clock()
+                    Holding_Input = true
+                elseif State == Enum.UserInputState.End then
+                    Holding_Input = false
+                end
+            end)
+        )
+
+        table.insert(
+            Connnections,
+            UserInputService.InputBegan:Connect(function(InputObject, GPE)
+                if GPE or not Equipped then
+                    return
+                end
+
+                if not Is_Swing_Input(InputObject) then
                     return
                 end
 
@@ -244,14 +266,24 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
         table.insert(
             Connnections,
             UserInputService.InputEnded:Connect(function(InputObject, GPE)
-                if GPE then
+                if not Is_Swing_Input(InputObject) then
                     return
                 end
 
-                if InputObject.UserInputType ~= Enum.UserInputType.MouseButton1 then
-                    return
-                end
+                Holding_Input = false
+            end)
+        )
 
+        table.insert(
+            Connnections,
+            UserInputService.WindowFocused:Connect(function()
+                Holding_Input = false
+            end)
+        )
+
+        table.insert(
+            Connnections,
+            GuiService.MenuOpened:Connect(function()
                 Holding_Input = false
             end)
         )
@@ -263,7 +295,7 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
                     Swing()
                 end
             end)
-		)]]
+        )
 
         table.insert(Connnections, Tool.Activated:Connect(Swing))
 
@@ -412,6 +444,14 @@ local function Handle_Group_Reward_Claimed(Local_Entity: Types.Entity)
     end
 end
 
+local function Handle_Friend_Boost(Local_Entity: Types.Entity)
+    for _, Data in Network.DataChanged.Friend_Boost.Iter() do
+        World:set(Local_Entity, Components.Friend_Boost, Data)
+
+        Fusion_Values.Friend_Boost:set(Data)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.First,
@@ -475,6 +515,8 @@ return {
         Handle_Spawn_Debris()
 
         Handle_Group_Reward_Claimed(Local_Entity)
+
+        Handle_Friend_Boost(Local_Entity)
     end,
     runConditions = {},
 }

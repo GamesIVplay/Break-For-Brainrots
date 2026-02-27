@@ -12,8 +12,8 @@ local Registry = require(ReplicatedStorage.Common.Registry)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
-local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Trade_Allowed = {}
@@ -105,6 +105,7 @@ local function Handle_Gift_Requests()
             continue
         end
 
+        local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
         local Open_Slot = Slot_Util.Get_First_Open(Target_Player_Entity_Brainrot_Inventory, Brainrot_Capacity)
 
         if not Open_Slot then

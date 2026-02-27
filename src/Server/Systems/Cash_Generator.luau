@@ -15,8 +15,7 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
-local Calculate_Cash_Multiplier = require(ReplicatedStorage.Common.Modules.Calculate_Cash_Multiplier)
-local Calculate_Income_Per_Sec = require(ReplicatedStorage.Common.Modules.Calculate_Income_Per_Sec)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Can_Generate = Ratelimit(1, 1)
@@ -50,7 +49,7 @@ local function Generate_Brainrots_Cash()
             continue
         end
 
-        local Income_Per_Sec = Calculate_Income_Per_Sec({
+        local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
             Brainrot_Name = Brainrot_Name,
             Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation),
             Secondary_Mutations = Secondary_Mutations,
@@ -58,7 +57,7 @@ local function Generate_Brainrots_Cash()
         })
 
         if Can_Generate(Brainrot_Entity) then
-            Cash += math.round(Income_Per_Sec * Calculate_Cash_Multiplier(Owner_Entity))
+            Cash += math.round(Income_Per_Sec * Stat_Calculator.Get_Cash_Multiplier(Owner_Entity))
         end
 
         local Touch = Stand:FindFirstChild("Touch") :: Part

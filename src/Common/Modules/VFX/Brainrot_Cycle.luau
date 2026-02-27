@@ -14,13 +14,15 @@ local Result = VFX:WaitForChild("Result") :: Attachment
 local Spin = VFX:WaitForChild("Spin") :: Attachment
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
-local Brainrot_Offset = require(ReplicatedStorage.Common.Modules.Brainrot_Offset)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Roll_Primary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Primary_Mutation)
 local Roll_Secondary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Secondary_Mutation)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update_Brainrot_Overhead)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 local Weight = require(ReplicatedStorage.Common.Modules.Weight)
+
+local Brainrot_Offset = Stat_Calculator.Get_Brainrot_Offset()
 
 local CYCLE_DURATION = 0.5
 local SHOWCASE_TIME = 3

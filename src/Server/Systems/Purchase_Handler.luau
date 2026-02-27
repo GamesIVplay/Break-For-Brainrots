@@ -18,12 +18,14 @@ local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
-local Brainrot_Capacity = require(ReplicatedStorage.Common.Modules.Brainrot_Capacity)
 local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Upgrades_Config = require(ReplicatedStorage.Common.Modules.Upgrades)
 local Weight = require(ReplicatedStorage.Common.Modules.Weight)
+
+local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
 
 local Grant_Purchase_By_Product_Id = {
     [Developer_Products["Restock"]] = function(PlayerEntity: Types.Entity)

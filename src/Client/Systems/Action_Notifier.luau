@@ -27,9 +27,9 @@ local Rebirths = require(ReplicatedStorage.Common.Modules.Rebirths)
 local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 
-local PICKAXE_NOTIFY_INTERVAL = 60
-local UPGRADE_NOTIFY_INTERVAL = 60 * 2
-local REBIRTH_NOTIFY_INTERVAL = 60 * 2
+local PICKAXE_NOTIFY_INTERVAL = 30
+local UPGRADE_NOTIFY_INTERVAL = 90
+local REBIRTH_NOTIFY_INTERVAL = 60
 
 local LastPickaxeNotify = 0
 local LastUpgradeNotify = 0
@@ -39,7 +39,7 @@ local function Notify(Text: string)
     local Entity = World:entity()
     World:set(Entity, Components.Text, Text)
     World:set(Entity, Components.NotificationType, "Success")
-    World:set(Entity, Components.Duration, 6)
+    World:set(Entity, Components.Duration, 8)
     World:add(Entity, Components.Tags.Notification)
 end
 
@@ -174,7 +174,7 @@ local function Action_Notifier()
 
     local Affordable_Pickaxe = Get_Affordable_Pickaxe(Local_Entity)
 
-    if Affordable_Pickaxe then
+    if Affordable_Pickaxe ~= nil then
         if currentTime - LastPickaxeNotify >= PICKAXE_NOTIFY_INTERVAL and Should_Notify then
             Notify(`You can afford a {Affordable_Pickaxe} Pickaxe!`)
             LastPickaxeNotify = currentTime
@@ -189,7 +189,7 @@ local function Action_Notifier()
 
     if Can_Rebirth(Local_Entity) then
         if currentTime - LastRebirthNotify >= REBIRTH_NOTIFY_INTERVAL and Should_Notify then
-            Notify(`You can afford a {Affordable_Pickaxe} Pickaxe!`)
+            Notify("You can Rebirth!")
             LastRebirthNotify = currentTime
         end
         Rebirth_Exclamation.Visible = true
@@ -200,6 +200,7 @@ local function Action_Notifier()
 
     if Can_Upgrade(Local_Entity) then
         if currentTime - LastUpgradeNotify >= UPGRADE_NOTIFY_INTERVAL and Should_Notify then
+            Notify(`There's upgrades you can buy!`)
             LastUpgradeNotify = currentTime
         end
         Upgrades_Exclamation.Visible = true
