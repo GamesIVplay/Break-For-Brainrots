@@ -50,7 +50,7 @@ local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 
 local TOUCH_PART_BOUNCE_TIME = 0.08
 local TOUCH_PART_TWEEN_INFO = TweenInfo.new(TOUCH_PART_BOUNCE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
-local STOCK_START_TIMESTAMP = 1772190287
+local STOCK_START_TIMESTAMP = 1772221960
 local STOCK_FULL_TIME = 2 * 7 * 86400
 local RANDOM_BRAINROT_CYCLE_TWEEN_INFO = TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 local RANDOM_BRAINROT_OPTIONS = {
