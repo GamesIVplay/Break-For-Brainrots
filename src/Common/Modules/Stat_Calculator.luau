@@ -11,7 +11,7 @@ local Secondary_Mutations = require(ReplicatedStorage.Common.Modules.Secondary_M
 local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 local Weight = require(ReplicatedStorage.Common.Modules.Weight)
 
-local BRAINROT_CAPACITY = 250
+local BRAINROT_CAPACITY = 300
 local BRAINROT_OFFSET = Vector3.new(0, 0.5, 0)
 
 export type Brainrot_Data = {

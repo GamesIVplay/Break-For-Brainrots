@@ -33,6 +33,7 @@ local Registry = require(ReplicatedStorage.Common.Registry)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
+local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
 local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
@@ -63,6 +64,7 @@ local RANDOM_BRAINROT_OPTIONS = {
     "Frigo Camelo",
     "Rhino Toasterino",
 }
+local RANDOM_BRAINROT_CYCLE_DELAY = 0.8
 
 local function BindFakeStock(Count: TextLabel, Max_Count: number)
     local CurrentStock = 0
@@ -523,7 +525,7 @@ local function Setup_Random_Brainrot(Local_Player: Player)
 
         local LastRolledBrainrot = nil
 
-        Clock(1, function()
+        Clock(RANDOM_BRAINROT_CYCLE_DELAY, function()
             local Rolled_Brainrot
 
             repeat
@@ -565,8 +567,37 @@ local function Setup_Random_Brainrot(Local_Player: Player)
 
             Util.Tween_Model_Scale(Target_Scale, Original_Scale, RANDOM_BRAINROT_CYCLE_TWEEN_INFO, Brainrot_Model)
 
-            Debris:AddItem(Brainrot_Model, 1)
+            Debris:AddItem(Brainrot_Model, RANDOM_BRAINROT_CYCLE_DELAY)
         end)
+    end
+end
+
+local function Setup_Secret_Offer(Local_Player: Player)
+    for _, Inst: Folder in CollectionService:GetTagged("Secret Offer") do
+        if not Inst:IsA("Folder") then
+            continue
+        end
+
+        task.spawn(function()
+            local Price = Inst:FindFirstChild("Price", true)
+            local Product_Info = Util.Get_Product_Info(Blocks["Secret"].Developer_Product)
+
+            if Product_Info then
+                Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+            else
+                Price.Text = ""
+            end
+        end)
+
+        local Prompt = Inst:FindFirstChild("Prompt", true) :: Attachment
+
+        Proximity(
+            Prompt,
+            { ActionText = "Purchase", ObjectText = "Secret Block", MaxActivationDistance = 10 },
+            function()
+                MarketPlaceService:PromptProductPurchase(Local_Player, Blocks["Secret"].Developer_Product)
+            end
+        )
     end
 end
 
@@ -596,6 +627,8 @@ return {
         Setup_Skibidi_Toilet(Local_Player)
 
         Setup_Random_Brainrot(Local_Player)
+
+        Setup_Secret_Offer(Local_Player)
     end,
     runConditions = {},
 }
