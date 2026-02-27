@@ -14,7 +14,7 @@ export type AnimationInfo = {
     Stack: boolean?,
 }
 
-export type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Mythical" | "Secret"
+export type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Mythical" | "Secret" | "Limited"
 export type NotificationType = "Success" | "Info" | "Warning" | "Error" | "Reward"
 
 export type Brainrot_Item = {

@@ -5,6 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local PurchaseHistoryStore = DataStoreService:GetDataStore("PurchaseHistory")
+local StockStore = DataStoreService:GetDataStore("StockStore")
 
 local Network = require(ServerScriptService.Network)
 
@@ -53,7 +54,7 @@ local Grant_Purchase_By_Product_Id = {
         Brainrot_Inventory[Open_Slot] = {
             Name = "Matteo",
             Secondary_Mutations = {},
-            Weight = Weight.Roll_Weight(),
+            Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
         } :: Types.Brainrot_Item
@@ -80,7 +81,7 @@ local Grant_Purchase_By_Product_Id = {
         Brainrot_Inventory[Open_Slot] = {
             Name = "Dragon Cannelloni",
             Secondary_Mutations = {},
-            Weight = Weight.Roll_Weight(),
+            Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
         } :: Types.Brainrot_Item
@@ -106,7 +107,7 @@ local Grant_Purchase_By_Product_Id = {
         Brainrot_Inventory[Open_Slot] = {
             Name = "Frigo Camelo",
             Secondary_Mutations = {},
-            Weight = Weight.Roll_Weight(),
+            Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
         } :: Types.Brainrot_Item
@@ -130,7 +131,7 @@ local Grant_Purchase_By_Product_Id = {
         Brainrot_Inventory[Open_Slot] = {
             Name = "Six Seven",
             Secondary_Mutations = {},
-            Weight = Weight.Roll_Weight(),
+            Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
         } :: Types.Brainrot_Item
@@ -154,7 +155,7 @@ local Grant_Purchase_By_Product_Id = {
         Brainrot_Inventory[Open_Slot] = {
             Name = "Esok Sekolah",
             Secondary_Mutations = {},
-            Weight = Weight.Roll_Weight(),
+            Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
         } :: Types.Brainrot_Item
@@ -246,7 +247,7 @@ local Grant_Purchase_By_Product_Id = {
         Brainrot_Inventory[Open_Slot] = {
             Name = "Ballerino Lololo",
             Secondary_Mutations = {},
-            Weight = Weight.Roll_Weight(),
+            Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
         } :: Types.Brainrot_Item
@@ -270,7 +271,7 @@ local Grant_Purchase_By_Product_Id = {
         Brainrot_Inventory[Open_Slot] = {
             Name = "Tung Sahur",
             Secondary_Mutations = {},
-            Weight = Weight.Roll_Weight(),
+            Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
         } :: Types.Brainrot_Item
@@ -297,7 +298,7 @@ local Grant_Purchase_By_Product_Id = {
             Name = "Ballerina Cappuccina",
             Primary_Mutation = "Gold",
             Secondary_Mutations = {},
-            Weight = Weight.Roll_Weight(),
+            Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
         } :: Types.Brainrot_Item
@@ -322,7 +323,7 @@ local Grant_Purchase_By_Product_Id = {
             Name = "Ballerina Cappuccina",
             Primary_Mutation = "Gold",
             Secondary_Mutations = {},
-            Weight = Weight.Roll_Weight(),
+            Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
         } :: Types.Brainrot_Item
@@ -347,7 +348,7 @@ local Grant_Purchase_By_Product_Id = {
             Name = "Bananita Dolphinita",
             Primary_Mutation = "Diamond",
             Secondary_Mutations = {},
-            Weight = Weight.Roll_Weight(),
+            Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
         } :: Types.Brainrot_Item
@@ -368,6 +369,78 @@ local Grant_Purchase_By_Product_Id = {
         end
 
         World:set(Block_Entity, Components.Health, 0)
+
+        return true
+    end,
+    [Developer_Products["Troll Face"]] = function(PlayerEntity: Types.Entity)
+        local Player = World:get(PlayerEntity, Components.Player)
+        local Brainrot_Inventory = World:get(PlayerEntity, Components.Brainrot_Inventory)
+
+        local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
+
+        if not Open_Slot then
+            Network.Notification.Fire(Player, {
+                Text = "Inventory full! Troll Face not claimed. Free up a slot and rejoin.",
+                Type = "Error",
+            })
+            return false
+        end
+
+        Brainrot_Inventory[Open_Slot] = {
+            Name = "Troll Face",
+            Secondary_Mutations = {},
+            Weight = math.max(10, Weight.Roll_Weight()),
+            Cash = 0,
+            Offline_Cash = 0,
+        } :: Types.Brainrot_Item
+
+        return true
+    end,
+    [Developer_Products["La Grande Combinasion"]] = function(PlayerEntity: Types.Entity)
+        local Player = World:get(PlayerEntity, Components.Player)
+        local Brainrot_Inventory = World:get(PlayerEntity, Components.Brainrot_Inventory)
+
+        local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
+
+        if not Open_Slot then
+            Network.Notification.Fire(Player, {
+                Text = "Inventory full! La Grande Combinasion not claimed. Free up a slot and rejoin.",
+                Type = "Error",
+            })
+            return false
+        end
+
+        Brainrot_Inventory[Open_Slot] = {
+            Name = "La Grande Combinasion",
+            Secondary_Mutations = {},
+            Weight = math.max(10, Weight.Roll_Weight()),
+            Cash = 0,
+            Offline_Cash = 0,
+        } :: Types.Brainrot_Item
+
+        return true
+    end,
+    [Developer_Products["Skibidi Toilet"]] = function(PlayerEntity: Types.Entity)
+        local Player = World:get(PlayerEntity, Components.Player)
+        local Brainrot_Inventory = World:get(PlayerEntity, Components.Brainrot_Inventory)
+
+        local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
+
+        if not Open_Slot then
+            Network.Notification.Fire(Player, {
+                Text = "Inventory full! Skibidi Toilet not claimed. Free up a slot and rejoin.",
+                Type = "Error",
+            })
+            return false
+        end
+
+        Brainrot_Inventory[Open_Slot] = {
+            Name = "Skibidi Toilet",
+            Secondary_Mutations = {},
+            Weight = math.max(10, Weight.Roll_Weight()),
+            Cash = 0,
+            Offline_Cash = 0,
+        } :: Types.Brainrot_Item
 
         return true
     end,

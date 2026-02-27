@@ -5,16 +5,18 @@ local Block_Models = Assets:WaitForChild("Blocks")
 
 local Brainrots = require(ReplicatedStorage.Common.Modules.Brainrots)
 
+local Rarities = require(ReplicatedStorage.Common.Modules.Rarities)
 local Types = require(ReplicatedStorage.Common.Types)
 
-local RarityOrder = {
-    "Common",
-    "Rare",
-    "Epic",
-    "Legendary",
-    "Mythical",
-    "Secret",
-}
+local RarityOrder = {}
+
+for Name, Index in pairs(Rarities) do
+    table.insert(RarityOrder, Name)
+end
+
+table.sort(RarityOrder, function(a, b)
+    return Rarities[a] > Rarities[b]
+end)
 
 local function GetLowerRarity(Rarity)
     local Index = table.find(RarityOrder, Rarity)

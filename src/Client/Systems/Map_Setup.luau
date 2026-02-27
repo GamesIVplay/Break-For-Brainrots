@@ -36,12 +36,37 @@ local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Pr
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Proximity = require(ReplicatedStorage.Common.Modules.Proximity)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
+local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
+local Unicode_Characters = require(ReplicatedStorage.Common.Modules.Unicode_Characters)
+local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 
 local TOUCH_PART_BOUNCE_TIME = 0.08
 local TOUCH_PART_TWEEN_INFO = TweenInfo.new(TOUCH_PART_BOUNCE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+local STOCK_START_TIMESTAMP = 1772190287
+local STOCK_FULL_TIME = 2 * 7 * 86400
+
+local function BindFakeStock(Count: TextLabel, Max_Count: number)
+    local CurrentStock = 0
+
+    local function Update()
+        local Now = os.time()
+        local Elapsed = math.max(0, Now - STOCK_START_TIMESTAMP)
+        local Alpha = math.clamp(Elapsed / STOCK_FULL_TIME, 0, 1)
+
+        CurrentStock = math.floor(Max_Count * Alpha)
+        Count.Text = string.format("%d/%d", CurrentStock, Max_Count)
+    end
+
+    Update()
+    Clock(30, Update)
+
+    return function()
+        return CurrentStock
+    end
+end
 
 local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
     local Local_Player = World:get(Local_Entity, Components.Player)
@@ -320,9 +345,41 @@ local function Setup_Troll_Face(Local_Player: Player)
             continue
         end
 
+        local Title = Inst:FindFirstChild("Title", true) :: TextLabel
+
+        local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
+            Brainrot_Name = "Troll Face",
+            Secondary_Mutations = {},
+            Weight = 10,
+        })
+
+        Title.Text = `Troll Face (${Util.Format_Number_With_Commas(Income_Per_Sec)}+/s)`
+
+        task.spawn(function()
+            local Price = Inst:FindFirstChild("Price", true)
+            local Product_Info = Util.Get_Product_Info(Developer_Products["Troll Face"])
+
+            if Product_Info then
+                Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+            else
+                Price.Text = ""
+            end
+        end)
+
+        local Count = Inst:FindFirstChild("Count", true) :: TextLabel
+        local Get_Stock = BindFakeStock(Count, 750)
+
         local Prompt = Inst:FindFirstChild("Prompt", true) :: Attachment
 
         Proximity(Prompt, { ActionText = "Purchase", ObjectText = "Troll Face", MaxActivationDistance = 15 }, function()
+            if Get_Stock() >= 750 then
+                local Entity = World:entity()
+                World:set(Entity, Components.Text, "This is sold Out")
+                World:set(Entity, Components.NotificationType, "Error")
+                World:add(Entity, Components.Tags.Notification)
+                return
+            end
+
             MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Troll Face"])
         end)
     end
@@ -334,12 +391,44 @@ local function Setup_La_Grande_Combinasion(Local_Player: Player)
             continue
         end
 
+        local Title = Inst:FindFirstChild("Title", true) :: TextLabel
+
+        local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
+            Brainrot_Name = "La Grande Combinasion",
+            Secondary_Mutations = {},
+            Weight = 10,
+        })
+
+        Title.Text = `Troll Face (${Util.Format_Number_With_Commas(Income_Per_Sec)}+/s)`
+
+        task.spawn(function()
+            local Price = Inst:FindFirstChild("Price", true)
+            local Product_Info = Util.Get_Product_Info(Developer_Products["La Grande Combinasion"])
+
+            if Product_Info then
+                Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+            else
+                Price.Text = ""
+            end
+        end)
+
+        local Count = Inst:FindFirstChild("Count", true) :: TextLabel
+        local Get_Stock = BindFakeStock(Count, 250)
+
         local Prompt = Inst:FindFirstChild("Prompt", true) :: Attachment
 
         Proximity(
             Prompt,
             { ActionText = "Purchase", ObjectText = "La Grande Combinasion", MaxActivationDistance = 15 },
             function()
+                if Get_Stock() >= 250 then
+                    local Entity = World:entity()
+                    World:set(Entity, Components.Text, "This is sold Out")
+                    World:set(Entity, Components.NotificationType, "Error")
+                    World:add(Entity, Components.Tags.Notification)
+                    return
+                end
+
                 MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["La Grande Combinasion"])
             end
         )
@@ -352,12 +441,44 @@ local function Setup_Skibidi_Toilet(Local_Player: Player)
             continue
         end
 
+        local Title = Inst:FindFirstChild("Title", true) :: TextLabel
+
+        local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
+            Brainrot_Name = "Skibidi Toilet",
+            Secondary_Mutations = {},
+            Weight = 10,
+        })
+
+        Title.Text = `Troll Face (${Util.Format_Number_With_Commas(Income_Per_Sec)}+/s)`
+
+        task.spawn(function()
+            local Price = Inst:FindFirstChild("Price", true)
+            local Product_Info = Util.Get_Product_Info(Developer_Products["Skibidi Toilet"])
+
+            if Product_Info then
+                Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+            else
+                Price.Text = ""
+            end
+        end)
+
+        local Count = Inst:FindFirstChild("Count", true) :: TextLabel
+        local Get_Stock = BindFakeStock(Count, 500)
+
         local Prompt = Inst:FindFirstChild("Prompt", true) :: Attachment
 
         Proximity(
             Prompt,
             { ActionText = "Purchase", ObjectText = "Skibidi Toilet", MaxActivationDistance = 15 },
             function()
+                if Get_Stock() >= 500 then
+                    local Entity = World:entity()
+                    World:set(Entity, Components.Text, "This is sold Out")
+                    World:set(Entity, Components.NotificationType, "Error")
+                    World:add(Entity, Components.Tags.Notification)
+                    return
+                end
+
                 MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Skibidi Toilet"])
             end
         )

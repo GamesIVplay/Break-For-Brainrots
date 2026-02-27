@@ -82,6 +82,11 @@ local Brainrots: { [string]: Brainrot } = {
     ["Chicleteira Bicicleteira"] = { Rarity = "Secret", IncomePerSec = 3_240 },
     ["Esok Sekolah"] = { Rarity = "Secret", IncomePerSec = 3_320 },
     ["Torrtuginni Dragonfrutini"] = { Rarity = "Secret", IncomePerSec = 3_400 },
+
+    -- Limited
+    ["Troll Face"] = { Rarity = "Limited", IncomePerSec = 100 },
+    ["Skibidi Toilet"] = { Rarity = "Limited", IncomePerSec = 3_600 },
+    ["La Grande Combinasion"] = { Rarity = "Limited", IncomePerSec = 4_000 },
 }
 
 local function Verify_Integrity()
