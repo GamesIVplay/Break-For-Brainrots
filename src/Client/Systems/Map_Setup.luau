@@ -419,7 +419,7 @@ local function Setup_La_Grande_Combinasion(Local_Player: Player)
             Weight = 10,
         })
 
-        Title.Text = `Troll Face (${Util.Format_Number_With_Commas(Income_Per_Sec)}+/s)`
+        Title.Text = `La Grande Combinasion (${Util.Format_Number_With_Commas(Income_Per_Sec)}+/s)`
 
         task.spawn(function()
             local Price = Inst:FindFirstChild("Price", true)
@@ -469,7 +469,7 @@ local function Setup_Skibidi_Toilet(Local_Player: Player)
             Weight = 10,
         })
 
-        Title.Text = `Troll Face (${Util.Format_Number_With_Commas(Income_Per_Sec)}+/s)`
+        Title.Text = `Skibidi Toilet (${Util.Format_Number_With_Commas(Income_Per_Sec)}+/s)`
 
         task.spawn(function()
             local Price = Inst:FindFirstChild("Price", true)
