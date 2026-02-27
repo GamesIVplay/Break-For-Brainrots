@@ -135,14 +135,14 @@ local function Handle_New_Player(Player: Player)
     end
 
     for Name, Level in Profile_Data.Upgrades do
-        if not Upgrades[Name] then
-            Profile_Data.Upgrades[Name] = nil
-        end
-
         if Name == "Luck Multiplier" then
             Profile_Data.Upgrades["Luck Boost"] = Level
         elseif Name == "Cash Multiplier" then
             Profile_Data.Upgrades["Cash Boost"] = Level
+        end
+
+        if not Upgrades[Name] then
+            Profile_Data.Upgrades[Name] = nil
         end
     end
 
