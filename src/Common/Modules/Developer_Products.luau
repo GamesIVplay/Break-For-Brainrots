@@ -20,4 +20,7 @@ return table.freeze({
     ["Break Block"] = 3524818590,
     ["Gold Ballerina Cappuccina"] = 3527109775,
     ["Diamond Bananita Dolphinita"] = 3527109928,
+    ["Troll Face"] = 3545898352,
+    ["La Grande Combinasion"] = 3545898566,
+    ["Skibidi Toilet"] = 3545898790,
 })

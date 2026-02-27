@@ -10,8 +10,6 @@ local Shops = Map:WaitForChild("Shops") :: Folder
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 
-local UIGradients = Assets:WaitForChild("UIGradients") :: Folder
-
 local Zone = require(Assets:WaitForChild("Modules"):WaitForChild("Zone")) :: any
 
 local Billboards = Assets:WaitForChild("Billboards")
@@ -185,62 +183,6 @@ local function Setup_Shops(Local_Player: Player)
     end
 end
 
---[[local function Setup_Free_Rewards()
-    for _, Inst in CollectionService:GetTagged("FreeReward") do
-        if not Inst:IsA("Model") then
-            continue
-        end
-
-        local Prompt = Inst:FindFirstChild("Prompt") :: BasePart?
-
-        if not Prompt then
-            continue
-        end
-
-        Proximity(Prompt, { ActionText = "🎁 Free Reward 🎁" }, function()
-            if not Ratelimits.Claim_Group_Reward() then
-                return
-            end
-
-            Network.Requests.Claim_Group_Reward.Fire()
-        end)
-    end
-end]]
-
---[[local function Setup_Gold_Ballerina_Cappuccina(Local_Player: Player)
-    for _, Inst in CollectionService:GetTagged("Gold Ballerina Cappuccina") do
-        if not Inst:IsA("Model") then
-            continue
-        end
-
-        local Main = Inst:FindFirstChild("Main", true) :: Attachment
-        local Rarity_Text_Label = Main:FindFirstChild("Rarity", true) :: TextLabel
-
-        Proximity(Main, { ActionText = "Purchase", MaxActivationDistance = 10 }, function()
-            MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Gold Ballerina Cappuccina"])
-        end)
-
-        UIGradients.Legendary:Clone().Parent = Rarity_Text_Label
-    end
-end]]
-
-local function Setup_Diamond_Bananita_Dolphinita(Local_Player: Player)
-    for _, Inst in CollectionService:GetTagged("Diamond Bananita Dolphinita") do
-        if not Inst:IsA("Model") then
-            continue
-        end
-
-        local Main = Inst:FindFirstChild("Main", true) :: Attachment
-        local Rarity_Text_Label = Main:FindFirstChild("Rarity", true) :: TextLabel
-
-        Proximity(Main, { ActionText = "Purchase", MaxActivationDistance = 10 }, function()
-            MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Diamond Bananita Dolphinita"])
-        end)
-
-        UIGradients.Epic:Clone().Parent = Rarity_Text_Label
-    end
-end
-
 local function Setup_x2_Cash_Parts(Local_Player: Player)
     for _, Inst in CollectionService:GetTagged("x2Cash") do
         if not Inst:IsA("Model") then
@@ -372,6 +314,56 @@ local function Setup_Update_Signs(Local_Player: Player)
     end)
 end
 
+local function Setup_Troll_Face(Local_Player: Player)
+    for _, Inst in CollectionService:GetTagged("Troll Face") do
+        if not Inst:IsA("Model") then
+            continue
+        end
+
+        local Prompt = Inst:FindFirstChild("Prompt", true) :: Attachment
+
+        Proximity(Prompt, { ActionText = "Purchase", ObjectText = "Troll Face", MaxActivationDistance = 15 }, function()
+            MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Troll Face"])
+        end)
+    end
+end
+
+local function Setup_La_Grande_Combinasion(Local_Player: Player)
+    for _, Inst in CollectionService:GetTagged("La Grande Combinasion") do
+        if not Inst:IsA("Model") then
+            continue
+        end
+
+        local Prompt = Inst:FindFirstChild("Prompt", true) :: Attachment
+
+        Proximity(
+            Prompt,
+            { ActionText = "Purchase", ObjectText = "La Grande Combinasion", MaxActivationDistance = 15 },
+            function()
+                MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["La Grande Combinasion"])
+            end
+        )
+    end
+end
+
+local function Setup_Skibidi_Toilet(Local_Player: Player)
+    for _, Inst in CollectionService:GetTagged("Skibidi Toilet") do
+        if not Inst:IsA("Model") then
+            continue
+        end
+
+        local Prompt = Inst:FindFirstChild("Prompt", true) :: Attachment
+
+        Proximity(
+            Prompt,
+            { ActionText = "Purchase", ObjectText = "Skibidi Toilet", MaxActivationDistance = 15 },
+            function()
+                MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Skibidi Toilet"])
+            end
+        )
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.InitPhases.Init,
@@ -385,13 +377,17 @@ return {
 
         Setup_Shops(Local_Player)
 
-        Setup_Diamond_Bananita_Dolphinita(Local_Player)
-
         Setup_x2_Cash_Parts(Local_Player)
 
         Setup_x2_Luck_Parts(Local_Player)
 
         task.spawn(Setup_Update_Signs, Local_Player)
+
+        Setup_Troll_Face(Local_Player)
+
+        Setup_La_Grande_Combinasion(Local_Player)
+
+        Setup_Skibidi_Toilet(Local_Player)
     end,
     runConditions = {},
 }
