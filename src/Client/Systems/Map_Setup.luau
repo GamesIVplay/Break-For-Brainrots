@@ -299,7 +299,9 @@ local function Setup_Update_Signs(Local_Player: Player)
             Display,
             { ObjectText = "Next Update!", ActionText = "Sign Up", MaxActivationDistance = 8 },
             function()
-                SocialService:PromptRsvpToEventAsync(Config.UPDATE_EVENT_ID)
+                pcall(function()
+                    SocialService:PromptRsvpToEventAsync(Config.UPDATE_EVENT_ID)
+                end)
             end
         )
     end

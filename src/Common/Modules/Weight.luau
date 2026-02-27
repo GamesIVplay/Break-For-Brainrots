@@ -6,8 +6,8 @@ function Weight.Roll_Weight()
     local Factor = math.random(70, 140) / 100
     local Weight_Value = BASE_WEIGHT * Factor
 
-    if math.random() < 0.02 then
-        local Lucky_multiplier = math.random(2, 4)
+    if math.random() < 0.01 then
+        local Lucky_multiplier = math.random(2, 3)
         Weight_Value *= Lucky_multiplier
     end
 
