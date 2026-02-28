@@ -74,7 +74,7 @@ local function BindFakeStock(Count: TextLabel, Max_Count: number)
         local Elapsed = math.max(0, Now - STOCK_START_TIMESTAMP)
         local Alpha = math.clamp(Elapsed / STOCK_FULL_TIME, 0, 1)
 
-        CurrentStock = math.floor(Max_Count * Alpha)
+        CurrentStock = math.floor(Max_Count * (1 - Alpha))
         Count.Text = string.format("%d/%d", CurrentStock, Max_Count)
     end
 
@@ -392,7 +392,7 @@ local function Setup_Troll_Face(Local_Player: Player)
         local Prompt = Inst:FindFirstChild("Prompt", true) :: Attachment
 
         Proximity(Prompt, { ActionText = "Purchase", ObjectText = "Troll Face", MaxActivationDistance = 10 }, function()
-            if Get_Stock() >= 750 then
+            if Get_Stock() == 0 then
                 local Entity = World:entity()
                 World:set(Entity, Components.Text, "This is sold Out")
                 World:set(Entity, Components.NotificationType, "Error")
@@ -441,7 +441,7 @@ local function Setup_La_Grande_Combinasion(Local_Player: Player)
             Prompt,
             { ActionText = "Purchase", ObjectText = "La Grande Combinasion", MaxActivationDistance = 10 },
             function()
-                if Get_Stock() >= 250 then
+                if Get_Stock() == 0 then
                     local Entity = World:entity()
                     World:set(Entity, Components.Text, "This is sold Out")
                     World:set(Entity, Components.NotificationType, "Error")
@@ -491,7 +491,7 @@ local function Setup_Skibidi_Toilet(Local_Player: Player)
             Prompt,
             { ActionText = "Purchase", ObjectText = "Skibidi Toilet", MaxActivationDistance = 10 },
             function()
-                if Get_Stock() >= 500 then
+                if Get_Stock() == 0 then
                     local Entity = World:entity()
                     World:set(Entity, Components.Text, "This is sold Out")
                     World:set(Entity, Components.NotificationType, "Error")
