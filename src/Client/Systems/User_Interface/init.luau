@@ -2175,6 +2175,7 @@ local function Setup_Topbar_Daily_Rewards()
         :setCaption("Daily Rewards")
         :setOrder(0)
         :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+        :autoDeselect(false)
 
     if Peek(DeviceType) ~= "Mobile" then
         Icon:setLabel("Daily Rewards")
@@ -2208,6 +2209,7 @@ local function Setup_Topbar_Toggle_Music()
         :setCaption("Toggle Music")
         :setOrder(1)
         :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+        :autoDeselect(false)
 
     if Peek(DeviceType) ~= "Mobile" then
         Icon:setLabel("Toggle Music")
