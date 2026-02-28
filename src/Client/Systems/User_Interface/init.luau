@@ -13,6 +13,8 @@ local Satchel = require(ReplicatedStorage:FindFirstChild("Satchel", true))
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 local UIGradients = Assets:WaitForChild("UIGradients")
 
+local ClickFX = require(Assets:WaitForChild("Modules"):WaitForChild("ClickFX"))
+
 local Sounds = Assets:WaitForChild("Sounds")
 
 local Music = Sounds:WaitForChild("Music") :: SoundGroup
@@ -2317,6 +2319,8 @@ return {
                     Satchel:SetBackpackEnabled(false)
                 end
             end)
+
+            ClickFX.Start()
 
             Log.Info("UI has been setup")
         end)
