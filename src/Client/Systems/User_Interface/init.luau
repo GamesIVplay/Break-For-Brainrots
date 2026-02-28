@@ -2,7 +2,6 @@ local Lighting = game:GetService("Lighting")
 local MarketplaceService = game:GetService("MarketplaceService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
 local Camera = workspace.CurrentCamera
@@ -609,7 +608,7 @@ local function Setup_HUD_Right_Corner(LocalEntity: Types.Entity, PlayerGui: Play
         })
     end
 
-    Clock(0.1, function()
+    Clock(1, function()
         local Cash_Multiplier = Stat_Calculator.Get_Cash_Multiplier(LocalEntity)
         local Cash_Percent = (Cash_Multiplier - 1) * 100
 
@@ -661,7 +660,7 @@ local function Setup_HUD_Right_Corner(LocalEntity: Types.Entity, PlayerGui: Play
 
                 table.insert(
                     Processor,
-                    RunService.RenderStepped:Connect(function()
+                    Clock(1, function()
                         local End_Time = Data.End_Time
 
                         local Seconds_Remaining = math.max(1, End_Time - os.time())
@@ -1606,7 +1605,7 @@ local function Setup_Blocks_Content(LocalEntity: Types.Entity, PlayerGui: Player
     local Contents = Blocks_Frame:WaitForChild("Contents") :: ScrollingFrame
     local Template = Contents:WaitForChild("Template") :: ImageLabel
 
-    Clock(0.1, function()
+    Clock(1, function()
         local Last_Restock = World:get(LocalEntity, Components.Last_Restock)
         local Next_Restock = Last_Restock + Config.RESTOCK_TIME
 
@@ -1913,7 +1912,11 @@ local function Setup_Daily_Rewards_Content(PlayerGui: PlayerGui)
             Image:AddTag("ImageFloat")
         end
 
-        Clock(0.01, function()
+        Clock(1, function()
+            if Peek(Fusion_Values.Screen) ~= "DailyRewards" then
+                return
+            end
+
             local Claimed_Daily_Rewards = Peek(Fusion_Values.Claimed_Daily_Rewards)
             local Elapsed = os.time() - Peek(Fusion_Values.Last_Daily_Reward_Claim)
             local Remaining_Seconds = math.max((86_400 / 2) - Elapsed, 0)
