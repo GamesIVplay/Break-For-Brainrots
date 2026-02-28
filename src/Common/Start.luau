@@ -38,7 +38,7 @@ local function Setup_Jabby()
 
     Jabby.register({
         applet = Jabby.applets.world,
-        name = "Open a Lucky Block",
+        name = "Break For Brainrots!",
         configuration = {
             world = World,
         },

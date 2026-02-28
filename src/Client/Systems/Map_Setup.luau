@@ -551,7 +551,7 @@ local function Setup_Random_Brainrot(Local_Player: Player)
             Highlight.FillColor = Color3.fromRGB(0, 0, 0)
             Highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
             Highlight.FillTransparency = 0
-            Highlight.OutlineTransparency = 0.5
+            Highlight.OutlineTransparency = 0
             Highlight.DepthMode = Enum.HighlightDepthMode.Occluded
             Highlight.Parent = Brainrot_Model
 
