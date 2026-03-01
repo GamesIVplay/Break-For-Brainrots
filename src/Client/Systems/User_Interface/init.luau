@@ -12,8 +12,6 @@ local Satchel = require(ReplicatedStorage:FindFirstChild("Satchel", true))
 local Assets = ReplicatedStorage:WaitForChild("Assets")
 local UIGradients = Assets:WaitForChild("UIGradients")
 
-local ClickFX = require(Assets:WaitForChild("Modules"):WaitForChild("ClickFX"))
-
 local Sounds = Assets:WaitForChild("Sounds")
 
 local Music = Sounds:WaitForChild("Music") :: SoundGroup
@@ -1915,10 +1913,6 @@ local function Setup_Daily_Rewards_Content(PlayerGui: PlayerGui)
         end
 
         table.insert(Update_Funcs, function()
-            if Peek(Fusion_Values.Screen) ~= "DailyRewards" then
-                return
-            end
-
             local Claimed_Daily_Rewards = Peek(Fusion_Values.Claimed_Daily_Rewards)
             local Elapsed = os.time() - Peek(Fusion_Values.Last_Daily_Reward_Claim)
             local Remaining_Seconds = math.max((86_400 / 2) - Elapsed, 0)
@@ -1966,7 +1960,8 @@ local function Setup_Daily_Rewards_Content(PlayerGui: PlayerGui)
         end
     end
 
-    Update()
+    Scope:Observer(Fusion_Values.Last_Daily_Reward_Claim):onChange(Update)
+    Scope:Observer(Fusion_Values.Claimed_Daily_Rewards):onChange(Update)
 
     Clock(1, Update)
 end
@@ -2336,8 +2331,6 @@ return {
                     Satchel:SetBackpackEnabled(false)
                 end
             end)
-
-            ClickFX.Start()
 
             Log.Info("UI has been setup")
         end)
