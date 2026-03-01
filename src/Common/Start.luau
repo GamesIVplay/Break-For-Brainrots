@@ -6,7 +6,6 @@ local ContextActionService = game:GetService("ContextActionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local Phases = require("./Phases")
 local Planck = require(ReplicatedStorage.Packages.Planck)
 local Scheduler = require("./Scheduler")
 local World = require("./World")
@@ -64,9 +63,6 @@ return function(Systems)
             :forceRunPhase(Planck.Phase.PreStartup)
             :forceRunPhase(Planck.Phase.Startup)
             :forceRunPhase(Planck.Phase.PostStartup)
-        --[[:run(Phases.InitPhases.PreInit)
-            :run(Phases.InitPhases.Init)
-            :run(Phases.InitPhases.PostInit)]]
     else
         Log.Warn("There are 0 systems")
     end
