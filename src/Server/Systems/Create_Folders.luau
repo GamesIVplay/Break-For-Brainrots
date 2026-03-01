@@ -18,6 +18,7 @@ return {
         New_Folder("Brainrots", workspace)
         New_Folder("Debris", workspace)
         New_Folder("Temp", ReplicatedStorage)
+        New_Folder("Culled_Brainrots", ReplicatedStorage)
     end,
     runConditions = {},
 }

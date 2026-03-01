@@ -1,0 +1,61 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Components = require(ReplicatedStorage.Common.Components)
+local Phases = require(ReplicatedStorage.Common.Phases)
+local Registry = require(ReplicatedStorage.Common.Registry)
+local World = require(ReplicatedStorage.Common.World)
+
+local Brainrots_Folder = workspace:FindFirstChild("Brainrots") :: Folder
+local Culled_Brainrots_Folder = ReplicatedStorage:FindFirstChild("Culled_Brainrots") :: Folder
+
+local MAX_DISTANCE = 70
+local MAX_DISTANCE_SQUARED = MAX_DISTANCE * MAX_DISTANCE
+
+local function Update(Character_Position: Vector3, Brainrot_Model: Model)
+    local Brainrot_Position = Brainrot_Model:GetPivot().Position
+    local Offset = Brainrot_Position - Character_Position
+    local DistanceSquared = Offset:Dot(Offset)
+
+    if DistanceSquared > MAX_DISTANCE_SQUARED then
+        if Brainrot_Model.Parent ~= Culled_Brainrots_Folder then
+            Brainrot_Model.Parent = Culled_Brainrots_Folder
+
+            if Brainrot_Model:HasTag("Idle") then
+                Brainrot_Model:RemoveTag("Idle")
+            end
+        end
+    else
+        if Brainrot_Model.Parent ~= Brainrots_Folder then
+            Brainrot_Model.Parent = Brainrots_Folder
+        end
+
+        if not Brainrot_Model:HasTag("Idle") then
+            Brainrot_Model:AddTag("Idle")
+        end
+    end
+end
+
+return {
+    name = script.Name,
+    phase = Phases.Runservice.PreRender,
+    system = function()
+        local Local_Entity = Registry.Get("Players", "Local")
+
+        local Local_Character = World:get(Local_Entity, Components.Renderable)
+
+        if not Local_Character then
+            return
+        end
+
+        local Character_Position = Local_Character:GetPivot().Position
+
+        for _, Brainrot_Model: Model in Brainrots_Folder:GetChildren() do
+            Update(Character_Position, Brainrot_Model)
+        end
+
+        for _, Brainrot_Model: Model in Culled_Brainrots_Folder:GetChildren() do
+            Update(Character_Position, Brainrot_Model)
+        end
+    end,
+    runConditions = {},
+}

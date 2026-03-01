@@ -40,6 +40,7 @@ Start({
     require(Systems.Cmdr),
     require(Systems.Init_Local_Entity),
     require(Systems.Brainrot_Cleaner),
+    require(Systems.Brainrot_Culling),
     require(Systems.Map_Setup),
     require(Systems.User_Interface),
     require(Systems.Notification),

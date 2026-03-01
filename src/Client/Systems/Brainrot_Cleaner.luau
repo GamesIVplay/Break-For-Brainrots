@@ -22,13 +22,16 @@ local VFX_CLASSES = {
 }
 
 local function ProcessModel(Brainrot_Model: Model, Local_UserId: number)
-    if not Brainrot_Model:IsDescendantOf(workspace:FindFirstChild("Brainrots")) then
+    if
+        not Brainrot_Model:IsDescendantOf(workspace:FindFirstChild("Brainrots"))
+        or not Brainrot_Model:IsDescendantOf(ReplicatedStorage:WaitForChild("Culled_Brainrots"))
+    then
         return
     end
 
     local Owner = Brainrot_Model:GetAttribute("Owner")
 
-    if Owner == Local_UserId then
+    if true then --Owner == Local_UserId then
         Brainrot_Model:AddTag("Idle")
         return
     end
