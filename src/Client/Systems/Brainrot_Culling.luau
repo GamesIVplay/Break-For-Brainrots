@@ -8,7 +8,7 @@ local World = require(ReplicatedStorage.Common.World)
 local Brainrots_Folder = workspace:FindFirstChild("Brainrots") :: Folder
 local Culled_Brainrots_Folder = ReplicatedStorage:FindFirstChild("Culled_Brainrots") :: Folder
 
-local MAX_DISTANCE = 70
+local MAX_DISTANCE = 150
 local MAX_DISTANCE_SQUARED = MAX_DISTANCE * MAX_DISTANCE
 
 local function StoreBaseCF(model: Model)
