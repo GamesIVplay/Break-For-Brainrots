@@ -88,6 +88,7 @@ return function(
 
     Brainrot_Model:AddTag("Brainrot")
     Brainrot_Model:SetAttribute("Owner", Player.UserId)
+    Brainrot_Model:AddPersistentPlayer(Player)
 
     return Brainrot_Entity, Brainrot_Model
 end

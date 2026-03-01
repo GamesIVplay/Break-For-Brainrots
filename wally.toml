@@ -7,7 +7,7 @@ private = true
 
 [dependencies]
 Jecs = "ukendio/jecs@=0.8.3"
-Planck = "yetanotherclown/planck@=0.2.0"
+Planck = "yetanotherclown/planck@=0.3.0-alpha.2"
 PlanckJabby = "yetanotherclown/planck-jabby@=0.3.0-alpha.1"
 PlanckRunService = "yetanotherclown/planck-runservice@=0.2.0"
 Jabby = "alicesaidhi/jabby@=0.4.0"

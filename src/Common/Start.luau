@@ -6,7 +6,7 @@ local ContextActionService = game:GetService("ContextActionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local Planck = require(ReplicatedStorage.Packages.Planck)
+local Phases = require("./Phases")
 local Scheduler = require("./Scheduler")
 local World = require("./World")
 
@@ -45,24 +45,12 @@ local function Setup_Jabby()
     } :: any)
 end
 
-Scheduler.forceRunPhase = function(self, phase)
-    if not self._phaseToSystems[phase] then
-        self._phaseToSystems[phase] = {}
-    end
-
-    for _, system in self._phaseToSystems[phase] do
-        self:runSystem(system)
-    end
-
-    return self
-end
-
 return function(Systems)
     if #Systems > 0 then
         Scheduler:addSystems(Systems)
-            :forceRunPhase(Planck.Phase.PreStartup)
-            :forceRunPhase(Planck.Phase.Startup)
-            :forceRunPhase(Planck.Phase.PostStartup)
+            :run(Phases.InitPhases.PreInit)
+            :run(Phases.InitPhases.Init)
+            :run(Phases.InitPhases.PostInit)
     else
         Log.Warn("There are 0 systems")
     end

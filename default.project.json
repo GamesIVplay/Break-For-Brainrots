@@ -5,10 +5,7 @@
   "tree": {
     "$className": "DataModel",
     "Workspace": {
-      "$className": "Workspace",
-      "$properties": {
-        "StreamingEnabled": false
-      }
+      "$className": "Workspace"
     },
     "ReplicatedStorage": {
       "Common": {
