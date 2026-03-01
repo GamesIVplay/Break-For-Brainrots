@@ -11,6 +11,39 @@ local Culled_Brainrots_Folder = ReplicatedStorage:FindFirstChild("Culled_Brainro
 local MAX_DISTANCE = 70
 local MAX_DISTANCE_SQUARED = MAX_DISTANCE * MAX_DISTANCE
 
+local function StoreBaseCF(model: Model)
+    if model:GetAttribute("BaseCF_X") then
+        return
+    end
+
+    local cf = model:GetPivot()
+    local rx, ry, rz = cf:ToOrientation()
+
+    model:SetAttribute("BaseCF_X", cf.X)
+    model:SetAttribute("BaseCF_Y", cf.Y)
+    model:SetAttribute("BaseCF_Z", cf.Z)
+
+    model:SetAttribute("BaseCF_RX", rx)
+    model:SetAttribute("BaseCF_RY", ry)
+    model:SetAttribute("BaseCF_RZ", rz)
+end
+
+local function RestoreBaseCF(model: Model)
+    local x = model:GetAttribute("BaseCF_X")
+    if not x then
+        return
+    end
+
+    local baseCF = CFrame.new(x, model:GetAttribute("BaseCF_Y"), model:GetAttribute("BaseCF_Z"))
+        * CFrame.Angles(
+            model:GetAttribute("BaseCF_RX"),
+            model:GetAttribute("BaseCF_RY"),
+            model:GetAttribute("BaseCF_RZ")
+        )
+
+    model:PivotTo(baseCF)
+end
+
 local function Update(Character_Position: Vector3, Brainrot_Model: Model)
     local Brainrot_Position = Brainrot_Model:GetPivot().Position
     local Offset = Brainrot_Position - Character_Position
@@ -25,8 +58,14 @@ local function Update(Character_Position: Vector3, Brainrot_Model: Model)
             end
         end
     else
+        if not Brainrot_Model:GetAttribute("BaseCF_X") then
+            StoreBaseCF(Brainrot_Model)
+        end
+
         if Brainrot_Model.Parent ~= Brainrots_Folder then
             Brainrot_Model.Parent = Brainrots_Folder
+
+            RestoreBaseCF(Brainrot_Model)
         end
 
         if not Brainrot_Model:HasTag("Idle") then

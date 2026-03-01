@@ -29,10 +29,9 @@ local function ProcessModel(Brainrot_Model: Model, Local_UserId: number)
         return
     end
 
-    local Owner = Brainrot_Model:GetAttribute("Owner")
+    --local Owner = Brainrot_Model:GetAttribute("Owner")
 
     if true then --Owner == Local_UserId then
-        Brainrot_Model:AddTag("Idle")
         return
     end
 

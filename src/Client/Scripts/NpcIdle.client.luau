@@ -65,3 +65,9 @@ end
 
 workspace.DescendantAdded:Connect(Start)
 CollectionService:GetInstanceAddedSignal("Idle"):Connect(Start)
+
+CollectionService:GetInstanceRemovedSignal("Idle"):Connect(function(Inst)
+    if Inst:IsA("Model") then
+        NpcIdle.Stop(Inst)
+    end
+end)
