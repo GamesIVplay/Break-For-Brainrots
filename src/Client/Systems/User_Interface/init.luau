@@ -1884,6 +1884,8 @@ local function Setup_Daily_Rewards_Content(PlayerGui: PlayerGui)
 
     local DAILY_REWARD_ID = Config.DAILY_REWARD_ID
 
+    local Update_Funcs = {}
+
     for Index, Data in Daily_Rewards[DAILY_REWARD_ID] do
         local ImageLabel = Daily_Rewards_Frame:FindFirstChild(tostring(Index))
         local Title = ImageLabel:WaitForChild("Title") :: TextLabel
@@ -1912,7 +1914,7 @@ local function Setup_Daily_Rewards_Content(PlayerGui: PlayerGui)
             Image:AddTag("ImageFloat")
         end
 
-        Clock(1, function()
+        table.insert(Update_Funcs, function()
             if Peek(Fusion_Values.Screen) ~= "DailyRewards" then
                 return
             end
@@ -1957,6 +1959,16 @@ local function Setup_Daily_Rewards_Content(PlayerGui: PlayerGui)
             Network.Requests.Claim_Daily_Reward.Fire(Index)
         end)
     end
+
+    local function Update()
+        for _, Func in Update_Funcs do
+            Func()
+        end
+    end
+
+    Update()
+
+    Clock(1, Update)
 end
 
 local function Setup_Daily_Rewards(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
