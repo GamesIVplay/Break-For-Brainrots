@@ -1,4 +1,5 @@
 local AnalyticsService = game:GetService("AnalyticsService")
+local MarketPlaceService = game:GetService("MarketplaceService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -89,6 +90,8 @@ local function Handle_Pickaxe_Purchase_Requests()
                 Text = "You don't have enough cash",
                 Type = "Error",
             })
+
+            MarketPlaceService:PromptProductPurchase(Player, Pickaxe_Data.Developer_Product)
             continue
         end
 

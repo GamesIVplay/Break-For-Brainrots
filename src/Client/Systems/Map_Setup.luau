@@ -238,6 +238,17 @@ local function Setup_x2_Cash_Parts(Local_Player: Player)
             continue
         end
 
+        task.spawn(function()
+            local Price = Inst:FindFirstChild("Price", true) :: TextLabel
+            local Product_Info = Util.Get_Gamepass_Info(Gamepasses["x2 Cash"])
+
+            if Product_Info then
+                Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+            else
+                Price.Visible = false
+            end
+        end)
+
         local New_Zone = Zone.fromParts({ Touch })
         New_Zone:BindToHeartbeat()
 
@@ -262,6 +273,17 @@ local function Setup_x2_Luck_Parts(Local_Player: Player)
         if not Touch then
             continue
         end
+
+        task.spawn(function()
+            local Price = Inst:FindFirstChild("Price", true) :: TextLabel
+            local Product_Info = Util.Get_Gamepass_Info(Gamepasses["x2 Luck"])
+
+            if Product_Info then
+                Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+            else
+                Price.Visible = false
+            end
+        end)
 
         local New_Zone = Zone.fromParts({ Touch })
         New_Zone:BindToHeartbeat()

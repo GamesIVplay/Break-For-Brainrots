@@ -1,3 +1,4 @@
+local MarketPlaceService = game:GetService("MarketplaceService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -41,6 +42,8 @@ local function Handle_Block_Purchase_Requests()
                 Text = "You don't have enough cash",
                 Type = "Error",
             })
+
+            MarketPlaceService:PromptProductPurchase(Player, Block_Data.Developer_Product)
             continue
         end
 

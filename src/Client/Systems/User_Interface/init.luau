@@ -50,6 +50,7 @@ local Brainrots = require(ReplicatedStorage.Common.Modules.Brainrots)
 local Daily_Rewards = require(ReplicatedStorage.Common.Modules.Daily_Rewards)
 local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
 local Events = require(ReplicatedStorage.Common.Modules.Events)
+local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
 local Rarities = require(ReplicatedStorage.Common.Modules.Rarities)
@@ -939,6 +940,87 @@ local function Setup_Robux_Shop_Brainrot_Offer_Three(Local_Player: Player, Playe
     end)
 end
 
+local function Setup_Robux_Shop_Gamepass_Offer_One(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Gamepasses_Frame = Contents:WaitForChild("Gamepasses")
+    local Offer_One = Gamepasses_Frame:WaitForChild("One") :: ImageLabel
+    local Buy = Offer_One:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Gamepass_Info(Gamepasses["+2 Slots"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptGamePassPurchase(Local_Player, Gamepasses["+2 Slots"])
+    end)
+end
+
+local function Setup_Robux_Shop_Gamepass_Offer_Two(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Gamepasses_Frame = Contents:WaitForChild("Gamepasses")
+    local Offer_Two = Gamepasses_Frame:WaitForChild("Two") :: ImageLabel
+    local Buy = Offer_Two:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Gamepass_Info(Gamepasses["x2 Cash"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptGamePassPurchase(Local_Player, Gamepasses["x2 Cash"])
+    end)
+end
+
+local function Setup_Robux_Shop_Gamepass_Offer_Three(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Gamepasses_Frame = Contents:WaitForChild("Gamepasses")
+    local Offer_Three = Gamepasses_Frame:WaitForChild("Three") :: ImageLabel
+    local Buy = Offer_Three:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Gamepass_Info(Gamepasses["x2 Luck"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptGamePassPurchase(Local_Player, Gamepasses["x2 Luck"])
+    end)
+end
+
 local function Setup_Robux_Shop_Cash_Offer_One(Local_Player: Player, PlayerGui: PlayerGui)
     local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
     local Frames = Main:WaitForChild("Frames") :: Frame
@@ -1041,6 +1123,11 @@ local function Setup_Robux_Shop_Contents(LocalEntity: Types.Entity, PlayerGui: P
     Setup_Robux_Shop_Cash_Offer_Two(Local_Player, PlayerGui)
 
     Setup_Robux_Shop_Cash_Offer_Three(Local_Player, PlayerGui)
+
+    -- Gamepass Offers
+    Setup_Robux_Shop_Gamepass_Offer_One(Local_Player, PlayerGui)
+    Setup_Robux_Shop_Gamepass_Offer_Two(Local_Player, PlayerGui)
+    Setup_Robux_Shop_Gamepass_Offer_Three(Local_Player, PlayerGui)
 end
 
 local function Setup_Robux_Shop(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
