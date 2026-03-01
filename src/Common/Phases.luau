@@ -6,9 +6,9 @@ local PlanckRunService = require(ReplicatedStorage.Packages.PlanckRunService)
 local Phases = {
     Runservice = PlanckRunService.Phases,
     InitPhases = {
-        PreInit = Planck.Phase.new("PreInit"),
-        Init = Planck.Phase.new("Init"),
-        PostInit = Planck.Phase.new("PostInit"),
+        PreInit = Planck.Phase.PreStartup,
+        Init = Planck.Phase.Startup,
+        PostInit = Planck.Phase.PostStartup,
     },
 }
 
