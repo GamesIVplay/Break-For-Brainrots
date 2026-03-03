@@ -77,16 +77,22 @@ return function(
         end
     end
 
-    for _, Mutation_Name in Data.Secondary_Mutations do
-        if Secondary_Mutations_Frame:FindFirstChild(Mutation_Name) then
-            continue
+    if #Data.Secondary_Mutations > 0 then
+        for _, Mutation_Name in Data.Secondary_Mutations do
+            if Secondary_Mutations_Frame:FindFirstChild(Mutation_Name) then
+                continue
+            end
+
+            local Clone = Template:Clone()
+            Clone.Name = Mutation_Name
+            Clone.Image = Secondary_Mutations[Mutation_Name].Image
+            Clone.Visible = true
+            Clone.Parent = Secondary_Mutations_Frame
         end
 
-        local Clone = Template:Clone()
-        Clone.Name = Mutation_Name
-        Clone.Image = Secondary_Mutations[Mutation_Name].Image
-        Clone.Visible = true
-        Clone.Parent = Secondary_Mutations_Frame
+        Secondary_Mutations_Frame.Visible = true
+    else
+        Secondary_Mutations_Frame.Visible = false
     end
 
     local Earnings = Billboard:FindFirstChild("Earnings") :: TextLabel
