@@ -1,8 +1,8 @@
 local Jecs = require(game:GetService("ReplicatedStorage").Packages.Jecs)
 
 export type World = typeof(Jecs.world())
-export type Entity = Jecs.Entity
-export type Id<T> = Jecs.Id<T>
+export type Entity<T = nil> = Jecs.Entity<T>
+export type Id<T = nil> = Jecs.Id<T>
 
 export type AnimationInfo = {
     Name: string,

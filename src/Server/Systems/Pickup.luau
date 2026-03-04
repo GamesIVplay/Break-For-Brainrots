@@ -64,6 +64,8 @@ local function Handle_Pickup_Requests()
             continue
         end
 
+        local Level = World:get(Brainrot_Entity, Components.Level)
+        local Experience = World:get(Brainrot_Entity, Components.Experience)
         local Brainrot_Name = World:get(Brainrot_Entity, Components.Name)
         local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
         local Secondary_Mutations = World:get(Brainrot_Entity, Components.Secondary_Mutations)
@@ -72,6 +74,8 @@ local function Handle_Pickup_Requests()
         local Offline_Cash = World:get(Brainrot_Entity, Components.Offline_Cash)
 
         local Brainrot_Item: Types.Brainrot_Item = {
+            Level = Level,
+            Experience = Experience,
             Name = Brainrot_Name,
             Primary_Mutation = Primary_Mutation,
             Secondary_Mutations = Secondary_Mutations,

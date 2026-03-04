@@ -265,6 +265,8 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
         local Old_Tool = Existing_Tools[Index]
 
         if Old_Tool then
+            local Level_Match = Old_Tool:GetAttribute("Level") == Brainrot_Item.Level
+            local Experience_Match = Old_Tool:GetAttribute("Experience") == Brainrot_Item.Experience
             local Name_Match = Old_Tool:GetAttribute("Name") == Brainrot_Item.Name
             local Primary_Match = Old_Tool:GetAttribute("Primary_Mutation") == Brainrot_Item.Primary_Mutation
             local Secondary_Match = Old_Tool:GetAttribute("Secondary_Mutations")
@@ -274,7 +276,9 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
             local Offline_Cash_Match = Old_Tool:GetAttribute("Offline_Cash") == Brainrot_Item.Offline_Cash
 
             if
-                Name_Match
+                Level_Match
+                and Experience_Match
+                and Name_Match
                 and Primary_Match
                 and Secondary_Match
                 and Weight_Match
@@ -287,6 +291,8 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
             end
         end
 
+        local Level = Brainrot_Item.Level
+        local Experience = Brainrot_Item.Experience
         local Brainrot_Name = Brainrot_Item.Name
         local Primary_Mutation = Brainrot_Item.Primary_Mutation
         local Secondary_Mutations = Brainrot_Item.Secondary_Mutations
@@ -307,6 +313,8 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
 
         New_Tool.Name = Tool_Name
         New_Tool.ToolTip = Tool_Name
+        New_Tool:SetAttribute("Level", Level)
+        New_Tool:SetAttribute("Experience", Experience)
         New_Tool:SetAttribute("Name", Brainrot_Name)
         New_Tool:SetAttribute("Secondary_Mutations", table.concat(Secondary_Mutations, ","))
         New_Tool:SetAttribute("Weight", Weight)

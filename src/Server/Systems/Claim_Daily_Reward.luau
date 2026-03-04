@@ -86,13 +86,10 @@ local function Handle_Claim_Daily_Reward_Requests()
             local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
 
             if not Open_Slot then
-                Network.Notification.Fire(
-                    Player,
-                    {
-                        Text = `Your brainrot inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`,
-                        Type = "Error",
-                    }
-                )
+                Network.Notification.Fire(Player, {
+                    Text = `Your brainrot inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`,
+                    Type = "Error",
+                })
                 continue
             end
 

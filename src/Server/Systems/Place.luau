@@ -92,6 +92,8 @@ local function Handle_Place_Requests()
         New_Brainrot_Entity(
             Player_Entity,
             Stand_Model,
+            Brainrot_Item.Level,
+            Brainrot_Item.Experience,
             Brainrot_Item.Name,
             Brainrot_Item.Primary_Mutation,
             Brainrot_Item.Secondary_Mutations,

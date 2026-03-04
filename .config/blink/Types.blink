@@ -7,6 +7,8 @@ type Weight = f16
 enum NotificationType = {Success, Info, Warning, Error, Reward}
 
 struct Brainrot_Item {
+Level: u8,
+Experience: f64,
 	Name: string,
 	Primary_Mutation: string?,
 	Secondary_Mutations: string[],

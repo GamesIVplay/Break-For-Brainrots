@@ -54,8 +54,8 @@ local function Generate_Brainrots_Cash()
         end
 
         local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
-            Level = Level,
-            Experience = Experience,
+            Level = 1,
+            Experience = 0,
             Brainrot_Name = Brainrot_Name,
             Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation),
             Secondary_Mutations = Secondary_Mutations,
