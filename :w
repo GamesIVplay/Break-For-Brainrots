@@ -120,8 +120,6 @@ local function Open_Blocks()
                 New_Brainrot_Entity(
                     Player_Entity,
                     Open_Stand,
-                    1,
-                    0,
                     Rolled_Brainrot,
                     Rolled_Primary_Mutation,
                     Secondary_Mutations,
@@ -133,7 +131,7 @@ local function Open_Blocks()
                 if Open_Slot then
                     Brainrot_Inventory[Open_Slot] = {
                         Level = 1,
-                        Experience = 0,
+                        Xp = 0,
                         Name = Rolled_Brainrot,
                         Primary_Mutation = Rolled_Primary_Mutation,
                         Secondary_Mutations = Secondary_Mutations,

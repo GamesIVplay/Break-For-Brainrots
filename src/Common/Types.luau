@@ -18,6 +18,8 @@ export type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Mythical" | "Se
 export type NotificationType = "Success" | "Info" | "Warning" | "Error" | "Reward"
 
 export type Brainrot_Item = {
+    Level: number,
+    Experience: number,
     Name: string,
     Primary_Mutation: string?,
     Secondary_Mutations: { string },
@@ -27,12 +29,18 @@ export type Brainrot_Item = {
 }
 
 export type Serialized_Brainrot = {
+    Level: number?,
+    Experience: number?,
     Name: string,
     Primary_Mutation: string?,
     Secondary_Mutations: { string },
     Weight: number,
     Cash: number,
     Offline_Cash: number,
+}
+
+export type Food_Item = {
+    Xp: number,
 }
 
 return {}

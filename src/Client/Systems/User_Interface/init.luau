@@ -2,6 +2,7 @@ local Lighting = game:GetService("Lighting")
 local MarketplaceService = game:GetService("MarketplaceService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local SocialService = game:GetService("SocialService")
 local TweenService = game:GetService("TweenService")
 
 local Camera = workspace.CurrentCamera
@@ -94,6 +95,7 @@ local Tutorial_Text_Computed = Scope:Computed(function(Use)
 end)
 
 local ActivateHaptic = Instance.new("HapticEffect")
+ActivateHaptic.Name = "ActivateHaptic"
 ActivateHaptic.Position = Vector3.new(0, 0, 0)
 ActivateHaptic.Radius = 1
 ActivateHaptic.Type = Enum.HapticEffectType.UIHover
@@ -702,6 +704,24 @@ local function Setup_HUD_Plot_Income_Per_Sec(PlayerGui: PlayerGui)
     })
 end
 
+local function Setup_Hold_To_Swing_Disclaimer(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Hold_To_Swing_Disclaimer = Main:WaitForChild("Hold_To_Swing_Disclaimer")
+
+    Scope:Hydrate(Hold_To_Swing_Disclaimer)({
+        Visible = Scope:Computed(function(Use)
+            return Use(Fusion_Values.Hold_To_Swing_Disclaimer)
+        end),
+        Position = Scope:Computed(function(Use)
+            if Use(DeviceType) ~= "Mobile" then
+                return UDim2.fromScale(0.5, 0.77)
+            else
+                return UDim2.fromScale(0.5, 0.67)
+            end
+        end),
+    })
+end
+
 local function Setup_HUD_Tutorial(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     local Tutorial = PlayerGui:WaitForChild("Visuals"):WaitForChild("Tutorial") :: ImageLabel
 
@@ -788,6 +808,8 @@ local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_HUD_Right_Corner(LocalEntity, PlayerGui)
 
     Setup_HUD_Plot_Income_Per_Sec(PlayerGui)
+
+    Setup_Hold_To_Swing_Disclaimer(PlayerGui)
 
     Setup_HUD_Tutorial(LocalEntity, PlayerGui)
 end
@@ -1021,6 +1043,87 @@ local function Setup_Robux_Shop_Gamepass_Offer_Three(Local_Player: Player, Playe
     end)
 end
 
+local function Setup_Robux_Shop_Time_Warping_Offer_One(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Time_Warping = Contents:WaitForChild("TimeWarping")
+    local Offer_One = Time_Warping:WaitForChild("One") :: ImageLabel
+    local Buy = Offer_One:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["15 min"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["15 min"])
+    end)
+end
+
+local function Setup_Robux_Shop_Time_Warping_Offer_Two(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Time_Warping = Contents:WaitForChild("TimeWarping")
+    local Offer_Two = Time_Warping:WaitForChild("Two") :: ImageLabel
+    local Buy = Offer_Two:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["1 hour"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["1 hour"])
+    end)
+end
+
+local function Setup_Robux_Shop_Time_Warping_Offer_Three(Local_Player: Player, PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Time_Warping = Contents:WaitForChild("TimeWarping")
+    local Offer_Three = Time_Warping:WaitForChild("Three") :: ImageLabel
+    local Buy = Offer_Three:WaitForChild("Buy") :: ImageButton
+    local Price = Buy:FindFirstChildOfClass("TextLabel")
+
+    task.spawn(function()
+        local Product_Info = Util.Get_Product_Info(Developer_Products["6 hours"])
+
+        if Product_Info then
+            Price.Text = `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
+        else
+            Price.Visible = false
+        end
+    end)
+
+    Hydrate_Button(Buy, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["6 hours"])
+    end)
+end
+
 local function Setup_Robux_Shop_Cash_Offer_One(Local_Player: Player, PlayerGui: PlayerGui)
     local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
     local Frames = Main:WaitForChild("Frames") :: Frame
@@ -1116,6 +1219,11 @@ local function Setup_Robux_Shop_Contents(LocalEntity: Types.Entity, PlayerGui: P
     Setup_Robux_Shop_Brainrot_Offer_Two(Local_Player, PlayerGui)
 
     Setup_Robux_Shop_Brainrot_Offer_Three(Local_Player, PlayerGui)
+
+    -- Time Warping Offers
+    Setup_Robux_Shop_Time_Warping_Offer_One(Local_Player, PlayerGui)
+    Setup_Robux_Shop_Time_Warping_Offer_Two(Local_Player, PlayerGui)
+    Setup_Robux_Shop_Time_Warping_Offer_Three(Local_Player, PlayerGui)
 
     -- Cash Offers
     Setup_Robux_Shop_Cash_Offer_One(Local_Player, PlayerGui)
@@ -2272,8 +2380,6 @@ local function Setup_Topbar_Daily_Rewards()
         :autoDeselect(false)
 
     if Peek(DeviceType) ~= "Mobile" then
-        Icon:setLabel("Daily Rewards")
-
         Icon.viewingStarted:Connect(function()
             Hover:Play()
         end)
@@ -2301,13 +2407,11 @@ local function Setup_Topbar_Toggle_Music()
         :setImageScale(0.8)
         :align("Right")
         :setCaption("Toggle Music")
-        :setOrder(1)
+        :setOrder(4)
         :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
         :autoDeselect(false)
 
     if Peek(DeviceType) ~= "Mobile" then
-        Icon:setLabel("Toggle Music")
-
         Icon.viewingStarted:Connect(function()
             Hover:Play()
         end)
@@ -2332,12 +2436,90 @@ local function Setup_Topbar_Toggle_Music()
     end)
 end
 
-local function Setup_Topbar()
+local function Setup_Topbar_Invite_Friends(Local_Player: Player)
+    local Icon = TopbarPlus.new()
+        :setImage("75568998181349")
+        :setImageScale(0.8)
+        :oneClick(true)
+        :align("Right")
+        :setCaption("Invite Friends")
+        :setOrder(2)
+        :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+        :autoDeselect(false)
+
+    if Peek(DeviceType) ~= "Mobile" then
+        Icon.viewingStarted:Connect(function()
+            Hover:Play()
+        end)
+    end
+
+    Icon.toggled:Connect(function(IsSelected)
+        Activate:Play()
+
+        local Success, CanInvite = pcall(function()
+            return SocialService:CanSendGameInviteAsync(Local_Player)
+        end)
+
+        if Success and CanInvite then
+            SocialService:PromptGameInvite(Local_Player)
+        end
+    end)
+
+    Scope:Observer(Tutorial_Completed_Computed):onBind(function()
+        if Peek(Tutorial_Completed_Computed) == true then
+            Icon:setEnabled(true)
+        else
+            Icon:setEnabled(false)
+        end
+    end)
+end
+
+local function Setup_Topbar_Join_Event()
+    local Icon = TopbarPlus.new()
+        :setImage("114090605943161")
+        :setImageScale(0.8)
+        :oneClick(true)
+        :align("Right")
+        :setCaption("Join Event")
+        :setOrder(3)
+        :setTextFont("Montserrat", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+        :autoDeselect(false)
+
+    if Peek(DeviceType) ~= "Mobile" then
+        Icon.viewingStarted:Connect(function()
+            Hover:Play()
+        end)
+    end
+
+    Icon.toggled:Connect(function(IsSelected)
+        Activate:Play()
+
+        pcall(function()
+            SocialService:PromptRsvpToEventAsync(Config.UPDATE_EVENT_ID)
+        end)
+    end)
+
+    Scope:Observer(Tutorial_Completed_Computed):onBind(function()
+        if Peek(Tutorial_Completed_Computed) == true then
+            Icon:setEnabled(true)
+        else
+            Icon:setEnabled(false)
+        end
+    end)
+end
+
+local function Setup_Topbar(LocalEntity: Types.Entity)
+    local Local_Player = World:get(LocalEntity, Components.Player)
+
     TopbarPlus.modifyBaseTheme(require(script.Icon_Themes.Default))
 
     Setup_Topbar_Daily_Rewards()
 
     Setup_Topbar_Toggle_Music()
+
+    Setup_Topbar_Invite_Friends(Local_Player)
+
+    Setup_Topbar_Join_Event(Local_Player)
 end
 
 local function Setup_Stroke_Fixer(PlayerGui: PlayerGui)
@@ -2401,7 +2583,7 @@ return {
             Setup_Sell(Local_Entity, PlayerGui)
             Setup_Free_Reward(PlayerGui)
 
-            Setup_Topbar()
+            Setup_Topbar(Local_Entity)
 
             Setup_Stroke_Fixer(PlayerGui)
 

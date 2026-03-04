@@ -22,6 +22,8 @@ local Can_Generate = Ratelimit(1, 1)
 
 local Cash_Generator_Query = World:query(
     Components.Renderable,
+    Components.Level,
+    Components.Experience,
     Components.Name,
     Components.Secondary_Mutations,
     Components.Weight,
@@ -36,6 +38,8 @@ local function Generate_Brainrots_Cash()
     for
         Brainrot_Entity: Types.Entity,
         Brainrot_Model: Model,
+        Level: number,
+        Experience: number,
         Brainrot_Name: string,
         Secondary_Mutations: { string },
         Weight: number,
@@ -50,6 +54,8 @@ local function Generate_Brainrots_Cash()
         end
 
         local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
+            Level = Level,
+            Experience = Experience,
             Brainrot_Name = Brainrot_Name,
             Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation),
             Secondary_Mutations = Secondary_Mutations,

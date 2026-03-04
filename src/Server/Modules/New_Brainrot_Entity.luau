@@ -17,6 +17,8 @@ local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update
 return function(
     Player_Entity: Types.Entity,
     Open_Stand: Model,
+    Level: number,
+    Experience: number,
     Brainrot_Name: string,
     Primary_Mutation: string?,
     Secondary_Mutations: { string },
@@ -31,6 +33,8 @@ return function(
     local Brainrot_Model, Offset = Generate_Brainrot_Model(Brainrot_Name, Primary_Mutation, Secondary_Mutations, Weight)
 
     Update_Brainrot_Overhead(Brainrot_Model, {
+        Level = Level,
+        Experience = Experience,
         Brainrot_Name = Brainrot_Name,
         Primary_Mutation = Primary_Mutation,
         Secondary_Mutations = Secondary_Mutations,
@@ -49,6 +53,8 @@ return function(
 
     World:set(Brainrot_Entity, Components.Name, Brainrot_Name)
     World:set(Brainrot_Entity, Components.Renderable, Brainrot_Model)
+    World:set(Brainrot_Entity, Components.Level, Level)
+    World:set(Brainrot_Entity, Components.Experience, Experience)
 
     if Primary_Mutation then
         World:set(Brainrot_Entity, Components.Primary_Mutation, Primary_Mutation)
@@ -73,6 +79,8 @@ return function(
     end)
 
     local Sell_Price = Stat_Calculator.Calculate_Sell_Price({
+        Level = Level,
+        Experience = Experience,
         Brainrot_Name = Brainrot_Name,
         Primary_Mutation = Primary_Mutation,
         Secondary_Mutations = Secondary_Mutations,

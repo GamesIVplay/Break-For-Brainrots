@@ -54,6 +54,13 @@ local Brainrot_Offset = Stat_Calculator.Get_Brainrot_Offset()
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 
+local ActivateHaptic = Instance.new("HapticEffect")
+ActivateHaptic.Name = "ActivateHaptic"
+ActivateHaptic.Position = Vector3.new(0, 0, 0)
+ActivateHaptic.Radius = 1
+ActivateHaptic.Type = Enum.HapticEffectType.UIHover
+ActivateHaptic.Parent = workspace
+
 local FOOD_PUMP_TOUCH_PART_BOUNCE_TIME = 0.1
 local FOOD_PUMP_TOUCH_PART_TWEEN_INFO =
     TweenInfo.new(FOOD_PUMP_TOUCH_PART_BOUNCE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
@@ -121,6 +128,10 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
             return
         end
 
+        Network.Requests.Pump_Food.Fire()
+
+        ActivateHaptic:Play()
+
         local Sound = Activate:Clone()
         Sound.Parent = Food_Pump_Touch
         Sound.PlayOnRemove = true
@@ -133,6 +144,19 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
         task.wait(FOOD_PUMP_TOUCH_PART_BOUNCE_TIME)
 
         Food_Pump_Touch_Tween_Up:Play()
+    end)
+
+    local Food_Spawn = Plot_Model:FindFirstChild("Food_Spawn", true) :: Attachment
+
+    Proximity(Food_Spawn, {
+        ActionText = "Pickup Food",
+        MaxActivationDistance = 8,
+    }, function()
+        if not Ratelimits.Pickup_Food() then
+            return
+        end
+
+        Network.Requests.Pickup_Food.Fire()
     end)
 
     local Break_Prompt, Skip_Screen =
@@ -432,6 +456,8 @@ local function Setup_Troll_Face(Local_Player: Player)
         local Title = Inst:FindFirstChild("Title", true) :: TextLabel
 
         local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
+            Level = 1,
+            Experience = 0,
             Brainrot_Name = "Troll Face",
             Secondary_Mutations = {},
             Weight = 10,
@@ -478,6 +504,8 @@ local function Setup_La_Grande_Combinasion(Local_Player: Player)
         local Title = Inst:FindFirstChild("Title", true) :: TextLabel
 
         local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
+            Level = 1,
+            Experience = 0,
             Brainrot_Name = "La Grande Combinasion",
             Secondary_Mutations = {},
             Weight = 10,
@@ -528,6 +556,8 @@ local function Setup_Skibidi_Toilet(Local_Player: Player)
         local Title = Inst:FindFirstChild("Title", true) :: TextLabel
 
         local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
+            Level = 1,
+            Experience = 0,
             Brainrot_Name = "Skibidi Toilet",
             Secondary_Mutations = {},
             Weight = 10,

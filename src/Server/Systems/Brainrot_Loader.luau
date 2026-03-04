@@ -50,6 +50,8 @@ local function Load_Brainrots()
 
             Stand_Model:AddTag("Occupied")
 
+            local Level = Serialized_Brainrot.Level
+            local Experience = Serialized_Brainrot.Experience
             local Brainrot_Name = Serialized_Brainrot.Name
             local Primary_Mutation = Serialized_Brainrot.Primary_Mutation
             local Secondary_Mutations = Serialized_Brainrot.Secondary_Mutations
@@ -58,6 +60,8 @@ local function Load_Brainrots()
             local Offline_Cash = Serialized_Brainrot.Offline_Cash
 
             local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
+                Level = Level,
+                Experience = Experience,
                 Brainrot_Name = Serialized_Brainrot.Name,
                 Primary_Mutation = Serialized_Brainrot.Primary_Mutation,
                 Secondary_Mutations = Serialized_Brainrot.Secondary_Mutations,
@@ -74,6 +78,8 @@ local function Load_Brainrots()
             New_Brainrot_Entity(
                 Player_Entity,
                 Stand_Model,
+                Level,
+                Experience,
                 Brainrot_Name,
                 Primary_Mutation,
                 Secondary_Mutations,

@@ -1,4 +1,5 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
 
 -- Balanced rarity caps
@@ -38,7 +39,6 @@ return function(Luck: number, Excluded: { string }): (string, Blocks.Block)
                 Weight *= 1 + 0.60 * ScaledBonus
             end
 
-            -- Clamp to rarity cap
             if Max_Weight_Per_Rarity[Rarity] then
                 Weight = math.min(Weight, Max_Weight_Per_Rarity[Rarity])
             end

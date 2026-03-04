@@ -16,4 +16,5 @@ return table.freeze({
     Claim_Group_Reward = Ratelimit(1, 0.5),
     Claim_Daily_Reward = Ratelimit(1, 0.5),
     Pump_Food = Ratelimit(1, 0.1),
+    Pickup_Food = Ratelimit(1, 0.5),
 })

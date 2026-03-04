@@ -21,6 +21,7 @@ local Components: {
     Block_Queue: Types.Id<{ string }>,
     Upgrades: Types.Id<{ [string]: number }>,
     Brainrot_Inventory: Types.Id<{ [number]: Types.Brainrot_Item }>,
+    Food_Inventory: Types.Id<{ [number]: Types.Food_Item }>,
     Pending_Brainrots: Types.Id<{ [number]: Types.Serialized_Brainrot }>,
     LastPlayed: Types.Id<number>,
     Index: Types.Id<{ [string]: { string } }>,
@@ -42,6 +43,8 @@ local Components: {
     Health: Types.Id<number>,
 
     Stand: Types.Id<Model>,
+    Level: Types.Id<number>,
+    Experience: Types.Id<number>,
     Primary_Mutation: Types.Id<string>,
     Secondary_Mutations: Types.Id<{ string }>,
     Weight: Types.Id<number>,
@@ -66,6 +69,7 @@ local Components: {
         Opening: Types.Entity,
         Brainrot: Types.Entity,
         Claimed_Group_Reward: Types.Entity,
+        Food: Types.Entity,
     },
     Relationships: {
         Owner: Types.Entity,
@@ -73,6 +77,7 @@ local Components: {
         Previous: Types.Entity,
         Block: Types.Entity,
         Brainrot: Types.Entity,
+        Food: Types.Entity,
     },
 } =
     {
@@ -93,6 +98,7 @@ local Components: {
         Block_Queue = World:component(),
         Upgrades = World:component(),
         Brainrot_Inventory = World:component(),
+        Food_Inventory = World:component(),
         Pending_Brainrots = World:component(),
         LastPlayed = World:component(),
         Index = World:component(),
@@ -114,6 +120,8 @@ local Components: {
         Health = World:component(),
 
         Stand = World:component(),
+        Level = World:component(),
+        Experience = World:component(),
         Primary_Mutation = World:component(),
         Secondary_Mutations = World:component(),
         Weight = World:component(),
@@ -132,6 +140,7 @@ local Components: {
             Opening = World:component(),
             Brainrot = World:component(),
             Claimed_Group_Reward = World:component(),
+            Food = World:component(),
         },
         Relationships = {
             Owner = World:component(),
@@ -139,6 +148,7 @@ local Components: {
             Previous = World:component(),
             Block = World:component(),
             Brainrot = World:component(),
+            Food = World:component(),
         },
     }
 

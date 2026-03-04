@@ -197,6 +197,8 @@ local function Spawn_Cycle_Brainrot(
         TweenService:Create(Highlight, Final_Highlight_Tween_Info, { FillTransparency = 1 }):Play()
 
         Update_Brainrot_Overhead(Brainrot_Model, {
+            Level = 1,
+            Experience = 0,
             Brainrot_Name = Rolled_Brainrot,
             Primary_Mutation = Rolled_Primary_Mutation,
             Secondary_Mutations = Rolled_Secondary_Mutations,

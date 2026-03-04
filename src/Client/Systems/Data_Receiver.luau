@@ -6,6 +6,7 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local ImpactHaptic = Instance.new("HapticEffect")
+ImpactHaptic.Name = "ImpactHaptic"
 ImpactHaptic.Position = Vector3.new(0, 0, 0)
 ImpactHaptic.Radius = 1
 ImpactHaptic.Type = Enum.HapticEffectType.UIHover
@@ -221,6 +222,8 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
             Connnections,
             Tool.Equipped:Connect(function()
                 Equipped = true
+
+                Fusion_Values.Hold_To_Swing_Disclaimer:set(true)
             end)
         )
 
@@ -228,6 +231,8 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
             Connnections,
             Tool.Unequipped:Connect(function()
                 Equipped = false
+
+                Fusion_Values.Hold_To_Swing_Disclaimer:set(false)
             end)
         )
 

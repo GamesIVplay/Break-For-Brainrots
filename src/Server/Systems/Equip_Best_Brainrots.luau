@@ -18,6 +18,8 @@ local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
+local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
+
 local function Handle_Equip_Best_Brainrots_Requests()
     for _, Player: Player in Network.Requests.Equip_Best_Brainrots.Iter() do
         if not Ratelimits.Equip_Best_Brainrots(Player) then
@@ -63,8 +65,6 @@ local function Handle_Equip_Best_Brainrots_Requests()
         local Stands = Plot_Model:FindFirstChild("Stands")
 
         local Gained_Cash = 0
-
-        local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
 
         for
             Brainrot_Entity,
@@ -116,6 +116,8 @@ local function Handle_Equip_Best_Brainrots_Requests()
                 Index = Index,
                 Data = Item,
                 Income = Stat_Calculator.Calculate_Income_Per_Sec({
+                    Level = Item.Level,
+                    Experience = Item.Experience,
                     Brainrot_Name = Item.Name,
                     Primary_Mutation = Item.Primary_Mutation,
                     Secondary_Mutations = Item.Secondary_Mutations,

@@ -19,6 +19,8 @@ local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator
 local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
+local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
+
 local function Normalize_Secondary(List: { string }): string
     if #List == 0 then
         return ""
@@ -120,7 +122,6 @@ local function Handle_Sell_Requests()
 
         local Total_Price = 0
 
-        local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
         Slot_Util.For_Each(Brainrot_Inventory, Brainrot_Capacity, function(_, Brainrot_Item: Types.Brainrot_Item)
             local Sell_Price = Stat_Calculator.Calculate_Sell_Price({
                 Brainrot_Name = Brainrot_Item.Name,
@@ -180,7 +181,6 @@ local function Handle_Sell_Requests()
 
         local Group_Secondary = Normalize_Secondary(Item_Group.Secondary_Mutations)
 
-        local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
         Slot_Util.For_Each(Brainrot_Inventory, Brainrot_Capacity, function(Index, Brainrot_Item: Types.Brainrot_Item)
             if
                 Brainrot_Item.Name ~= Item_Group.Name

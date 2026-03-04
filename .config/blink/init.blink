@@ -278,6 +278,20 @@ scope Requests {
 	   Poll: true,
 	   Data: u8
 	}
+
+	event Pump_Food {
+	   From: Client,
+       Type: Reliable,
+       Call: SingleSync,
+	   Poll: true,
+	}
+
+	event Pickup_Food {
+ 	   From: Client,
+       Type: Reliable,
+       Call: SingleSync,
+	   Poll: true,
+	}
 }
 
 scope DataChanged {

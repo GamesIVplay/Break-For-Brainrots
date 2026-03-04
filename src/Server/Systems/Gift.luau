@@ -16,6 +16,8 @@ local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
+local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
+
 local Trade_Allowed = {}
 
 game.Players.PlayerAdded:Connect(function(Player)
@@ -105,12 +107,11 @@ local function Handle_Gift_Requests()
             continue
         end
 
-        local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
         local Open_Slot = Slot_Util.Get_First_Open(Target_Player_Entity_Brainrot_Inventory, Brainrot_Capacity)
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = `This players inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`,
+                Text = `This players brainrot inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`,
                 Type = "Error",
             })
             continue

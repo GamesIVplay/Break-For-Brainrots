@@ -18,6 +18,8 @@ local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 
+local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
+
 local function Handle_Pickup_Requests()
     for _, Player: Player, Brainrot_Entity: Types.Entity in Network.Requests.Pickup.Iter() do
         if not Ratelimits.Pickup(Player) then
@@ -52,13 +54,12 @@ local function Handle_Pickup_Requests()
 
         local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
 
-        local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
         local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
 
         if not Open_Slot then
             Network.Notification.Fire(
                 Player,
-                { Text = `Your inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`, Type = "Error" }
+                { Text = `Your brainrot inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`, Type = "Error" }
             )
             continue
         end

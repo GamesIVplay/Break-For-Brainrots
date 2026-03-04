@@ -12,9 +12,12 @@ local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 local Weight = require(ReplicatedStorage.Common.Modules.Weight)
 
 local BRAINROT_CAPACITY = 300
+local FOOD_CAPACITY = 50
 local BRAINROT_OFFSET = Vector3.new(0, 0.5, 0)
 
 export type Brainrot_Data = {
+    Level: number,
+    Experience: number,
     Brainrot_Name: string,
     Primary_Mutation: string?,
     Secondary_Mutations: { string },
@@ -25,6 +28,10 @@ local Stat_Calculator = {}
 
 local function Get_Base_With_Percent(Base: number, Total_Percent: number)
     return Base + (Total_Percent / 100)
+end
+
+local function Calculate_Level_Cash_Multiplier(Level: number)
+    return 1 + (Level * 0.05)
 end
 
 function Stat_Calculator.Get_Luck(Player_Entity: Types.Entity)
@@ -129,6 +136,8 @@ function Stat_Calculator.Calculate_Income_Per_Sec(Data: Brainrot_Data): number
 
     Income_Per_Sec *= Weight.Get_Cash_Multiplier(Data.Weight)
 
+    Income_Per_Sec *= Calculate_Level_Cash_Multiplier(Data.Level)
+
     return math.max(1, math.round(Income_Per_Sec))
 end
 
@@ -145,6 +154,14 @@ end
 
 function Stat_Calculator.Get_Brainrot_Offset()
     return BRAINROT_OFFSET
+end
+
+function Stat_Calculator.Get_Food_Capacity()
+    return FOOD_CAPACITY
+end
+
+function Stat_Calculator.Calculate_Xp_Needed(Level: number)
+    return Level * 100
 end
 
 return table.freeze(Stat_Calculator)

@@ -2,6 +2,7 @@ local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local NotificationHaptic = Instance.new("HapticEffect")
+NotificationHaptic.Name = "NotificationHaptic"
 NotificationHaptic.Position = Vector3.new(0, 0, 0)
 NotificationHaptic.Radius = 1
 NotificationHaptic.Type = Enum.HapticEffectType.UIHover

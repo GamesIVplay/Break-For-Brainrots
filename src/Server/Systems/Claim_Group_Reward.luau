@@ -16,6 +16,8 @@ local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 
+local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
+
 local function Handle_Claim_Group_Reward_Requests()
     for _, Player: Player in Network.Requests.Claim_Group_Reward.Iter() do
         if not Ratelimits.Claim_Group_Reward(Player) then
@@ -61,14 +63,13 @@ local function Handle_Claim_Group_Reward_Requests()
 
             local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
 
-            local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
             local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
 
             if not Open_Slot then
-                Network.Notification.Fire(
-                    Player,
-                    { Text = `Your inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`, Type = "Error" }
-                )
+                Network.Notification.Fire(Player, {
+                    Text = `Your brainrot inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`,
+                    Type = "Error",
+                })
                 return
             end
 

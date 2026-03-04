@@ -13,9 +13,17 @@ local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 return function(
     Brainrot_Model: Model,
-    Data: { Brainrot_Name: string, Primary_Mutation: string?, Secondary_Mutations: { string }, Weight: number }
+    Data: {
+        Level: number,
+        Experience: number,
+        Brainrot_Name: string,
+        Primary_Mutation: string?,
+        Secondary_Mutations: { string },
+        Weight: number,
+    }
 )
     local Brainrot_Rarity = Brainrots[Data.Brainrot_Name].Rarity
+    local Xp_Needed = Stat_Calculator.Calculate_Xp_Needed(Data.Level)
 
     local Overhead_Attachment = Brainrot_Model:FindFirstChild("Overhead_Attachment", true) :: Attachment
     local Billboard = Overhead_Attachment:FindFirstChild("Brainrot_Overhead") :: BillboardGui
@@ -24,6 +32,9 @@ return function(
         Billboard = Brainrot_Overhead:Clone()
         Billboard.Parent = Overhead_Attachment
     end
+
+    local Level = Billboard:FindFirstChild("Level") :: TextLabel
+    Level.Text = `Level {Data.Level} ({Data.Experience}/{Xp_Needed})`
 
     local Name = Billboard:FindFirstChild("Name") :: TextLabel
     Name.Text = string.format("[%.1f kg] %s", Data.Weight, Data.Brainrot_Name)
@@ -98,6 +109,8 @@ return function(
     local Earnings = Billboard:FindFirstChild("Earnings") :: TextLabel
 
     local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
+        Level = Data.Level,
+        Experience = Data.Experience,
         Brainrot_Name = Data.Brainrot_Name,
         Primary_Mutation = Data.Primary_Mutation,
         Secondary_Mutations = Data.Secondary_Mutations,
