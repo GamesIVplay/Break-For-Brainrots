@@ -31,19 +31,6 @@ event Setup_Tool {
     Data: Instance(Tool)
 }
 
-event Setup_Sell_Prompt {
-	From: Server,
-    Type: Reliable,
-    Call: SingleSync,
-	Poll: true,
-    Data: struct {
-		Brainrot_Name: string,
-		Primary_Mutation: string?,
-		Brainrot_Model: Instance(Model),
-		Sell_Price: f64
-	}
-}
-
 scope VFX { 
 	event Buy {
         From: Server,

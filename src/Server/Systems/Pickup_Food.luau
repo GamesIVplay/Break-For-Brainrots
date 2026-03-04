@@ -10,7 +10,6 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
 local World = require(ReplicatedStorage.Common.World)
 
-local Food = require(ReplicatedStorage.Common.Modules.Food)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 

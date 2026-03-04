@@ -281,6 +281,8 @@ local function Make_Sell_Group(Brainrot_Inventory: { Types.Brainrot_Item })
         end
 
         local Sell_Price = Stat_Calculator.Calculate_Sell_Price({
+            Level = Brainrot_Item.Level,
+            Experience = Brainrot_Item.Experience,
             Brainrot_Name = Brainrot_Item.Name,
             Primary_Mutation = Brainrot_Item.Primary_Mutation,
             Secondary_Mutations = Brainrot_Item.Secondary_Mutations,
@@ -2211,6 +2213,8 @@ local function Setup_Sell_Total_Value(PlayerGui: PlayerGui)
 
             for _, Brainrot_Item: Types.Brainrot_Item in Brainrot_Inventory do
                 local Sell_Price = Stat_Calculator.Calculate_Sell_Price({
+                    Level = Brainrot_Item.Level,
+                    Experience = Brainrot_Item.Experience,
                     Brainrot_Name = Brainrot_Item.Name,
                     Primary_Mutation = Brainrot_Item.Primary_Mutation,
                     Secondary_Mutations = Brainrot_Item.Secondary_Mutations,

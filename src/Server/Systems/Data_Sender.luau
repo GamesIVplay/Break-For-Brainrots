@@ -313,6 +313,8 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
 
         New_Tool.Name = Tool_Name
         New_Tool.ToolTip = Tool_Name
+        New_Tool.Enabled = false
+        New_Tool.CanBeDropped = false
         New_Tool:SetAttribute("Level", Level)
         New_Tool:SetAttribute("Experience", Experience)
         New_Tool:SetAttribute("Name", Brainrot_Name)
@@ -327,6 +329,8 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
             Generate_Brainrot_Model(Brainrot_Name, Primary_Mutation, Secondary_Mutations, Weight)
 
         Update_Brainrot_Overhead(Brainrot_Model, {
+            Level = Level,
+            Experience = Experience,
             Brainrot_Name = Brainrot_Name,
             Primary_Mutation = Primary_Mutation,
             Secondary_Mutations = Secondary_Mutations,
@@ -392,8 +396,6 @@ local function Replicate_Food_Inventory(Player: Player, Entity: Types.Entity)
         table.insert(Serialized_Food_Inventory, Food_Item)
     end)
 
-    --Network.DataChanged.Brainrot_Inventory.Fire(Player, Serialized_Brainrot_Inventory)
-
     World:set(
         Entity,
         Pair(Components.Relationships.Previous, Components.Food_Inventory),
@@ -448,6 +450,8 @@ local function Replicate_Food_Inventory(Player: Player, Entity: Types.Entity)
 
         New_Tool.Name = `[+{Xp} Xp] {Food_Data.Name}`
         New_Tool.ToolTip = `[+{Xp} Xp] {Food_Data.Name}`
+        New_Tool.Enabled = false
+        New_Tool.CanBeDropped = false
         New_Tool:SetAttribute("Xp", Food_Item.Xp)
         New_Tool:SetAttribute("Index", Index)
         New_Tool:AddTag("Food")
@@ -630,8 +634,8 @@ local function Replicate_Plot_Income_Per_Sec(Player: Player, Entity: Types.Entit
         local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
 
         Plot_Income_Per_Sec += math.round(Stat_Calculator.Calculate_Income_Per_Sec({
-            Level = 1,
-            Experience = 0,
+            Level = Level,
+            Experience = Experience,
             Brainrot_Name = Brainrot_Name,
             Primary_Mutation = Primary_Mutation,
             Secondary_Mutations = Secondary_Mutations,

@@ -16,6 +16,7 @@ local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
+local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update_Brainrot_Overhead)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 local Can_Generate = Ratelimit(1, 1)
@@ -53,11 +54,22 @@ local function Generate_Brainrots_Cash()
             continue
         end
 
-        local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
-            Level = 1,
-            Experience = 0,
+        local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
+
+        Update_Brainrot_Overhead(Brainrot_Model, {
+            Level = Level,
+            Experience = Experience,
             Brainrot_Name = Brainrot_Name,
-            Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation),
+            Primary_Mutation = Primary_Mutation,
+            Secondary_Mutations = Secondary_Mutations,
+            Weight = Weight,
+        })
+
+        local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
+            Level = Level,
+            Experience = Experience,
+            Brainrot_Name = Brainrot_Name,
+            Primary_Mutation = Primary_Mutation,
             Secondary_Mutations = Secondary_Mutations,
             Weight = Weight,
         })

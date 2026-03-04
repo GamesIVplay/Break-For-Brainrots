@@ -12,7 +12,6 @@ local World = require(ReplicatedStorage.Common.World)
 
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
-local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update_Brainrot_Overhead)
 
 return function(
     Player_Entity: Types.Entity,
@@ -32,17 +31,7 @@ return function(
 
     local Brainrot_Model, Offset = Generate_Brainrot_Model(Brainrot_Name, Primary_Mutation, Secondary_Mutations, Weight)
 
-    Update_Brainrot_Overhead(Brainrot_Model, {
-        Level = Level,
-        Experience = Experience,
-        Brainrot_Name = Brainrot_Name,
-        Primary_Mutation = Primary_Mutation,
-        Secondary_Mutations = Secondary_Mutations,
-        Weight = Weight,
-    })
-
     Brainrot_Model.Parent = workspace:FindFirstChild("Brainrots")
-
     Brainrot_Model:PivotTo(Attachment.WorldCFrame * Offset * CFrame.new(Stat_Calculator.Get_Brainrot_Offset()))
 
     Network.VFX.Bounce_Brainrot.FireAll(Brainrot_Model)
@@ -77,22 +66,6 @@ return function(
         Open_Stand:RemoveTag("Occupied")
         Open_Stand:SetAttribute("ServerEntity", nil)
     end)
-
-    local Sell_Price = Stat_Calculator.Calculate_Sell_Price({
-        Level = Level,
-        Experience = Experience,
-        Brainrot_Name = Brainrot_Name,
-        Primary_Mutation = Primary_Mutation,
-        Secondary_Mutations = Secondary_Mutations,
-        Weight = Weight,
-    })
-
-    Network.Setup_Sell_Prompt.Fire(Player, {
-        Brainrot_Name = Brainrot_Name,
-        Primary_Mutation = Primary_Mutation,
-        Brainrot_Model = Brainrot_Model,
-        Sell_Price = Sell_Price,
-    })
 
     Brainrot_Model:AddTag("Brainrot")
     Brainrot_Model:SetAttribute("Owner", Player.UserId)

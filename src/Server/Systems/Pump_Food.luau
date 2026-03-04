@@ -10,6 +10,7 @@ local World = require(ReplicatedStorage.Common.World)
 
 local Food = require(ReplicatedStorage.Common.Modules.Food)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
+local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 
 return {
     name = script.Name,
@@ -23,6 +24,18 @@ return {
             local Player_Entity = Registry.Get("Players", Player)
 
             if not Player_Entity then
+                continue
+            end
+
+            local Tutorial_Step = World:get(Player_Entity, Components.Tutorial_Step)
+
+            if not Tutorial_Step then
+                continue
+            end
+
+            if Tutorial_Step < #Tutorial_Steps then
+                Network.Notification.Fire(Player, { Text = "Complete the tutorial first", Type = "Error" })
+
                 continue
             end
 

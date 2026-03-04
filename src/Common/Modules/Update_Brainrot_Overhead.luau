@@ -34,7 +34,10 @@ return function(
     end
 
     local Level = Billboard:FindFirstChild("Level") :: TextLabel
-    Level.Text = `Level {Data.Level} ({Data.Experience}/{Xp_Needed})`
+    Level.Text =
+        `Level {Util.Format_Number_With_Commas(Data.Level)} ({Util.Format_Number_With_Commas(Data.Experience)}/{Util.Format_Number_With_Commas(
+            Xp_Needed
+        )} Xp)`
 
     local Name = Billboard:FindFirstChild("Name") :: TextLabel
     Name.Text = string.format("[%.1f kg] %s", Data.Weight, Data.Brainrot_Name)
