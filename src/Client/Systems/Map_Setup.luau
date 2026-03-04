@@ -3,7 +3,7 @@ local Debris = game:GetService("Debris")
 local MarketPlaceService = game:GetService("MarketplaceService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local SocialService = game:GetService("SocialService")
+-- local SocialService = game:GetService("SocialService")
 local TweenService = game:GetService("TweenService")
 
 local Map = workspace:WaitForChild("Map") :: Folder
@@ -27,8 +27,8 @@ local Peek = Fusion.peek
 local Clock = require(ReplicatedStorage.Packages.Clock)
 
 local Components = require(ReplicatedStorage.Common.Components)
-local Config = require(ReplicatedStorage.Common.Config)
-local Log = require(ReplicatedStorage.Common.Log)
+-- local Config = require(ReplicatedStorage.Common.Config)
+-- local Log = require(ReplicatedStorage.Common.Log)
 local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
 local Types = require(ReplicatedStorage.Common.Types)
@@ -626,6 +626,38 @@ local function Setup_Secret_Offer(Local_Player: Player)
     end
 end
 
+local function Setup_Pro_Pack(Local_Player: Player)
+    for _, Inst: Attachment in CollectionService:GetTagged("Pro Pack Prompt Attachment") do
+        if not Inst:IsA("Attachment") then
+            continue
+        end
+
+        Proximity(Inst, {
+            ActionText = "Purchase",
+            ObjectText = "Pro Pack",
+            MaxActivationDistance = 10,
+        }, function()
+            MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Pro Pack"])
+        end)
+    end
+end
+
+local function Setup_Starter_Pack(Local_Player: Player)
+    for _, Inst: Attachment in CollectionService:GetTagged("Starter Pack Prompt Attachment") do
+        if not Inst:IsA("Attachment") then
+            continue
+        end
+
+        Proximity(Inst, {
+            ActionText = "Purchase",
+            ObjectText = "Starter Pack",
+            MaxActivationDistance = 8,
+        }, function()
+            MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Starter Pack"])
+        end)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.InitPhases.Init,
@@ -654,6 +686,10 @@ return {
         Setup_Random_Brainrot(Local_Player)
 
         Setup_Secret_Offer(Local_Player)
+
+        Setup_Pro_Pack(Local_Player)
+
+        Setup_Starter_Pack(Local_Player)
     end,
     runConditions = {},
 }
