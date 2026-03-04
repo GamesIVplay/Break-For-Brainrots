@@ -94,6 +94,8 @@ local function Handle_Claim_Daily_Reward_Requests()
             end
 
             local Brainrot_Item: Types.Brainrot_Item = {
+                Level = 1,
+                Experience = 0,
                 Name = Reward_Data.Name,
                 Primary_Mutation = Reward_Data.Primary_Mutation,
                 Secondary_Mutations = {},

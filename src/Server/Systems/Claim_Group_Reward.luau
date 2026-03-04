@@ -76,6 +76,8 @@ local function Handle_Claim_Group_Reward_Requests()
             World:add(Player_Entity, Components.Tags.Claimed_Group_Reward)
 
             Brainrot_Inventory[Open_Slot] = {
+                Level = 1,
+                Experience = 0,
                 Name = "Cappuccino Assassino",
                 Primary_Mutation = "Diamond",
                 Secondary_Mutations = {},

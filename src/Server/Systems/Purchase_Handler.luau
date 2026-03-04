@@ -100,6 +100,8 @@ local Grant_Purchase_By_Product_Id = {
         end
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = "Matteo",
             Secondary_Mutations = {},
             Weight = math.max(10, Weight.Roll_Weight()),
@@ -127,6 +129,8 @@ local Grant_Purchase_By_Product_Id = {
         end
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = "Dragon Cannelloni",
             Secondary_Mutations = {},
             Weight = math.max(10, Weight.Roll_Weight()),
@@ -153,6 +157,8 @@ local Grant_Purchase_By_Product_Id = {
         end
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = "Frigo Camelo",
             Secondary_Mutations = {},
             Weight = math.max(10, Weight.Roll_Weight()),
@@ -177,6 +183,8 @@ local Grant_Purchase_By_Product_Id = {
         end
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = "Six Seven",
             Secondary_Mutations = {},
             Weight = math.max(10, Weight.Roll_Weight()),
@@ -201,6 +209,8 @@ local Grant_Purchase_By_Product_Id = {
         end
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = "Esok Sekolah",
             Secondary_Mutations = {},
             Weight = math.max(10, Weight.Roll_Weight()),
@@ -318,6 +328,8 @@ local Grant_Purchase_By_Product_Id = {
         local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = Rolled_Name,
             Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
             Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
@@ -348,6 +360,8 @@ local Grant_Purchase_By_Product_Id = {
         end
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = "Ballerino Lololo",
             Secondary_Mutations = {},
             Weight = math.max(10, Weight.Roll_Weight()),
@@ -374,6 +388,8 @@ local Grant_Purchase_By_Product_Id = {
         local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = "Tung Sahur",
             Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
             Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
@@ -401,6 +417,8 @@ local Grant_Purchase_By_Product_Id = {
         end
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = "Ballerina Cappuccina",
             Primary_Mutation = "Gold",
             Secondary_Mutations = {},
@@ -426,6 +444,8 @@ local Grant_Purchase_By_Product_Id = {
         end
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = "Bananita Dolphinita",
             Primary_Mutation = "Diamond",
             Secondary_Mutations = {},
@@ -470,6 +490,8 @@ local Grant_Purchase_By_Product_Id = {
         local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = "Troll Face",
             Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
             Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
@@ -497,6 +519,8 @@ local Grant_Purchase_By_Product_Id = {
         local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = "La Grande Combinasion",
             Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
             Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
@@ -524,6 +548,8 @@ local Grant_Purchase_By_Product_Id = {
         local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
 
         Brainrot_Inventory[Open_Slot] = {
+            Level = 1,
+            Experience = 0,
             Name = "Skibidi Toilet",
             Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
             Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
