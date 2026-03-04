@@ -221,6 +221,8 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
             Connnections,
             Tool.Equipped:Connect(function()
                 Equipped = true
+
+                Fusion_Values.Hold_To_Swing_Disclaimer:set(true)
             end)
         )
 
@@ -228,6 +230,8 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
             Connnections,
             Tool.Unequipped:Connect(function()
                 Equipped = false
+
+                Fusion_Values.Hold_To_Swing_Disclaimer:set(false)
             end)
         )
 

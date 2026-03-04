@@ -703,6 +703,24 @@ local function Setup_HUD_Plot_Income_Per_Sec(PlayerGui: PlayerGui)
     })
 end
 
+local function Setup_Hold_To_Swing_Disclaimer(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Hold_To_Swing_Disclaimer = Main:WaitForChild("Hold_To_Swing_Disclaimer")
+
+    Scope:Hydrate(Hold_To_Swing_Disclaimer)({
+        Visible = Scope:Computed(function(Use)
+            return Use(Fusion_Values.Hold_To_Swing_Disclaimer)
+        end),
+        Position = Scope:Computed(function(Use)
+            if Use(DeviceType) ~= "Mobile" then
+                return UDim2.fromScale(0.5, 0.77)
+            else
+                return UDim2.fromScale(0.5, 0.67)
+            end
+        end),
+    })
+end
+
 local function Setup_HUD_Tutorial(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     local Tutorial = PlayerGui:WaitForChild("Visuals"):WaitForChild("Tutorial") :: ImageLabel
 
@@ -789,6 +807,8 @@ local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_HUD_Right_Corner(LocalEntity, PlayerGui)
 
     Setup_HUD_Plot_Income_Per_Sec(PlayerGui)
+
+    Setup_Hold_To_Swing_Disclaimer(PlayerGui)
 
     Setup_HUD_Tutorial(LocalEntity, PlayerGui)
 end
