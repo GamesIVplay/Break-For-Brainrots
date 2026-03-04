@@ -15,7 +15,6 @@ return {
         New_Folder("Characters", workspace)
         New_Folder("Events", workspace)
         New_Folder("Blocks", workspace)
-        New_Folder("Foods", workspace)
         New_Folder("Brainrots", workspace)
         New_Folder("Debris", workspace)
         New_Folder("Temp", ReplicatedStorage)

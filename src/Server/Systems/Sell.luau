@@ -19,8 +19,6 @@ local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator
 local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
-local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
-
 local function Normalize_Secondary(List: { string }): string
     if #List == 0 then
         return ""
@@ -73,16 +71,12 @@ local function Handle_Sell_Requests()
             continue
         end
 
-        local Level = World:get(ServerEntity, Components.Level)
-        local Experience = World:get(ServerEntity, Components.Experience)
         local Brainrot_Name = World:get(ServerEntity, Components.Name)
         local Primary_Mutation = World:get(ServerEntity, Components.Primary_Mutation)
         local Secondary_Mutations = World:get(ServerEntity, Components.Secondary_Mutations)
         local Weight = World:get(ServerEntity, Components.Weight)
 
         local Sell_Price = Stat_Calculator.Calculate_Sell_Price({
-            Level = Level,
-            Experience = Experience,
             Brainrot_Name = Brainrot_Name,
             Primary_Mutation = Primary_Mutation,
             Secondary_Mutations = Secondary_Mutations,
@@ -126,10 +120,9 @@ local function Handle_Sell_Requests()
 
         local Total_Price = 0
 
+        local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
         Slot_Util.For_Each(Brainrot_Inventory, Brainrot_Capacity, function(_, Brainrot_Item: Types.Brainrot_Item)
             local Sell_Price = Stat_Calculator.Calculate_Sell_Price({
-                Level = Brainrot_Item.Level,
-                Experience = Brainrot_Item.Experience,
                 Brainrot_Name = Brainrot_Item.Name,
                 Primary_Mutation = Brainrot_Item.Primary_Mutation,
                 Secondary_Mutations = Brainrot_Item.Secondary_Mutations,
@@ -187,6 +180,7 @@ local function Handle_Sell_Requests()
 
         local Group_Secondary = Normalize_Secondary(Item_Group.Secondary_Mutations)
 
+        local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
         Slot_Util.For_Each(Brainrot_Inventory, Brainrot_Capacity, function(Index, Brainrot_Item: Types.Brainrot_Item)
             if
                 Brainrot_Item.Name ~= Item_Group.Name
@@ -197,8 +191,6 @@ local function Handle_Sell_Requests()
             end
 
             local Sell_Price = Stat_Calculator.Calculate_Sell_Price({
-                Level = Brainrot_Item.Level,
-                Experience = Brainrot_Item.Experience,
                 Brainrot_Name = Brainrot_Item.Name,
                 Primary_Mutation = Brainrot_Item.Primary_Mutation,
                 Secondary_Mutations = Brainrot_Item.Secondary_Mutations,

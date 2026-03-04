@@ -13,17 +13,9 @@ local Util = require(ReplicatedStorage.Common.Modules.Util)
 
 return function(
     Brainrot_Model: Model,
-    Data: {
-        Level: number,
-        Experience: number,
-        Brainrot_Name: string,
-        Primary_Mutation: string?,
-        Secondary_Mutations: { string },
-        Weight: number,
-    }
+    Data: { Brainrot_Name: string, Primary_Mutation: string?, Secondary_Mutations: { string }, Weight: number }
 )
     local Brainrot_Rarity = Brainrots[Data.Brainrot_Name].Rarity
-    local Xp_Needed = Stat_Calculator.Calculate_Xp_Needed(Data.Level)
 
     local Overhead_Attachment = Brainrot_Model:FindFirstChild("Overhead_Attachment", true) :: Attachment
     local Billboard = Overhead_Attachment:FindFirstChild("Brainrot_Overhead") :: BillboardGui
@@ -32,12 +24,6 @@ return function(
         Billboard = Brainrot_Overhead:Clone()
         Billboard.Parent = Overhead_Attachment
     end
-
-    local Level = Billboard:FindFirstChild("Level") :: TextLabel
-    Level.Text =
-        `Level {Util.Format_Number_With_Commas(Data.Level)} ({Util.Format_Number_With_Commas(Data.Experience)}/{Util.Format_Number_With_Commas(
-            Xp_Needed
-        )} Xp)`
 
     local Name = Billboard:FindFirstChild("Name") :: TextLabel
     Name.Text = string.format("[%.1f kg] %s", Data.Weight, Data.Brainrot_Name)
@@ -91,29 +77,21 @@ return function(
         end
     end
 
-    if #Data.Secondary_Mutations > 0 then
-        for _, Mutation_Name in Data.Secondary_Mutations do
-            if Secondary_Mutations_Frame:FindFirstChild(Mutation_Name) then
-                continue
-            end
-
-            local Clone = Template:Clone()
-            Clone.Name = Mutation_Name
-            Clone.Image = Secondary_Mutations[Mutation_Name].Image
-            Clone.Visible = true
-            Clone.Parent = Secondary_Mutations_Frame
+    for _, Mutation_Name in Data.Secondary_Mutations do
+        if Secondary_Mutations_Frame:FindFirstChild(Mutation_Name) then
+            continue
         end
 
-        Secondary_Mutations_Frame.Visible = true
-    else
-        Secondary_Mutations_Frame.Visible = false
+        local Clone = Template:Clone()
+        Clone.Name = Mutation_Name
+        Clone.Image = Secondary_Mutations[Mutation_Name].Image
+        Clone.Visible = true
+        Clone.Parent = Secondary_Mutations_Frame
     end
 
     local Earnings = Billboard:FindFirstChild("Earnings") :: TextLabel
 
     local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
-        Level = Data.Level,
-        Experience = Data.Experience,
         Brainrot_Name = Data.Brainrot_Name,
         Primary_Mutation = Data.Primary_Mutation,
         Secondary_Mutations = Data.Secondary_Mutations,

@@ -88,7 +88,7 @@ local Blocks: { [string]: Block } = {
         Developer_Product = 3524815548,
         Model = Block_Models:WaitForChild("Common"),
         Roll_Brainrot = New_Rarity_Brainrot_Roll("Common"),
-        Part_Color = Color3.fromRGB(93, 94, 100),
+        Part_Color = Color3.fromRGB(128, 129, 138),
     },
     ["Rare"] = {
         Health = 30,

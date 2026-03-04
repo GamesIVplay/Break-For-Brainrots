@@ -1,11 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local Assets = ReplicatedStorage:WaitForChild("Assets")
-
-local VFX = Assets:WaitForChild("VFX")
-local Secondary_Mutations_VFX = VFX:WaitForChild("Secondary_Mutations")
-
 local Network = require(ServerScriptService.Network)
 
 local Jecs = require(ReplicatedStorage.Packages.Jecs)
@@ -18,7 +13,6 @@ local World = require(ReplicatedStorage.Common.World)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
 local Roll_Block = require(ReplicatedStorage.Common.Modules.Roll_Block)
-local Roll_Secondary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Secondary_Mutation)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 
 local Block_Spawner_Query = World:query(Components.Renderable)
@@ -35,9 +29,8 @@ local function Spawn_Blocks()
         local Block_Queue = World:get(Owner_Entity, Components.Block_Queue)
 
         local Luck = Stat_Calculator.Get_Luck(Owner_Entity)
-        local Mutation_Luck = Stat_Calculator.Get_Luck(Owner_Entity)
 
-        local Block_Name, Block_Data, Secondary_Mutations
+        local Block_Name, Block_Data
 
         if Opens == 0 or Opens == 1 then
             Block_Name = "Common"
@@ -60,8 +53,6 @@ local function Spawn_Blocks()
             Block_Name, Block_Data = Roll_Block(Luck, Excluded)
         end
 
-        Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck)
-
         local Block_Spawn = Plot_Model:FindFirstChild("Block_Spawn", true) :: Attachment
 
         local Block_Model = Block_Data.Model:Clone()
@@ -75,20 +66,6 @@ local function Spawn_Blocks()
         Block_Model:AddTag(Plot_Model.Name .. "_Block")
         Block_Model.Parent = workspace:FindFirstChild("Blocks")
 
-        if Secondary_Mutations ~= nil then
-            for _, Mutation_Name in Secondary_Mutations do
-                local Part = Secondary_Mutations_VFX:FindFirstChild(Mutation_Name):Clone() :: Part
-                Part.Parent = Block_Model
-                Part.CFrame = Block_Model.PrimaryPart.CFrame
-                Part.Size = Block_Model:GetExtentsSize()
-
-                local Weld = Instance.new("WeldConstraint")
-                Weld.Part0 = Block_Model.PrimaryPart
-                Weld.Part1 = Part
-                Weld.Parent = Part
-            end
-        end
-
         if Block_Data.Floats then
             Block_Model:AddTag("Idle")
         end
@@ -98,7 +75,6 @@ local function Spawn_Blocks()
         World:set(Block_Entity, Components.Name, Block_Name)
         World:set(Block_Entity, Components.Renderable, Block_Model)
         World:set(Block_Entity, Components.Health, Block_Data.Health)
-        World:set(Block_Entity, Components.Secondary_Mutations, Secondary_Mutations or {})
 
         World:add(Block_Entity, Components.Tags.Block)
         World:add(Block_Entity, Components.Tags.Networked)

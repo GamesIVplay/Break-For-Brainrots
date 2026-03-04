@@ -45,7 +45,6 @@ Start({
     require(Systems.User_Interface),
     require(Systems.Notification),
     require(Systems.Data_Receiver),
-    require(Systems.Feed),
     require(Systems.Gift),
     require(Systems.Event),
     require(Systems.Music),

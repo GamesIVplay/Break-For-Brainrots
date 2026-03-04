@@ -18,8 +18,6 @@ local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
-local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
-
 local function Handle_Equip_Best_Brainrots_Requests()
     for _, Player: Player in Network.Requests.Equip_Best_Brainrots.Iter() do
         if not Ratelimits.Equip_Best_Brainrots(Player) then
@@ -66,10 +64,10 @@ local function Handle_Equip_Best_Brainrots_Requests()
 
         local Gained_Cash = 0
 
+        local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
+
         for
             Brainrot_Entity,
-            Level: number,
-            Experience: number,
             Brainrot_Name: string,
             Secondary_Mutations: { string },
             Weight: number,
@@ -77,8 +75,6 @@ local function Handle_Equip_Best_Brainrots_Requests()
             Offline_Cash: number
         in
             World:query(
-                Components.Level,
-                Components.Experience,
                 Components.Name,
                 Components.Secondary_Mutations,
                 Components.Weight,
@@ -95,8 +91,6 @@ local function Handle_Equip_Best_Brainrots_Requests()
             local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
 
             local Brainrot_Item: Types.Brainrot_Item = {
-                Level = Level,
-                Experience = Experience,
                 Name = Brainrot_Name,
                 Primary_Mutation = Primary_Mutation,
                 Secondary_Mutations = Secondary_Mutations,
@@ -122,8 +116,6 @@ local function Handle_Equip_Best_Brainrots_Requests()
                 Index = Index,
                 Data = Item,
                 Income = Stat_Calculator.Calculate_Income_Per_Sec({
-                    Level = Item.Level,
-                    Experience = Item.Experience,
                     Brainrot_Name = Item.Name,
                     Primary_Mutation = Item.Primary_Mutation,
                     Secondary_Mutations = Item.Secondary_Mutations,
@@ -165,8 +157,6 @@ local function Handle_Equip_Best_Brainrots_Requests()
                 New_Brainrot_Entity(
                     Player_Entity,
                     Open_Stand,
-                    Data.Data.Level,
-                    Data.Data.Experience,
                     Data.Data.Name,
                     Data.Data.Primary_Mutation,
                     Data.Data.Secondary_Mutations,

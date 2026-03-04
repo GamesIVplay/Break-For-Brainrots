@@ -10,9 +10,6 @@ local Network = require(ServerScriptService.Network)
 
 local Slot_Util = require(ServerScriptService.Server.Modules.Slot_Util)
 
-local Jecs = require(ReplicatedStorage.Packages.Jecs)
-local Pair = Jecs.pair
-
 local Components = require(ReplicatedStorage.Common.Components)
 local Log = require(ReplicatedStorage.Common.Log)
 local Phases = require(ReplicatedStorage.Common.Phases)
@@ -28,58 +25,14 @@ local Roll_Primary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Prim
 local Roll_Secondary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Secondary_Mutation)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Upgrades_Config = require(ReplicatedStorage.Common.Modules.Upgrades)
-local Util = require(ReplicatedStorage.Common.Modules.Util)
 local Weight = require(ReplicatedStorage.Common.Modules.Weight)
 
 local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
 
-local function Simulate_Time(PlayerEntity: Types.Entity, Amount: number)
-    local Cash = World:get(PlayerEntity, Components.Cash)
-
-    local Gained_Cash = 0
-
-    for
-        Brainrot_Entity,
-        Level: number,
-        Experience: number,
-        Brainrot_Name: string,
-        Secondary_Mutations: { string },
-        Weight: number,
-        Cash: number,
-        Offline_Cash: number
-    in
-        World:query(
-            Components.Level,
-            Components.Experience,
-            Components.Name,
-            Components.Secondary_Mutations,
-            Components.Weight,
-            Components.Cash,
-            Components.Offline_Cash
-        ):with(Components.Tags.Brainrot, Pair(Components.Relationships.Owner, PlayerEntity))
-    do
-        local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
-
-        local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
-            Level = Level,
-            Experience = Experience,
-            Brainrot_Name = Brainrot_Name,
-            Primary_Mutation = Primary_Mutation,
-            Secondary_Mutations = Secondary_Mutations,
-            Weight = Weight,
-        }) * Stat_Calculator.Get_Cash_Multiplier(PlayerEntity)
-
-        Gained_Cash += Income_Per_Sec * Amount
-    end
-
-    World:set(PlayerEntity, Components.Cash, Cash + Gained_Cash)
-
-    return Gained_Cash
-end
-
 local Grant_Purchase_By_Product_Id = {
     [Developer_Products["Restock"]] = function(PlayerEntity: Types.Entity)
         World:set(PlayerEntity, Components.Last_Restock, 0)
+
         return true
     end,
 
@@ -93,15 +46,13 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! Starter Pack not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! Starter Pack not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
         end
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = "Matteo",
             Secondary_Mutations = {},
             Weight = math.max(10, Weight.Roll_Weight()),
@@ -122,15 +73,13 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! Pro Pack not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! Pro Pack not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
         end
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = "Dragon Cannelloni",
             Secondary_Mutations = {},
             Weight = math.max(10, Weight.Roll_Weight()),
@@ -150,15 +99,13 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! Frigo Camelo not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! Frigo Camelo not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
         end
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = "Frigo Camelo",
             Secondary_Mutations = {},
             Weight = math.max(10, Weight.Roll_Weight()),
@@ -176,15 +123,13 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! Six Seven not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! Six Seven not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
         end
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = "Six Seven",
             Secondary_Mutations = {},
             Weight = math.max(10, Weight.Roll_Weight()),
@@ -202,69 +147,19 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! Esok Sekolah not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! Esok Sekolah not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
         end
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = "Esok Sekolah",
             Secondary_Mutations = {},
             Weight = math.max(10, Weight.Roll_Weight()),
             Cash = 0,
             Offline_Cash = 0,
         } :: Types.Brainrot_Item
-
-        return true
-    end,
-    [Developer_Products["15 min"]] = function(PlayerEntity: Types.Entity)
-        local Player = World:get(PlayerEntity, Components.Player)
-
-        if not Player then
-            return false
-        end
-
-        local Gained_Cash = Simulate_Time(PlayerEntity, 60 * 15)
-
-        Network.Notification.Fire(Player, {
-            Text = `Simulated 15 minutes and earned ${Util.Abbreviate_Number(Gained_Cash, 2)}!`,
-            Type = "Success",
-        })
-
-        return true
-    end,
-    [Developer_Products["1 hour"]] = function(PlayerEntity: Types.Entity)
-        local Player = World:get(PlayerEntity, Components.Player)
-
-        if not Player then
-            return false
-        end
-
-        local Gained_Cash = Simulate_Time(PlayerEntity, 60 * 60)
-
-        Network.Notification.Fire(Player, {
-            Text = `Simulated 1 hour and earned ${Util.Abbreviate_Number(Gained_Cash, 2)}!`,
-            Type = "Success",
-        })
-
-        return true
-    end,
-    [Developer_Products["6 hours"]] = function(PlayerEntity: Types.Entity)
-        local Player = World:get(PlayerEntity, Components.Player)
-
-        if not Player then
-            return false
-        end
-
-        local Gained_Cash = Simulate_Time(PlayerEntity, 60 * 60 * 6)
-
-        Network.Notification.Fire(Player, {
-            Text = `Simulated 6 hours and earned ${Util.Abbreviate_Number(Gained_Cash, 2)}!`,
-            Type = "Success",
-        })
 
         return true
     end,
@@ -299,7 +194,7 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! Random Brainrot not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! Random Brainrot not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
@@ -328,8 +223,6 @@ local Grant_Purchase_By_Product_Id = {
         local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = Rolled_Name,
             Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
             Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
@@ -353,15 +246,13 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! Ballerino Lololo not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! Ballerino Lololo not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
         end
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = "Ballerino Lololo",
             Secondary_Mutations = {},
             Weight = math.max(10, Weight.Roll_Weight()),
@@ -379,7 +270,7 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! Tung Sahur not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! Tung Sahur not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
@@ -388,8 +279,6 @@ local Grant_Purchase_By_Product_Id = {
         local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = "Tung Sahur",
             Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
             Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
@@ -410,15 +299,13 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! Gold Ballerina Cappuccina not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! Gold Ballerina Cappuccina not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
         end
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = "Ballerina Cappuccina",
             Primary_Mutation = "Gold",
             Secondary_Mutations = {},
@@ -437,15 +324,13 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! Diamond Bananita Dolphinita not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! Diamond Bananita Dolphinita not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
         end
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = "Bananita Dolphinita",
             Primary_Mutation = "Diamond",
             Secondary_Mutations = {},
@@ -481,7 +366,7 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! Troll Face not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! Troll Face not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
@@ -490,8 +375,6 @@ local Grant_Purchase_By_Product_Id = {
         local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = "Troll Face",
             Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
             Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
@@ -510,7 +393,7 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! La Grande Combinasion not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! La Grande Combinasion not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
@@ -519,8 +402,6 @@ local Grant_Purchase_By_Product_Id = {
         local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = "La Grande Combinasion",
             Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
             Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),
@@ -539,7 +420,7 @@ local Grant_Purchase_By_Product_Id = {
 
         if not Open_Slot then
             Network.Notification.Fire(Player, {
-                Text = "Brainrot inventory full! Skibidi Toilet not claimed. Free up a slot and rejoin.",
+                Text = "Inventory full! Skibidi Toilet not claimed. Free up a slot and rejoin.",
                 Type = "Error",
             })
             return false
@@ -548,8 +429,6 @@ local Grant_Purchase_By_Product_Id = {
         local Mutation_Luck = Stat_Calculator.Get_Mutation_Luck(PlayerEntity)
 
         Brainrot_Inventory[Open_Slot] = {
-            Level = 1,
-            Experience = 0,
             Name = "Skibidi Toilet",
             Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck),
             Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck),

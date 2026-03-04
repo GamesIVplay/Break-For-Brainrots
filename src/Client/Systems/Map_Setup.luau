@@ -7,14 +7,9 @@ local SocialService = game:GetService("SocialService")
 local TweenService = game:GetService("TweenService")
 
 local Map = workspace:WaitForChild("Map") :: Folder
-local Plots = Map:FindFirstChild("Plots") :: Folder
 local Shops = Map:WaitForChild("Shops") :: Folder
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
-
-local Sounds = Assets:WaitForChild("Sounds")
-local UISounds = Sounds:WaitForChild("UI")
-local Activate = UISounds:WaitForChild("Activate") :: Sound
 
 local Zone = require(Assets:WaitForChild("Modules"):WaitForChild("Zone")) :: any
 
@@ -40,7 +35,6 @@ local World = require(ReplicatedStorage.Common.World)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
 local Developer_Products = require(ReplicatedStorage.Common.Modules.Developer_Products)
-local Food_Pump = require(ReplicatedStorage.Common.Modules.VFX.Food_Pump)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Proximity = require(ReplicatedStorage.Common.Modules.Proximity)
@@ -54,16 +48,6 @@ local Brainrot_Offset = Stat_Calculator.Get_Brainrot_Offset()
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 
-local ActivateHaptic = Instance.new("HapticEffect")
-ActivateHaptic.Name = "ActivateHaptic"
-ActivateHaptic.Position = Vector3.new(0, 0, 0)
-ActivateHaptic.Radius = 1
-ActivateHaptic.Type = Enum.HapticEffectType.UIHover
-ActivateHaptic.Parent = workspace
-
-local FOOD_PUMP_TOUCH_PART_BOUNCE_TIME = 0.1
-local FOOD_PUMP_TOUCH_PART_TWEEN_INFO =
-    TweenInfo.new(FOOD_PUMP_TOUCH_PART_BOUNCE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 local TOUCH_PART_BOUNCE_TIME = 0.08
 local TOUCH_PART_TWEEN_INFO = TweenInfo.new(TOUCH_PART_BOUNCE_TIME, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
 local STOCK_START_TIMESTAMP = 1772221960
@@ -80,7 +64,7 @@ local RANDOM_BRAINROT_OPTIONS = {
     "Frigo Camelo",
     "Rhino Toasterino",
 }
-local RANDOM_BRAINROT_CYCLE_DELAY = 1.5
+local RANDOM_BRAINROT_CYCLE_DELAY = 0.8
 
 local function BindFakeStock(Count: TextLabel, Max_Count: number)
     local CurrentStock = 0
@@ -108,56 +92,6 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
     World:set(Local_Entity, Components.Plot_Model, Plot_Model)
 
     Home_Billboard:Clone().Parent = Plot_Model
-
-    local Food_Pump_Touch = Plot_Model:WaitForChild("Food_Pump"):WaitForChild("Touch")
-
-    local Food_Pump_Touch_Tween_Up = TweenService:Create(Food_Pump_Touch, FOOD_PUMP_TOUCH_PART_TWEEN_INFO, {
-        Position = Food_Pump_Touch.Position,
-    })
-
-    local Food_Pump_Touch_Tween_Down = TweenService:Create(Food_Pump_Touch, FOOD_PUMP_TOUCH_PART_TWEEN_INFO, {
-        Position = Food_Pump_Touch.Position - Vector3.new(0, 0.5, 0),
-    })
-
-    local Click_Detector = Instance.new("ClickDetector")
-    Click_Detector.MaxActivationDistance = 60
-    Click_Detector.Parent = Food_Pump_Touch
-
-    Click_Detector.MouseClick:Connect(function()
-        if not Ratelimits.Pump_Food() then
-            return
-        end
-
-        Network.Requests.Pump_Food.Fire()
-
-        ActivateHaptic:Play()
-
-        local Sound = Activate:Clone()
-        Sound.Parent = Food_Pump_Touch
-        Sound.PlayOnRemove = true
-        Sound:Destroy()
-
-        Food_Pump(Food_Pump_Touch)
-
-        Food_Pump_Touch_Tween_Down:Play()
-
-        task.wait(FOOD_PUMP_TOUCH_PART_BOUNCE_TIME)
-
-        Food_Pump_Touch_Tween_Up:Play()
-    end)
-
-    local Food_Spawn = Plot_Model:FindFirstChild("Food_Spawn", true) :: Attachment
-
-    Proximity(Food_Spawn, {
-        ActionText = "Pickup Food",
-        MaxActivationDistance = 8,
-    }, function()
-        if not Ratelimits.Pickup_Food() then
-            return
-        end
-
-        Network.Requests.Pickup_Food.Fire()
-    end)
 
     local Break_Prompt, Skip_Screen =
         Plot_Model:WaitForChild("Break"):WaitForChild("Prompt") :: Part,
@@ -239,7 +173,7 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
 
             Tween_Down:Play()
 
-            task.wait(TOUCH_PART_BOUNCE_TIME)
+            task.wait(0.8)
 
             Tween_Up:Play()
         end)
@@ -456,8 +390,6 @@ local function Setup_Troll_Face(Local_Player: Player)
         local Title = Inst:FindFirstChild("Title", true) :: TextLabel
 
         local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
-            Level = 1,
-            Experience = 0,
             Brainrot_Name = "Troll Face",
             Secondary_Mutations = {},
             Weight = 10,
@@ -504,8 +436,6 @@ local function Setup_La_Grande_Combinasion(Local_Player: Player)
         local Title = Inst:FindFirstChild("Title", true) :: TextLabel
 
         local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
-            Level = 1,
-            Experience = 0,
             Brainrot_Name = "La Grande Combinasion",
             Secondary_Mutations = {},
             Weight = 10,
@@ -556,8 +486,6 @@ local function Setup_Skibidi_Toilet(Local_Player: Player)
         local Title = Inst:FindFirstChild("Title", true) :: TextLabel
 
         local Income_Per_Sec = Stat_Calculator.Calculate_Income_Per_Sec({
-            Level = 1,
-            Experience = 0,
             Brainrot_Name = "Skibidi Toilet",
             Secondary_Mutations = {},
             Weight = 10,
@@ -605,13 +533,13 @@ local function Setup_Random_Brainrot(Local_Player: Player)
             continue
         end
 
-        Proximity(Inst, {
-            ActionText = "Purchase",
-            ObjectText = "Random Brainrot",
-            MaxActivationDistance = Inst:IsDescendantOf(Plots) and 8 or 10,
-        }, function()
-            MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Random Brainrot"])
-        end)
+        Proximity(
+            Inst,
+            { ActionText = "Purchase", ObjectText = "Random Brainrot", MaxActivationDistance = 10 },
+            function()
+                MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Random Brainrot"])
+            end
+        )
     end
 
     for _, Inst: Attachment in CollectionService:GetTagged("Random Brainrot Spawn Attachment") do
@@ -632,7 +560,7 @@ local function Setup_Random_Brainrot(Local_Player: Player)
 
             local Rolled_Primary_Mutation = nil
             local Rolled_Secondary_Mutations = {}
-            local Rolled_Weight = Inst:IsDescendantOf(Plots) and 10 or 12.5
+            local Rolled_Weight = 12.5
 
             local Brainrot_Model, Offset = Generate_Brainrot_Model(
                 Rolled_Brainrot,

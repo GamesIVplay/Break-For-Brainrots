@@ -18,8 +18,6 @@ local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 
-local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
-
 local function Handle_Pickup_Requests()
     for _, Player: Player, Brainrot_Entity: Types.Entity in Network.Requests.Pickup.Iter() do
         if not Ratelimits.Pickup(Player) then
@@ -54,18 +52,17 @@ local function Handle_Pickup_Requests()
 
         local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
 
+        local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
         local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
 
         if not Open_Slot then
             Network.Notification.Fire(
                 Player,
-                { Text = `Your brainrot inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`, Type = "Error" }
+                { Text = `Your inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`, Type = "Error" }
             )
             continue
         end
 
-        local Level = World:get(Brainrot_Entity, Components.Level)
-        local Experience = World:get(Brainrot_Entity, Components.Experience)
         local Brainrot_Name = World:get(Brainrot_Entity, Components.Name)
         local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
         local Secondary_Mutations = World:get(Brainrot_Entity, Components.Secondary_Mutations)
@@ -74,8 +71,6 @@ local function Handle_Pickup_Requests()
         local Offline_Cash = World:get(Brainrot_Entity, Components.Offline_Cash)
 
         local Brainrot_Item: Types.Brainrot_Item = {
-            Level = Level,
-            Experience = Experience,
             Name = Brainrot_Name,
             Primary_Mutation = Primary_Mutation,
             Secondary_Mutations = Secondary_Mutations,

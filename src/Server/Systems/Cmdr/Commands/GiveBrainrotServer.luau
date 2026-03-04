@@ -32,7 +32,7 @@ return function(context, brainrotName: string, player: Player)
 
     if not Open_Slot then
         Network.Notification.Fire(Executor, {
-            Text = `This players brainrot inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`,
+            Text = `This players inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`,
             Type = "Error",
         })
         return

@@ -10,21 +10,12 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local World = require(ReplicatedStorage.Common.World)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
-local Secondary_Mutations = require(ReplicatedStorage.Common.Modules.Secondary_Mutations)
 
 local Block_Overhead_Query =
-    World:query(Components.Name, Components.Secondary_Mutations, Components.Health, Components.Renderable)
-        :with(Components.Tags.Block)
-        :cached()
+    World:query(Components.Name, Components.Health, Components.Renderable):with(Components.Tags.Block):cached()
 
 local function Update_Block_Overheads()
-    for
-        Block_Entity,
-        Block_Name: string,
-        Block_Secondary_Mutations: { string },
-        Block_Health: number,
-        Block_Model: Model
-    in Block_Overhead_Query:iter() do
+    for Block_Entity, Block_Name: string, Block_Health: number, Block_Model: Model in Block_Overhead_Query:iter() do
         local Max_Health = Blocks[Block_Name].Health
 
         local Overhead_Attachment = Block_Model:FindFirstChild("Overhead_Attachment", true)
@@ -46,28 +37,6 @@ local function Update_Block_Overheads()
 
         Health_Inside.Size = UDim2.fromScale(math.clamp(Block_Health / Max_Health, 0, 1), 1)
         Health_Title.Text = `{Block_Health}/{Max_Health}`
-
-        local Secondary_Mutations_Frame = Billboard:FindFirstChild("Secondary_Mutations") :: Frame
-        local Template = Secondary_Mutations_Frame:FindFirstChild("Template") :: ImageLabel
-        Template.Visible = false
-
-        if #Block_Secondary_Mutations > 0 then
-            for _, Mutation_Name in Block_Secondary_Mutations do
-                if Secondary_Mutations_Frame:FindFirstChild(Mutation_Name) then
-                    continue
-                end
-
-                local Clone = Template:Clone()
-                Clone.Name = Mutation_Name
-                Clone.Image = Secondary_Mutations[Mutation_Name].Image
-                Clone.Visible = true
-                Clone.Parent = Secondary_Mutations_Frame
-            end
-
-            Secondary_Mutations_Frame.Visible = true
-        else
-            Secondary_Mutations_Frame.Visible = false
-        end
     end
 end
 

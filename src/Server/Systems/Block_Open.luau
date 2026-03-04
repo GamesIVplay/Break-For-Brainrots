@@ -19,14 +19,13 @@ local Weight = require(ReplicatedStorage.Common.Modules.Weight)
 
 local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
 
-local Block_Open_Query =
-    World:query(Components.Name, Components.Secondary_Mutations, Components.Renderable, Components.Health)
-        :with(Components.Tags.Block)
-        :without(Components.Tags.Opening)
-        :cached()
+local Block_Open_Query = World:query(Components.Name, Components.Renderable, Components.Health)
+    :with(Components.Tags.Block)
+    :without(Components.Tags.Opening)
+    :cached()
 
 local function Open_Blocks()
-    for Block_Entity: Types.Entity, Block_Name: string, Secondary_Mutations, Block_Model: Model, Block_Health: number in
+    for Block_Entity: Types.Entity, Block_Name: string, Block_Model: Model, Block_Health: number in
         Block_Open_Query:iter()
     do
         if Block_Health > 0 then
@@ -67,7 +66,7 @@ local function Open_Blocks()
 
         local Rolled_Brainrot = Blocks[Block_Name].Roll_Brainrot()
         local Rolled_Primary_Mutation = Roll_Primary_Mutation(Tutorial_Step ~= 1 and Mutation_Luck or 300)
-        Secondary_Mutations = #Secondary_Mutations > 0 and Secondary_Mutations or Roll_Secondary_Mutation(Mutation_Luck)
+        local Rolled_Secondary_Mutations = Roll_Secondary_Mutation(Mutation_Luck)
         local Rolled_Weight = Weight.Roll_Weight()
 
         local Brainrot_CF = Block_Model:GetPivot()
@@ -81,7 +80,7 @@ local function Open_Blocks()
             Rolled_Brainrot = {
                 Name = Rolled_Brainrot,
                 Primary_Mutation = Rolled_Primary_Mutation,
-                Secondary_Mutations = Secondary_Mutations,
+                Secondary_Mutations = Rolled_Secondary_Mutations,
                 Weight = Rolled_Weight,
             },
         })
@@ -120,11 +119,9 @@ local function Open_Blocks()
                 New_Brainrot_Entity(
                     Player_Entity,
                     Open_Stand,
-                    1,
-                    0,
                     Rolled_Brainrot,
                     Rolled_Primary_Mutation,
-                    Secondary_Mutations,
+                    Rolled_Secondary_Mutations,
                     Rolled_Weight
                 )
             else
@@ -132,20 +129,18 @@ local function Open_Blocks()
 
                 if Open_Slot then
                     Brainrot_Inventory[Open_Slot] = {
-                        Level = 1,
-                        Experience = 0,
                         Name = Rolled_Brainrot,
                         Primary_Mutation = Rolled_Primary_Mutation,
-                        Secondary_Mutations = Secondary_Mutations,
+                        Secondary_Mutations = Rolled_Secondary_Mutations,
                         Weight = Rolled_Weight,
                         Cash = 0,
                         Offline_Cash = 0,
                     }
                 else
-                    Network.Notification.Fire(Player, {
-                        Text = `Your brainrot inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`,
-                        Type = "Error",
-                    })
+                    Network.Notification.Fire(
+                        Player,
+                        { Text = `Your inventory is full ({Brainrot_Capacity}/{Brainrot_Capacity})`, Type = "Error" }
+                    )
                 end
             end
 

@@ -20,7 +20,6 @@ PhysicsService:CollisionGroupSetCollidable("Character", "Character", false)
 local Network = require(ServerScriptService.Network)
 
 local Profile = require(ServerScriptService.Server.Modules.Profile)
-local Slot_Util = require(ServerScriptService.Server.Modules.Slot_Util)
 
 local Jecs = require(ReplicatedStorage.Packages.Jecs)
 local Pair = Jecs.pair
@@ -35,10 +34,7 @@ local World = require(ReplicatedStorage.Common.World)
 local AnimPlayer = require(ReplicatedStorage.Common.Modules.AnimPlayer)
 local Config = require(ReplicatedStorage.Common.Config)
 local Gamepasses = require(ReplicatedStorage.Common.Modules.Gamepasses)
-local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
-
-local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
 
 local PlayersRemoving = Collect(Players.PlayerRemoving)
 
@@ -138,16 +134,6 @@ local function Handle_New_Player(Player: Player)
         end
     end
 
-    for _, Data in Profile_Data.Brainrots do
-        Data.Level = Data.Level or 1
-        Data.Experience = Data.Experience or 1
-    end
-
-    Slot_Util.For_Each(Profile_Data.Brainrot_Inventory, Brainrot_Capacity, function(_, Item: Types.Brainrot_Item)
-        Item.Level = Item.Level or 1
-        Item.Experience = Item.Experience or 0
-    end)
-
     for Name, Level in Profile_Data.Upgrades do
         if Name == "Luck Multiplier" then
             Profile_Data.Upgrades["Luck Boost"] = Level
@@ -190,7 +176,6 @@ local function Handle_New_Player(Player: Player)
     World:set(Player_Entity, Components.Block_Queue, Profile_Data.Block_Queue)
     World:set(Player_Entity, Components.Upgrades, Profile_Data.Upgrades)
     World:set(Player_Entity, Components.Brainrot_Inventory, Profile_Data.Brainrot_Inventory)
-    World:set(Player_Entity, Components.Food_Inventory, Profile_Data.Food_Inventory)
     World:set(Player_Entity, Components.Pending_Brainrots, Profile_Data.Brainrots)
     World:set(Player_Entity, Components.Index, Profile_Data.Index)
     World:set(Player_Entity, Components.PlayTime, Profile_Data.PlayTime)
@@ -246,7 +231,6 @@ local function Handle_New_Player(Player: Player)
         Profile_Data.Block_Queue = World:get(Player_Entity, Components.Block_Queue)
         Profile_Data.Upgrades = World:get(Player_Entity, Components.Upgrades)
         Profile_Data.Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
-        Profile_Data.Food_Inventory = World:get(Player_Entity, Components.Food_Inventory)
         Profile_Data.Index = World:get(Player_Entity, Components.Index)
         Profile_Data.PlayTime = World:get(Player_Entity, Components.PlayTime)
         Profile_Data.LastPlayed = os.time()
@@ -259,8 +243,6 @@ local function Handle_New_Player(Player: Player)
 
         for
             Brainrot_Entity,
-            Level: number,
-            Experience: number,
             Brainrot_Name: string,
             Secondary_Mutations: { string },
             Weight: number,
@@ -269,8 +251,6 @@ local function Handle_New_Player(Player: Player)
             Stand: Model
         in
             World:query(
-                Components.Level,
-                Components.Experience,
                 Components.Name,
                 Components.Secondary_Mutations,
                 Components.Weight,
@@ -280,8 +260,6 @@ local function Handle_New_Player(Player: Player)
             ):with(Pair(Components.Relationships.Owner, Player_Entity))
         do
             Serialized_Brainrots[Stand.Name] = {
-                Level = Level,
-                Experience = Experience,
                 Name = Brainrot_Name,
                 Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation),
                 Secondary_Mutations = Secondary_Mutations,
@@ -305,7 +283,6 @@ local function Handle_New_Player(Player: Player)
     Player.CharacterRemoving:Connect(function()
         World:remove(Player_Entity, Components.Renderable)
         World:remove(Player_Entity, Pair(Components.Relationships.Previous, Components.Brainrot_Inventory))
-        World:remove(Player_Entity, Pair(Components.Relationships.Previous, Components.Food_Inventory))
         World:remove(Player_Entity, Pair(Components.Relationships.Previous, Components.Pickaxe))
     end)
 

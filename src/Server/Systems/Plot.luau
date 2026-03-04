@@ -50,12 +50,6 @@ local function Cleanup_Plots()
             World:delete(Block_Entity)
         end
 
-        local Food_Entity = World:target(Plot_Entity, Components.Relationships.Food)
-
-        if Food_Entity then
-            World:delete(Food_Entity)
-        end
-
         local PlayerInfo = Plot_Model:FindFirstChild("PlayerInfo")
         local Title: TextLabel, Avatar: ImageLabel =
             PlayerInfo:FindFirstChild("Title", true), PlayerInfo:FindFirstChild("Avatar", true)

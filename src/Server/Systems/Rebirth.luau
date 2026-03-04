@@ -65,27 +65,13 @@ local function Handle_Rebirth_Requests()
 
         local Plot_Income_Per_Sec = 0
 
-        for
-            Brainrot_Entity,
-            Level: number,
-            Experience: number,
-            Brainrot_Name: string,
-            Secondary_Mutations: { string },
-            Weight: number
-        in
-            World:query(
-                Components.Level,
-                Components.Experience,
-                Components.Name,
-                Components.Secondary_Mutations,
-                Components.Weight
-            ):with(Components.Tags.Brainrot, Pair(Components.Relationships.Owner, Player_Entity))
+        for Brainrot_Entity, Brainrot_Name: string, Secondary_Mutations: { string }, Weight: number in
+            World:query(Components.Name, Components.Secondary_Mutations, Components.Weight)
+                :with(Components.Tags.Brainrot, Pair(Components.Relationships.Owner, Player_Entity))
         do
             local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
 
             Plot_Income_Per_Sec += math.round(Stat_Calculator.Calculate_Income_Per_Sec({
-                Level = Level,
-                Experience = Experience,
                 Brainrot_Name = Brainrot_Name,
                 Primary_Mutation = Primary_Mutation,
                 Secondary_Mutations = Secondary_Mutations,

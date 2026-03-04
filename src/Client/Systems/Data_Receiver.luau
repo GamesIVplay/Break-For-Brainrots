@@ -6,7 +6,6 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local ImpactHaptic = Instance.new("HapticEffect")
-ImpactHaptic.Name = "ImpactHaptic"
 ImpactHaptic.Position = Vector3.new(0, 0, 0)
 ImpactHaptic.Radius = 1
 ImpactHaptic.Type = Enum.HapticEffectType.UIHover
@@ -222,8 +221,6 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
             Connnections,
             Tool.Equipped:Connect(function()
                 Equipped = true
-
-                Fusion_Values.Hold_To_Swing_Disclaimer:set(true)
             end)
         )
 
@@ -231,8 +228,6 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
             Connnections,
             Tool.Unequipped:Connect(function()
                 Equipped = false
-
-                Fusion_Values.Hold_To_Swing_Disclaimer:set(false)
             end)
         )
 
@@ -307,6 +302,39 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
         Tool.Destroying:Connect(function()
             for _, Connection in Connnections do
                 Connection:disconnect()
+            end
+        end)
+    end
+end
+
+local function Handle_Sell_Prompt_Setup()
+    for _, Data in Network.Setup_Sell_Prompt.Iter() do
+        local Brainrot_Model = Data.Brainrot_Model
+        local Sell_Price = Data.Sell_Price
+
+        if not Brainrot_Model:IsDescendantOf(workspace) then
+            continue
+        end
+
+        local ObjectText = not Data.Primary_Mutation and Data.Brainrot_Name
+            or `{Data.Primary_Mutation} {Data.Brainrot_Name}`
+
+        Proximity(Brainrot_Model.PrimaryPart, {
+            ObjectText = ObjectText,
+            ActionText = `Sell: ${Util.Abbreviate_Number(Sell_Price)}`,
+            MaxActivationDistance = 7,
+            Keycode = Enum.KeyCode.Q,
+            GamepadKeyCode = Enum.KeyCode.ButtonY,
+            HoldDuration = 1,
+        }, function()
+            if not Ratelimits.Sell() then
+                return
+            end
+
+            local ServerEntity = Brainrot_Model:GetAttribute("ServerEntity")
+
+            if ServerEntity then
+                Network.Requests.Sell_Brainrot.Fire(ServerEntity)
             end
         end)
     end
@@ -461,6 +489,8 @@ return {
         Handle_Bounce_Brainrot()
 
         Handle_Tool_Setup(Local_Entity)
+
+        Handle_Sell_Prompt_Setup()
 
         Handle_Inventory_Changes(Local_Entity)
 

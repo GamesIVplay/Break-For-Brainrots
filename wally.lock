@@ -49,18 +49,18 @@ dependencies = []
 
 [[package]]
 name = "ukendio/jecs"
-version = "0.9.0"
+version = "0.8.3"
 dependencies = []
 
 [[package]]
 name = "ukendio/jecs"
-version = "0.10.3"
+version = "0.9.0"
 dependencies = []
 
 [[package]]
 name = "uxnknwn/open-a-lucky-block"
 version = "0.1.0"
-dependencies = [["Clock", "red-blox/clock@1.0.0"], ["Collection", "red-blox/collection@1.0.0"], ["Fusion", "uxnkown/fusion@0.3.0"], ["Jabby", "alicesaidhi/jabby@0.4.0"], ["Jecs", "ukendio/jecs@0.10.3"], ["Planck", "yetanotherclown/planck@0.3.0-alpha.2"], ["PlanckJabby", "yetanotherclown/planck-jabby@0.3.0-alpha.1"], ["PlanckRunService", "yetanotherclown/planck-runservice@0.2.0"], ["ProfileStore", "uxnknwn/profilestore@1.0.2"], ["Ratelimit", "red-blox/ratelimit@1.0.1"], ["Signal", "red-blox/signal@2.0.2"], ["TopbarPlus", "uxnknwn/topbarplus@3.0.2"], ["cmdr", "evaera/cmdr@1.12.0"]]
+dependencies = [["Clock", "red-blox/clock@1.0.0"], ["Collection", "red-blox/collection@1.0.0"], ["Fusion", "uxnkown/fusion@0.3.0"], ["Jabby", "alicesaidhi/jabby@0.4.0"], ["Jecs", "ukendio/jecs@0.8.3"], ["Planck", "yetanotherclown/planck@0.3.0-alpha.2"], ["PlanckJabby", "yetanotherclown/planck-jabby@0.3.0-alpha.1"], ["PlanckRunService", "yetanotherclown/planck-runservice@0.2.0"], ["ProfileStore", "uxnknwn/profilestore@1.0.2"], ["Ratelimit", "red-blox/ratelimit@1.0.1"], ["Signal", "red-blox/signal@2.0.2"], ["TopbarPlus", "uxnknwn/topbarplus@3.0.2"], ["cmdr", "evaera/cmdr@1.12.0"]]
 
 [[package]]
 name = "uxnknwn/profilestore"

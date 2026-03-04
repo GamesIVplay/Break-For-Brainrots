@@ -2,11 +2,6 @@ local AnalyticsService = game:GetService("AnalyticsService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local Assets = ReplicatedStorage:WaitForChild("Assets")
-
-local Billboards = Assets:WaitForChild("Billboards")
-local Food_Overhead = Billboards:WaitForChild("Food_Overhead")
-
 local Slot_Util = require(ServerScriptService.Server.Modules.Slot_Util)
 
 local Jecs = require(ReplicatedStorage.Packages.Jecs)
@@ -20,7 +15,6 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
-local Food = require(ReplicatedStorage.Common.Modules.Food)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Pickaxes = require(ReplicatedStorage.Common.Modules.Pickaxes)
 local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
@@ -28,7 +22,6 @@ local Tutorial_Steps = require(ReplicatedStorage.Common.Modules.Tutorial_Steps)
 local Update_Brainrot_Overhead = require(ReplicatedStorage.Common.Modules.Update_Brainrot_Overhead)
 local Util = require(ReplicatedStorage.Common.Modules.Util)
 
-local Food_Capacity = Stat_Calculator.Get_Food_Capacity()
 local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
 
 local Player_Entities = World:query(Components.Player):cached()
@@ -265,8 +258,6 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
         local Old_Tool = Existing_Tools[Index]
 
         if Old_Tool then
-            local Level_Match = Old_Tool:GetAttribute("Level") == Brainrot_Item.Level
-            local Experience_Match = Old_Tool:GetAttribute("Experience") == Brainrot_Item.Experience
             local Name_Match = Old_Tool:GetAttribute("Name") == Brainrot_Item.Name
             local Primary_Match = Old_Tool:GetAttribute("Primary_Mutation") == Brainrot_Item.Primary_Mutation
             local Secondary_Match = Old_Tool:GetAttribute("Secondary_Mutations")
@@ -276,9 +267,7 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
             local Offline_Cash_Match = Old_Tool:GetAttribute("Offline_Cash") == Brainrot_Item.Offline_Cash
 
             if
-                Level_Match
-                and Experience_Match
-                and Name_Match
+                Name_Match
                 and Primary_Match
                 and Secondary_Match
                 and Weight_Match
@@ -291,8 +280,6 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
             end
         end
 
-        local Level = Brainrot_Item.Level
-        local Experience = Brainrot_Item.Experience
         local Brainrot_Name = Brainrot_Item.Name
         local Primary_Mutation = Brainrot_Item.Primary_Mutation
         local Secondary_Mutations = Brainrot_Item.Secondary_Mutations
@@ -313,10 +300,6 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
 
         New_Tool.Name = Tool_Name
         New_Tool.ToolTip = Tool_Name
-        New_Tool.Enabled = false
-        New_Tool.CanBeDropped = false
-        New_Tool:SetAttribute("Level", Level)
-        New_Tool:SetAttribute("Experience", Experience)
         New_Tool:SetAttribute("Name", Brainrot_Name)
         New_Tool:SetAttribute("Secondary_Mutations", table.concat(Secondary_Mutations, ","))
         New_Tool:SetAttribute("Weight", Weight)
@@ -329,8 +312,6 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
             Generate_Brainrot_Model(Brainrot_Name, Primary_Mutation, Secondary_Mutations, Weight)
 
         Update_Brainrot_Overhead(Brainrot_Model, {
-            Level = Level,
-            Experience = Experience,
             Brainrot_Name = Brainrot_Name,
             Primary_Mutation = Primary_Mutation,
             Secondary_Mutations = Secondary_Mutations,
@@ -373,146 +354,6 @@ local function Replicate_Brainrot_Inventory(Player: Player, Entity: Types.Entity
     end
 
     Log.Info(`{Player.Name}'s Brainrot Inventory was changed`)
-end
-
-local function Replicate_Food_Inventory(Player: Player, Entity: Types.Entity)
-    local Character = World:get(Entity, Components.Renderable)
-
-    if not Character then
-        return
-    end
-
-    local Food_Inventory = World:get(Entity, Components.Food_Inventory) :: { [number]: Types.Food_Item }
-    local Previous_Food_Inventory =
-        World:get(Entity, Pair(Components.Relationships.Previous, Components.Food_Inventory))
-
-    if Util.TablesAreEqual(Previous_Food_Inventory, Food_Inventory) then
-        return
-    end
-
-    local Serialized_Food_Inventory: { Types.Food_Item } = {}
-
-    Slot_Util.For_Each(Food_Inventory, Food_Capacity, function(_, Food_Item: Types.Food_Item)
-        table.insert(Serialized_Food_Inventory, Food_Item)
-    end)
-
-    World:set(
-        Entity,
-        Pair(Components.Relationships.Previous, Components.Food_Inventory),
-        Util.CopyTable(Food_Inventory, true)
-    )
-
-    local Existing_Tools = {}
-
-    for _, Inst: Instance in Player.Backpack:GetChildren() do
-        if Inst:IsA("Tool") and Inst:HasTag("Food") then
-            local Index = Inst:GetAttribute("Index")
-            if Index then
-                Existing_Tools[Index] = Inst
-            end
-        end
-    end
-
-    for _, Inst: Instance in Player.Character:GetChildren() do
-        if Inst:IsA("Tool") and Inst:HasTag("Food") then
-            local Index = Inst:GetAttribute("Index")
-            if Index then
-                Existing_Tools[Index] = Inst
-            end
-        end
-    end
-
-    local Slots_To_Keep = {}
-
-    for Index, Food_Item in pairs(Food_Inventory) do
-        if not Food_Item then
-            continue
-        end
-
-        Slots_To_Keep[Index] = true
-
-        local Old_Tool = Existing_Tools[Index]
-
-        if Old_Tool then
-            local Xp_Match = Old_Tool:GetAttribute("Xp") == Food_Item.Xp
-
-            if Xp_Match then
-                continue
-            else
-                Old_Tool:Destroy()
-            end
-        end
-
-        local Xp = Food_Item.Xp
-        local Food_Data = Food.Get_Data_From_Xp(Xp)
-
-        local New_Tool = Instance.new("Tool")
-
-        New_Tool.Name = `[+{Xp} Xp] {Food_Data.Name}`
-        New_Tool.ToolTip = `[+{Xp} Xp] {Food_Data.Name}`
-        New_Tool.Enabled = false
-        New_Tool.CanBeDropped = false
-        New_Tool:SetAttribute("Xp", Food_Item.Xp)
-        New_Tool:SetAttribute("Index", Index)
-        New_Tool:AddTag("Food")
-
-        local Food_Model = Food_Data.Model:Clone()
-
-        local Overhead_Attachment = Food_Model:FindFirstChild("Overhead_Attachment", true) :: Attachment
-
-        local Overhead = Overhead_Attachment:FindFirstChild("Food_Overhead")
-        if not Overhead then
-            Overhead = Food_Overhead:Clone()
-            Overhead.Parent = Overhead_Attachment
-        end
-
-        local Title_Text = Overhead:FindFirstChild("Title") :: TextLabel
-        local Current_Text = Util.Abbreviate_Number(Xp, 2)
-        Title_Text.Text = string.format("+%s XP", Current_Text)
-
-        local Xp_Frame = Overhead:FindFirstChild("Xp") :: Frame
-        Xp_Frame.Visible = false
-
-        Food_Model:ScaleTo(Food_Data.Scale)
-
-        local Extents = Food_Model:GetExtentsSize()
-
-        New_Tool.Grip = CFrame.new(0, 0, Extents.Z / 3)
-
-        local Handle = Food_Model.PrimaryPart
-        Handle.Name = "Handle"
-
-        for _, Inst: Instance in Food_Model:GetDescendants() do
-            if Inst:IsA("BasePart") then
-                Inst.Massless = true
-                Inst.CanCollide = false
-                Inst.Anchored = false
-
-                if Inst == Handle then
-                    continue
-                end
-
-                local Weld = Instance.new("WeldConstraint")
-                Weld.Part0 = Handle
-                Weld.Part1 = Inst
-                Weld.Parent = Handle
-            end
-        end
-
-        for _, Inst in Food_Model:GetChildren() do
-            Inst.Parent = New_Tool
-        end
-
-        New_Tool.Parent = Player.Backpack
-    end
-
-    for Slot, Tool in Existing_Tools do
-        if not Slots_To_Keep[Slot] then
-            Tool:Destroy()
-        end
-    end
-
-    Log.Info(`{Player.Name}'s Food Inventory was changed`)
 end
 
 local function Replicate_Index(Player: Player, Entity: Types.Entity)
@@ -615,27 +456,13 @@ local function Replicate_Plot_Income_Per_Sec(Player: Player, Entity: Types.Entit
     local Previous_Plot_Income_Per_Sec =
         World:get(Entity, Pair(Components.Relationships.Previous, Components.Plot_Income_Per_Sec))
 
-    for
-        Brainrot_Entity,
-        Level: number,
-        Experience: number,
-        Brainrot_Name: string,
-        Secondary_Mutations: { string },
-        Weight: number
-    in
-        World:query(
-            Components.Level,
-            Components.Experience,
-            Components.Name,
-            Components.Secondary_Mutations,
-            Components.Weight
-        ):with(Components.Tags.Brainrot, Pair(Components.Relationships.Owner, Entity))
+    for Brainrot_Entity, Brainrot_Name: string, Secondary_Mutations: { string }, Weight: number in
+        World:query(Components.Name, Components.Secondary_Mutations, Components.Weight)
+            :with(Components.Tags.Brainrot, Pair(Components.Relationships.Owner, Entity))
     do
         local Primary_Mutation = World:get(Brainrot_Entity, Components.Primary_Mutation)
 
         Plot_Income_Per_Sec += math.round(Stat_Calculator.Calculate_Income_Per_Sec({
-            Level = Level,
-            Experience = Experience,
             Brainrot_Name = Brainrot_Name,
             Primary_Mutation = Primary_Mutation,
             Secondary_Mutations = Secondary_Mutations,
@@ -731,8 +558,6 @@ return {
             Replicate_Upgrades(Player, Entity)
 
             Replicate_Brainrot_Inventory(Player, Entity)
-
-            Replicate_Food_Inventory(Player, Entity)
 
             Replicate_Index(Player, Entity)
 
