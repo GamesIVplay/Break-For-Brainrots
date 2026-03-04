@@ -7,6 +7,7 @@ local SocialService = game:GetService("SocialService")
 local TweenService = game:GetService("TweenService")
 
 local Map = workspace:WaitForChild("Map") :: Folder
+local Plots = Map:FindFirstChild("Plots") :: Folder
 local Shops = Map:WaitForChild("Shops") :: Folder
 
 local Assets = ReplicatedStorage:WaitForChild("Assets")
@@ -64,7 +65,7 @@ local RANDOM_BRAINROT_OPTIONS = {
     "Frigo Camelo",
     "Rhino Toasterino",
 }
-local RANDOM_BRAINROT_CYCLE_DELAY = 0.8
+local RANDOM_BRAINROT_CYCLE_DELAY = 1.5
 
 local function BindFakeStock(Count: TextLabel, Max_Count: number)
     local CurrentStock = 0
@@ -173,7 +174,7 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
 
             Tween_Down:Play()
 
-            task.wait(0.8)
+            task.wait(TOUCH_PART_BOUNCE_TIME)
 
             Tween_Up:Play()
         end)
@@ -298,7 +299,7 @@ local function Setup_x2_Luck_Parts(Local_Player: Player)
     end
 end
 
-local function Setup_Update_Signs(Local_Player: Player)
+--[[local function Setup_Update_Signs(Local_Player: Player)
     local Event_Info = SocialService:GetExperienceEventAsync(Config.UPDATE_EVENT_ID)
 
     if not Event_Info then
@@ -379,7 +380,7 @@ local function Setup_Update_Signs(Local_Player: Player)
             Timer.Text = string.format("%02d:%02d:%02d", Hours, Minutes, Seconds)
         end
     end)
-end
+end]]
 
 local function Setup_Troll_Face(Local_Player: Player)
     for _, Inst in CollectionService:GetTagged("Troll Face") do
@@ -533,13 +534,13 @@ local function Setup_Random_Brainrot(Local_Player: Player)
             continue
         end
 
-        Proximity(
-            Inst,
-            { ActionText = "Purchase", ObjectText = "Random Brainrot", MaxActivationDistance = 10 },
-            function()
-                MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Random Brainrot"])
-            end
-        )
+        Proximity(Inst, {
+            ActionText = "Purchase",
+            ObjectText = "Random Brainrot",
+            MaxActivationDistance = Inst:IsDescendantOf(Plots) and 8 or 10,
+        }, function()
+            MarketPlaceService:PromptProductPurchase(Local_Player, Developer_Products["Random Brainrot"])
+        end)
     end
 
     for _, Inst: Attachment in CollectionService:GetTagged("Random Brainrot Spawn Attachment") do
@@ -560,7 +561,7 @@ local function Setup_Random_Brainrot(Local_Player: Player)
 
             local Rolled_Primary_Mutation = nil
             local Rolled_Secondary_Mutations = {}
-            local Rolled_Weight = 12.5
+            local Rolled_Weight = Inst:IsDescendantOf(Plots) and 10 or 12.5
 
             local Brainrot_Model, Offset = Generate_Brainrot_Model(
                 Rolled_Brainrot,
@@ -642,7 +643,7 @@ return {
 
         Setup_x2_Luck_Parts(Local_Player)
 
-        task.spawn(Setup_Update_Signs, Local_Player)
+        --task.spawn(Setup_Update_Signs, Local_Player)
 
         Setup_Troll_Face(Local_Player)
 
