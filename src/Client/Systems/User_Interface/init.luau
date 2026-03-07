@@ -1706,7 +1706,7 @@ local function Setup_Pickaxes_Content(LocalEntity: Types.Entity, PlayerGui: Play
         Scope:Hydrate(Rebirth_Requirement_Title)({
             Text = Scope:Computed(function(Use)
                 if not Use(Tutorial_Completed_Computed) and Name ~= "Stone" then
-                    return "Comple the tutorial"
+                    return "Complete the tutorial"
                 end
 
                 return `Requires Rebirth {Data.Rebirth}`
