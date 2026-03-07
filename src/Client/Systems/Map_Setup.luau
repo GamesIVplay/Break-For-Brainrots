@@ -3,7 +3,7 @@ local Debris = game:GetService("Debris")
 local MarketPlaceService = game:GetService("MarketplaceService")
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
--- local SocialService = game:GetService("SocialService")
+local SocialService = game:GetService("SocialService")
 local TweenService = game:GetService("TweenService")
 
 local Map = workspace:WaitForChild("Map") :: Folder
@@ -27,8 +27,8 @@ local Peek = Fusion.peek
 local Clock = require(ReplicatedStorage.Packages.Clock)
 
 local Components = require(ReplicatedStorage.Common.Components)
--- local Config = require(ReplicatedStorage.Common.Config)
--- local Log = require(ReplicatedStorage.Common.Log)
+local Config = require(ReplicatedStorage.Common.Config)
+local Log = require(ReplicatedStorage.Common.Log)
 local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
 local Types = require(ReplicatedStorage.Common.Types)
@@ -299,7 +299,7 @@ local function Setup_x2_Luck_Parts(Local_Player: Player)
     end
 end
 
---[[local function Setup_Update_Signs(Local_Player: Player)
+local function Setup_Update_Signs(Local_Player: Player)
     local Event_Info = SocialService:GetExperienceEventAsync(Config.UPDATE_EVENT_ID)
 
     if not Event_Info then
@@ -380,7 +380,7 @@ end
             Timer.Text = string.format("%02d:%02d:%02d", Hours, Minutes, Seconds)
         end
     end)
-end]]
+end
 
 local function Setup_Troll_Face(Local_Player: Player)
     for _, Inst in CollectionService:GetTagged("Troll Face") do
@@ -675,7 +675,7 @@ return {
 
         Setup_x2_Luck_Parts(Local_Player)
 
-        --task.spawn(Setup_Update_Signs, Local_Player)
+        task.spawn(Setup_Update_Signs, Local_Player)
 
         Setup_Troll_Face(Local_Player)
 
