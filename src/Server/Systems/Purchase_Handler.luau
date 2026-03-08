@@ -1,6 +1,7 @@
 local DataStoreService = game:GetService("DataStoreService")
 local MarketPlaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
+local PolicyService = game:GetService("PolicyService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -32,6 +33,27 @@ local Util = require(ReplicatedStorage.Common.Modules.Util)
 local Weight = require(ReplicatedStorage.Common.Modules.Weight)
 
 local Brainrot_Capacity = Stat_Calculator.Get_Brainrot_Capacity()
+local Paid_Random_Items_Allowed = {}
+
+game.Players.PlayerAdded:Connect(function(Player)
+    task.spawn(function()
+        local Success, PolicyInfo = pcall(function()
+            return PolicyService:GetPolicyInfoForPlayerAsync(Player)
+        end)
+
+        local Allowed = false
+
+        if Success and PolicyInfo then
+            Allowed = not PolicyInfo.ArePaidRandomItemsRestricted
+        end
+
+        Paid_Random_Items_Allowed[Player] = Allowed
+    end)
+end)
+
+game.Players.PlayerRemoving:Connect(function(Player)
+    Paid_Random_Items_Allowed[Player] = nil
+end)
 
 local function Simulate_Time(PlayerEntity: Types.Entity, Amount: number)
     local Cash = World:get(PlayerEntity, Components.Cash)
@@ -278,6 +300,19 @@ local Grant_Purchase_By_Product_Id = {
     -- HUD Offers
     [Developer_Products["Random Brainrot"]] = function(PlayerEntity: Types.Entity)
         local Player = World:get(PlayerEntity, Components.Player)
+        local Cash = World:get(PlayerEntity, Components.Cash)
+
+        if not Paid_Random_Items_Allowed[Player] then
+            Network.Notification.Fire(Player, {
+                Text = "Paid random items not available in your region, 1000 cash added",
+                Type = "Info",
+            })
+
+            World:set(PlayerEntity, Components.Cash, Cash + 1000)
+
+            return true
+        end
+
         local Brainrot_Inventory = World:get(PlayerEntity, Components.Brainrot_Inventory)
 
         local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)

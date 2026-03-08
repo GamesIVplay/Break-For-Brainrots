@@ -24,7 +24,13 @@ game.Players.PlayerAdded:Connect(function(Player)
             return PolicyService:GetPolicyInfoForPlayerAsync(Player)
         end)
 
-        Trade_Allowed[Player] = Success and PolicyInfo and PolicyInfo.IsPaidItemTradingAllowed ~= false
+        local Allowed = false
+
+        if Success and PolicyInfo then
+            Allowed = PolicyInfo.IsPaidItemTradingAllowed
+        end
+
+        Trade_Allowed[Player] = Allowed
     end)
 end)
 
