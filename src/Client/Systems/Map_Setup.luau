@@ -382,6 +382,89 @@ local function Setup_Update_Signs(Local_Player: Player)
     end)
 end
 
+local function Setup_Admin_Abuse_Signs(Local_Player: Player)
+    local Event_Info = SocialService:GetExperienceEventAsync(Config.ADMIN_ABUSE_EVENT_ID)
+
+    if not Event_Info then
+        Log.Warn("Failed to retrieve update event data")
+        return
+    end
+
+    for _, Inst in CollectionService:GetTagged("Admin Abuse Sign") do
+        if not Inst:IsA("Model") then
+            continue
+        end
+
+        local Display = Inst:FindFirstChild("Display")
+
+        if not Display then
+            continue
+        end
+
+        Proximity(
+            Display,
+            { ObjectText = "Admin Abuse!", ActionText = "Sign Up", MaxActivationDistance = 8 },
+            function()
+                pcall(function()
+                    SocialService:PromptRsvpToEventAsync(Config.ADMIN_ABUSE_EVENT_ID)
+                end)
+            end
+        )
+    end
+
+    local StartInfo = Event_Info.StartTime
+    local EndInfo = Event_Info.EndTime
+
+    local StartDateTime = DateTime.fromUniversalTime(
+        StartInfo.Year,
+        StartInfo.Month,
+        StartInfo.Day,
+        StartInfo.Hour,
+        StartInfo.Minute,
+        StartInfo.Second,
+        StartInfo.Millisecond
+    )
+
+    local EndDateTime = DateTime.fromUniversalTime(
+        EndInfo.Year,
+        EndInfo.Month,
+        EndInfo.Day,
+        EndInfo.Hour,
+        EndInfo.Minute,
+        EndInfo.Second,
+        EndInfo.Millisecond
+    )
+
+    Clock(1, function()
+        for _, Inst in CollectionService:GetTagged("Admin Abuse Sign") do
+            local Timer = Inst:FindFirstChild("Timer", true) :: TextLabel
+            if not Timer then
+                continue
+            end
+
+            local NowDateTime = DateTime.now()
+
+            if NowDateTime.UnixTimestamp >= EndDateTime.UnixTimestamp then
+                Timer.Text = "Ended"
+                continue
+            end
+
+            if NowDateTime.UnixTimestamp >= StartDateTime.UnixTimestamp then
+                Timer.Text = "00:00:00"
+                continue
+            end
+
+            local Remaining = StartDateTime.UnixTimestamp - NowDateTime.UnixTimestamp
+
+            local Hours = math.floor(Remaining / 3600)
+            local Minutes = math.floor((Remaining % 3600) / 60)
+            local Seconds = Remaining % 60
+
+            Timer.Text = string.format("%02d:%02d:%02d", Hours, Minutes, Seconds)
+        end
+    end)
+end
+
 local function Setup_Troll_Face(Local_Player: Player)
     for _, Inst in CollectionService:GetTagged("Troll Face") do
         if not Inst:IsA("Model") then
@@ -676,6 +759,8 @@ return {
         Setup_x2_Luck_Parts(Local_Player)
 
         task.spawn(Setup_Update_Signs, Local_Player)
+
+        task.spawn(Setup_Admin_Abuse_Signs, Local_Player)
 
         Setup_Troll_Face(Local_Player)
 
