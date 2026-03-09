@@ -125,6 +125,7 @@ local Grant_Purchase_By_Product_Id = {
         } :: Types.Brainrot_Item
 
         World:set(PlayerEntity, Components.Cash, Cash + 50_000)
+        World:add(PlayerEntity, Components.Tags.Bought_Starter_Pack)
 
         return true
     end,

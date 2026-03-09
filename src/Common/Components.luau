@@ -66,6 +66,7 @@ local Components: {
         Opening: Types.Entity,
         Brainrot: Types.Entity,
         Claimed_Group_Reward: Types.Entity,
+        Bought_Starter_Pack: Types.Entity,
     },
     Relationships: {
         Owner: Types.Entity,
@@ -132,6 +133,7 @@ local Components: {
             Opening = World:component(),
             Brainrot = World:component(),
             Claimed_Group_Reward = World:component(),
+            Bought_Starter_Pack = World:component(),
         },
         Relationships = {
             Owner = World:component(),

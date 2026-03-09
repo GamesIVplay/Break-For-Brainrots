@@ -517,6 +517,25 @@ local function Replicate_Group_Reward_Claimed(Player: Player, Entity: Types.Enti
     end
 end
 
+local function Replicate_Bought_Starter_Pack(Player: Player, Entity: Types.Entity)
+    local Bought_Starter_Pack = World:has(Entity, Components.Tags.Bought_Starter_Pack)
+
+    local Previous_Bought_Starter_Pack =
+        World:has(Entity, Pair(Components.Relationships.Previous, Components.Tags.Bought_Starter_Pack))
+
+    if Bought_Starter_Pack ~= Previous_Bought_Starter_Pack then
+        Network.DataChanged.Bought_Starter_Pack.Fire(Player, Bought_Starter_Pack)
+
+        if Bought_Starter_Pack then
+            World:add(Entity, Pair(Components.Relationships.Previous, Components.Tags.Bought_Starter_Pack))
+        else
+            World:remove(Entity, Pair(Components.Relationships.Previous, Components.Tags.Bought_Starter_Pack))
+        end
+
+        Log.Info(`{Player.Name}'s bought starter pack state changed to {Bought_Starter_Pack}`)
+    end
+end
+
 local function Replicate_Friend_Boost(Player: Player, Entity: Types.Entity)
     local Friend_Boost = World:get(Entity, Components.Friend_Boost)
     local Previous_Friend_Boost = World:get(Entity, Pair(Components.Relationships.Previous, Components.Friend_Boost))
@@ -572,6 +591,8 @@ return {
             Replicate_Tutorial_Step(Player, Entity)
 
             Replicate_Group_Reward_Claimed(Player, Entity)
+
+            Replicate_Bought_Starter_Pack(Player, Entity)
 
             Replicate_Friend_Boost(Player, Entity)
         end

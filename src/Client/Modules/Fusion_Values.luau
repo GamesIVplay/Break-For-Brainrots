@@ -22,6 +22,7 @@ return table.freeze({
     Plot_Income_Per_Sec = Scope:Value(0),
     Tutorial_Step = Scope:Value(0),
     Group_Reward_Claimed = Scope:Value(false),
+    Bought_Starter_Pack = Scope:Value(false),
     Friend_Boost = Scope:Value(0),
     Hold_To_Swing_Disclaimer = Scope:Value(false),
 })

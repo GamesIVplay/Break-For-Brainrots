@@ -164,6 +164,10 @@ local function Handle_New_Player(Player: Player)
         World:add(Player_Entity, Components.Tags.Claimed_Group_Reward)
     end
 
+    if Profile_Data.Bought_Starter_Pack then
+        World:add(Player_Entity, Components.Tags.Bought_Starter_Pack)
+    end
+
     World:set(Player_Entity, Components.Name, Player.Name)
     World:set(Player_Entity, Components.Cash, Profile_Data.Cash)
     World:set(Player_Entity, Components.Rebirth, Profile_Data.Rebirth)
@@ -218,6 +222,10 @@ local function Handle_New_Player(Player: Player)
 
         if World:has(Player_Entity, Components.Tags.Claimed_Group_Reward) then
             Profile_Data.Claimed_Group_Reward = true
+        end
+
+        if World:has(Player_Entity, Components.Tags.Bought_Starter_Pack) then
+            Profile_Data.Bought_Starter_Pack = true
         end
 
         Profile_Data.Cash = World:get(Player_Entity, Components.Cash)

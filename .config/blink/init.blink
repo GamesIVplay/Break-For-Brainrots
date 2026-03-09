@@ -431,6 +431,14 @@ scope DataChanged {
         Data: boolean 
 	}
 
+	event Bought_Starter_Pack {
+		From: Server,
+        Type: Reliable,
+        Call: SingleSync, 
+		Poll: true,
+        Data: boolean 
+	}
+
 	event Friend_Boost {
 		From: Server,
         Type: Reliable,

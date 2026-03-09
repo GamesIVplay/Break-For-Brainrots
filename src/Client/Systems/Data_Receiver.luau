@@ -448,6 +448,18 @@ local function Handle_Group_Reward_Claimed(Local_Entity: Types.Entity)
     end
 end
 
+local function Handle_Bought_Starter_Pack(Local_Entity: Types.Entity)
+    for _, Data in Network.DataChanged.Bought_Starter_Pack.Iter() do
+        if Data == true then
+            World:add(Local_Entity, Components.Tags.Bought_Starter_Pack)
+        else
+            World:remove(Local_Entity, Components.Tags.Bought_Starter_Pack)
+        end
+
+        Fusion_Values.Bought_Starter_Pack:set(Data)
+    end
+end
+
 local function Handle_Friend_Boost(Local_Entity: Types.Entity)
     for _, Data in Network.DataChanged.Friend_Boost.Iter() do
         World:set(Local_Entity, Components.Friend_Boost, Data)
@@ -519,6 +531,8 @@ return {
         Handle_Spawn_Debris()
 
         Handle_Group_Reward_Claimed(Local_Entity)
+
+        Handle_Bought_Starter_Pack(Local_Entity)
 
         Handle_Friend_Boost(Local_Entity)
     end,

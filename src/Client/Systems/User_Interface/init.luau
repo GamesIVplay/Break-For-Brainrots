@@ -496,15 +496,50 @@ local function Setup_HUD_Offers(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
 
     local Offers = Main:WaitForChild("Offers") :: Frame
 
+    local Starter_Pack = Offers:WaitForChild("Starter_Pack") :: TextButton
+    local Starter_Pack_Timer = Starter_Pack:WaitForChild("Timer") :: TextLabel
+
     local Random_Brainrot = Offers:WaitForChild("Random_Brainrot") :: TextButton
     local Random_Brainrot_Icon = Random_Brainrot:WaitForChild("Icon") :: ImageLabel
     local Random_Brainrot_Price_Text_Label = Random_Brainrot:WaitForChild("Price") :: TextLabel
 
-    local Offer_One = Offers:WaitForChild("Offer_One") :: TextButton
-    local Offer_One_Price_Text_Label = Offer_One:WaitForChild("Price") :: TextLabel
-
     local Offer_Two = Offers:WaitForChild("Offer_Two") :: TextButton
     local Offer_Two_Price_Text_Label = Offer_Two:WaitForChild("Price") :: TextLabel
+
+    local Time_Left = Scope:Value(60 * 10)
+
+    Clock(1, function()
+        local Current_Time_Left = Peek(Time_Left)
+
+        Time_Left:set(math.max(Current_Time_Left - 1), 0)
+    end)
+
+    Scope:Hydrate(Starter_Pack)({
+        Visible = Scope:Computed(function(Use)
+            return not Use(Fusion_Values.Bought_Starter_Pack) and Use(Time_Left) > 0
+        end),
+    })
+
+    Scope:Hydrate(Starter_Pack_Timer)({
+        Text = Scope:Computed(function(Use)
+            local Remaining = Use(Time_Left)
+
+            local Minutes = math.floor((Remaining % 3600) / 60)
+            local Seconds = Remaining % 60
+
+            return string.format("%02d:%02d", Minutes, Seconds)
+        end),
+    })
+
+    Hydrate_Button(Starter_Pack, function()
+        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Starter Pack"])
+    end)
+
+    Scope:Hydrate(Offer_Two)({
+        Visible = Scope:Computed(function(Use)
+            return Use(Fusion_Values.Bought_Starter_Pack)
+        end),
+    })
 
     task.spawn(function()
         local Product_Info = Util.Get_Product_Info(Developer_Products["Random Brainrot"])
@@ -534,21 +569,6 @@ local function Setup_HUD_Offers(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
 
     Clock(1, function()
         Random_Brainrot_Icon.Image = Brainrot_Images[math.random(1, #Brainrot_Images)]
-    end)
-
-    task.spawn(function()
-        local Product_Info = Util.Get_Product_Info(Developer_Products["Ballerino Lololo"])
-
-        if Product_Info then
-            Offer_One_Price_Text_Label.Text =
-                `{Unicode_Characters.Robux}{Util.Format_Number_With_Commas(Product_Info.PriceInRobux)}`
-        else
-            Offer_One_Price_Text_Label.Visible = false
-        end
-    end)
-
-    Hydrate_Button(Offer_One, function()
-        MarketplaceService:PromptProductPurchase(Local_Player, Developer_Products["Ballerino Lololo"])
     end)
 
     task.spawn(function()
