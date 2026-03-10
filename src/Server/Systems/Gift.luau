@@ -102,14 +102,6 @@ local function Handle_Gift_Requests()
             continue
         end
 
-        if Rebirth < 1 then
-            Network.Notification.Fire(Player, {
-                Text = "You must be at least Rebirth 1 to gift",
-                Type = "Error",
-            })
-            continue
-        end
-
         local Brainrot_Inventory = World:get(Player_Entity, Components.Brainrot_Inventory)
 
         if not Brainrot_Inventory then
@@ -134,6 +126,22 @@ local function Handle_Gift_Requests()
         if not Tool then
             Network.Notification.Fire(Player, {
                 Text = "You must hold a brainrot",
+                Type = "Error",
+            })
+            continue
+        end
+
+        if Rebirth < 1 then
+            Network.Notification.Fire(Player, {
+                Text = "You must be at least Rebirth 1 to gift",
+                Type = "Error",
+            })
+            continue
+        end
+
+        if Target_Player_Rebirth < 1 then
+            Network.Notification.Fire(Player, {
+                Text = "Player must be at least Rebirth 1 to receive gifts",
                 Type = "Error",
             })
             continue
