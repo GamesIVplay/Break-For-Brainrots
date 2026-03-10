@@ -23,12 +23,19 @@ local World = require(ReplicatedStorage.Common.World)
 
 local AnimPlayer = require(ReplicatedStorage.Common.Modules.AnimPlayer)
 local Block_Hit = require(ReplicatedStorage.Common.Modules.VFX.Block_Hit)
+local CameraShaker = require(ReplicatedStorage.Common.Modules.CameraShaker)
 local Proximity = require(ReplicatedStorage.Common.Modules.Proximity)
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
 
 local Fusion_Values = require(ReplicatedFirst.Client.Modules.Fusion_Values)
 
 local Util = require(ReplicatedStorage.Common.Modules.Util)
+
+local CamShake = CameraShaker.new(Enum.RenderPriority.Camera.Value + 1, function(Shake_CFrame)
+    workspace.CurrentCamera.CFrame = workspace.CurrentCamera.CFrame * Shake_CFrame
+end)
+
+CamShake:Start()
 
 local function Handle_Cash_Changes(Local_Entity: Types.Entity)
     for _, Value in Network.DataChanged.Cash.Iter() do
@@ -204,6 +211,8 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
                         local Hit_Block_Entity = Block_Model:GetAttribute("ServerEntity")
 
                         Block_Hit(Block_Model)
+
+                        CamShake:ShakeOnce(2.5, 0.5, 0.06, 0.1, Vector3.one, Vector3.zero)
 
                         ImpactHaptic:Play()
 
