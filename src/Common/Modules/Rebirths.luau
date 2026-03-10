@@ -10,22 +10,22 @@ local Rebirths: { [number]: Rebirth } = {
     },
 
     [1] = {
-        Requirement = 10_000,
+        Requirement = 3_000,
         Multiplier = 1.25,
     },
 
     [2] = {
-        Requirement = 25_000,
+        Requirement = 8_000,
         Multiplier = 1.5,
     },
 
     [3] = {
-        Requirement = 50_000,
+        Requirement = 15_000,
         Multiplier = 1.75,
     },
 
     [4] = {
-        Requirement = 100_000,
+        Requirement = 25_000,
         Multiplier = 2.0,
     },
 }
