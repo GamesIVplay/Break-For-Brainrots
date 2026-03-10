@@ -1256,10 +1256,43 @@ local function Setup_Robux_Shop_Contents(LocalEntity: Types.Entity, PlayerGui: P
     Setup_Robux_Shop_Gamepass_Offer_Three(Local_Player, PlayerGui)
 end
 
+local function Setup_Robux_Shop_Categories(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
+    local Categories = RobuxShop:WaitForChild("Categories") :: Frame
+    local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
+
+    local Absolute_Canvas_Size = Contents.AbsoluteCanvasSize
+
+    Hydrate_Button(Categories:WaitForChild("ForYou"), function()
+        Contents.CanvasPosition = Vector2.zero
+    end)
+
+    Hydrate_Button(Categories:WaitForChild("Brainrots"), function()
+        Contents.CanvasPosition = Vector2.new(0, Absolute_Canvas_Size.Y * 0.22)
+    end)
+
+    Hydrate_Button(Categories:WaitForChild("Time"), function()
+        Contents.CanvasPosition = Vector2.new(0, Absolute_Canvas_Size.Y * 0.415)
+    end)
+
+    Hydrate_Button(Categories:WaitForChild("Passes"), function()
+        Contents.CanvasPosition = Vector2.new(0, Absolute_Canvas_Size.Y * 0.61)
+    end)
+
+    Hydrate_Button(Categories:WaitForChild("Cash"), function()
+        Contents.CanvasPosition = Vector2.new(0, Absolute_Canvas_Size.Y * 1)
+    end)
+end
+
 local function Setup_Robux_Shop(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Robux_Shop_Visibility(PlayerGui)
 
     Setup_Robux_Shop_Contents(LocalEntity, PlayerGui)
+
+    Setup_Robux_Shop_Categories(PlayerGui)
 end
 
 local function Setup_Index_Visibility(PlayerGui: PlayerGui)
