@@ -19,7 +19,7 @@ return function(context, eventName: string, duration: number)
 
     Network.Notification.FireAll({
         Text = `{Executor.Name} started a {eventName} Event!`,
-        Type = "Info",
+        Type = "Announcement",
         Duration = 5,
     })
 end

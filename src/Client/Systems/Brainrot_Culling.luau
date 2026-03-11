@@ -5,8 +5,8 @@ local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
 local World = require(ReplicatedStorage.Common.World)
 
-local Brainrots_Folder = workspace:FindFirstChild("Brainrots") :: Folder
-local Culled_Brainrots_Folder = ReplicatedStorage:FindFirstChild("Culled_Brainrots") :: Folder
+local Brainrots_Folder = workspace:WaitForChild("Brainrots") :: Folder
+local Culled_Brainrots_Folder = ReplicatedStorage:WaitForChild("Culled_Brainrots") :: Folder
 
 local MAX_DISTANCE = 150
 local MAX_DISTANCE_SQUARED = MAX_DISTANCE * MAX_DISTANCE

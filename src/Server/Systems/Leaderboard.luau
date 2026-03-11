@@ -2,6 +2,7 @@ local DataStoreService = game:GetService("DataStoreService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local PlayTime_Leaderboard_Data_Store = DataStoreService:GetOrderedDataStore("PlayTime")
+local Cash_Leaderboard_Data_Store = DataStoreService:GetOrderedDataStore("Cash")
 local Open_Leaderboard_Data_Store = DataStoreService:GetOrderedDataStore("Open")
 
 local Map = workspace:WaitForChild("Map")
@@ -10,6 +11,9 @@ local Leaderboards = Map:WaitForChild("Leaderboards")
 
 local PlayTime_Leaderboard = Leaderboards:WaitForChild("PlayTime")
 local PlayTime_Scrolling_Frame = PlayTime_Leaderboard:FindFirstChild("ScrollingFrame", true) :: ScrollingFrame
+
+local Cash_Leaderboard = Leaderboards:WaitForChild("Cash")
+local Cash_Scrolling_Frame = Cash_Leaderboard:FindFirstChild("ScrollingFrame", true) :: ScrollingFrame
 
 local Open_Leaderboard = Leaderboards:WaitForChild("Open")
 local Open_Scrolling_Frame = Open_Leaderboard:FindFirstChild("ScrollingFrame", true) :: ScrollingFrame
@@ -55,6 +59,31 @@ local function Fetch_Leaderboard_Data(OrderedDataStore: OrderedDataStore)
     end
 
     return New_Entries
+end
+
+local function Update_Cash_Leaderboard()
+    local Template = Cash_Scrolling_Frame:WaitForChild("Template")
+    Template.Visible = false
+
+    local Entries = Fetch_Leaderboard_Data(Cash_Leaderboard_Data_Store)
+
+    for _, Inst in Cash_Scrolling_Frame:GetChildren() do
+        if Inst:HasTag("Can_Delete") then
+            Inst:Destroy()
+        end
+    end
+
+    for Rank, Data in Entries do
+        local Clone = Template:Clone()
+        Clone.Rank.ImageLabel.Image = Data.Image
+        Clone.Rank.TextLabel.Text = Rank .. "."
+        Clone.Username.TextLabel.Text = Data.Name
+        Clone.Amount.TextLabel.Text = Util.Abbreviate_Number(Data.Value, 2)
+        Clone:AddTag("Can_Delete")
+
+        Clone.Visible = true
+        Clone.Parent = Cash_Scrolling_Frame
+    end
 end
 
 local function Update_Open_Leaderboard()
@@ -114,6 +143,8 @@ return {
     phase = Phases.Runservice.PreUpdate,
     system = function()
         task.spawn(function()
+            Update_Cash_Leaderboard()
+
             Update_Open_Leaderboard()
 
             Update_PlayTime_Leaderboard()

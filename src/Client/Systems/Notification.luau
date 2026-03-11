@@ -91,6 +91,12 @@ local function Create_Notifications()
         return
     end
 
+    local Announcement_Template = Notifications:FindFirstChild("Announcement_Template") :: Frame
+
+    if not Announcement_Template then
+        return
+    end
+
     for Entity, Text, Type in Notification_Query:iter() do
         local Duration = World:get(Entity, Components.Duration) or DEFAULT_NOTIFICATION_DURATION
 
@@ -128,7 +134,7 @@ local function Create_Notifications()
 
         local Visible = {}
         for _, Child in Notifications:GetChildren() do
-            if Child:IsA("Frame") and Child.Name ~= "Template" then
+            if Child:IsA("Frame") and (Child.Name ~= "Template" and Child.Name ~= "Announcement_Template") then
                 table.insert(Visible, Child)
             end
         end
@@ -141,7 +147,7 @@ local function Create_Notifications()
             Visible[1]:Destroy()
         end
 
-        local Notification = Template:Clone()
+        local Notification = Type ~= "Announcement" and Template:Clone() or Announcement_Template:Clone()
         Notification.Name = Text
         Notification.Visible = true
 

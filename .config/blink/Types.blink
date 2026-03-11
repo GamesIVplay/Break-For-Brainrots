@@ -4,7 +4,7 @@ type Rebirth = f64
 type Opens = f64
 type Weight = f16
 
-enum NotificationType = {Success, Info, Warning, Error, Reward}
+enum NotificationType = {Success, Info, Warning, Error, Reward, Announcement}
 
 struct Brainrot_Item {
 	Name: string,

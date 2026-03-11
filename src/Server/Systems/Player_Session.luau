@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local PlayTime_Leaderboard_Data_Store = DataStoreService:GetOrderedDataStore("PlayTime")
+local Cash_Leaderboard_Data_Store = DataStoreService:GetOrderedDataStore("Cash")
 local Open_Leaderboard_Data_Store = DataStoreService:GetOrderedDataStore("Open")
 
 local Types = require(ReplicatedStorage.Common.Types)
@@ -303,11 +304,13 @@ local function Update_Leaderboard_Data(Player_Entity: Types.Entity)
     local Player = World:get(Player_Entity, Components.Player)
 
     local PlayTime = World:get(Player_Entity, Components.PlayTime)
+    local Cash = World:get(Player_Entity, Components.Cash)
     local Opens = World:get(Player_Entity, Components.Opens)
 
     task.spawn(function()
         local Success, Error = pcall(function()
             PlayTime_Leaderboard_Data_Store:SetAsync(Player.UserId, PlayTime)
+            Cash_Leaderboard_Data_Store:SetAsync(Player.UserId, Cash)
             Open_Leaderboard_Data_Store:SetAsync(Player.UserId, Opens)
         end)
 

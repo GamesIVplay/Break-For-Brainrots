@@ -1,4 +1,5 @@
 local CollectionService = game:GetService("CollectionService")
+local MessagingService = game:GetService("MessagingService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 
@@ -31,6 +32,46 @@ for Name in Events do
 end
 
 local Block_Names = { "Rare", "Epic", "Legendary", "Mythical" }
+
+MessagingService:SubscribeAsync("Start_Global_Event", function(Message)
+    local Data = Message.Data :: Types.Start_Global_Event_Data
+
+    if not table.find(Event_Names, Data.Name) then
+        return
+    end
+
+    local Active_Events = World:get(Components.Singletons.Active_Events, Components.Singletons.Active_Events)
+
+    Active_Events[Data.Name] = {
+        Start_Time = os.time(),
+        End_Time = os.time() + Data.Duration,
+        Luck_Bonus = Data.Luck_Bonus,
+    }
+
+    Network.Notification.FireAll({
+        Text = `{Data.Executor} started a Global {Data.Name} Event!`,
+        Type = "Announcement",
+        Duration = 5,
+    })
+end)
+
+MessagingService:SubscribeAsync("Stop_Global_Event", function(Message)
+    local Data = Message.Data :: Types.Stop_Global_Event_Data
+
+    local Active_Events = World:get(Components.Singletons.Active_Events, Components.Singletons.Active_Events)
+
+    Active_Events[Data.Name] = nil
+end)
+
+MessagingService:SubscribeAsync("Announcement", function(Message)
+    local Data = Message.Data
+
+    Network.Notification.FireAll({
+        Text = `{Data.Executor}: {Data.Message}`,
+        Type = "Announcement",
+        Duration = 5,
+    })
+end)
 
 local function Choose_Next_Event()
     if Next_Event then
