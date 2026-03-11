@@ -82,14 +82,6 @@ local function Handle_Gift_Requests()
             continue
         end
 
-        if Target_Player_Rebirth < 1 then
-            Network.Notification.Fire(Player, {
-                Text = "Player must be at least Rebirth 1 to receive gifts",
-                Type = "Error",
-            })
-            continue
-        end
-
         local Player_Entity = Registry.Get("Players", Player)
 
         if not Player_Entity then
@@ -131,17 +123,17 @@ local function Handle_Gift_Requests()
             continue
         end
 
-        if Rebirth < 1 then
+        if Rebirth < 2 then
             Network.Notification.Fire(Player, {
-                Text = "You must be at least Rebirth 1 to gift",
+                Text = "You must be at least Rebirth 2 to gift",
                 Type = "Error",
             })
             continue
         end
 
-        if Target_Player_Rebirth < 1 then
+        if Target_Player_Rebirth < 2 then
             Network.Notification.Fire(Player, {
-                Text = "Player must be at least Rebirth 1 to receive gifts",
+                Text = "Player must be at least Rebirth 2 to receive gifts",
                 Type = "Error",
             })
             continue
