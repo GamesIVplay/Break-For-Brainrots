@@ -91,7 +91,7 @@ local Blocks: { [string]: Block } = {
         Part_Color = Color3.fromRGB(128, 129, 138),
     },
     ["Rare"] = {
-        Health = 25,
+        Health = 20,
         Rarity = "Rare",
         Chance = 0.323,
         Price = 10_000,
@@ -105,7 +105,7 @@ local Blocks: { [string]: Block } = {
         Part_Color = Color3.fromRGB(33, 84, 185),
     },
     ["Epic"] = {
-        Health = 120,
+        Health = 100,
         Rarity = "Epic",
         Chance = 0.108,
         Price = 500_000,
@@ -120,7 +120,7 @@ local Blocks: { [string]: Block } = {
         Part_Color = Color3.fromRGB(255, 176, 0),
     },
     ["Legendary"] = {
-        Health = 300,
+        Health = 250,
         Rarity = "Legendary",
         Chance = 0.05,
         Price = 2_500_000,
@@ -135,7 +135,7 @@ local Blocks: { [string]: Block } = {
         Part_Color = Color3.fromRGB(171, 23, 23),
     },
     ["Mythical"] = {
-        Health = 700,
+        Health = 500,
         Rarity = "Mythical",
         Chance = 0.025,
         Price = 5_000_000,
@@ -149,7 +149,7 @@ local Blocks: { [string]: Block } = {
         Part_Color = Color3.fromRGB(255, 255, 255),
     },
     ["Secret"] = {
-        Health = 1500,
+        Health = 1000,
         Rarity = "Secret",
         Chance = 0.01,
         Price = 10_000_000,
