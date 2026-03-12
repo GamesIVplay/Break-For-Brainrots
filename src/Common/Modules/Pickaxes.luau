@@ -30,14 +30,14 @@ local Pickaxes: { [string]: Pickaxe } = {
         Rarity = "Common",
         Price = 500,
         Rebirth = 0,
-        Power = 3,
+        Power = 4,
         Image = "rbxassetid://99837424509453",
         Developer_Product = 3529374574,
         Tool = Pickaxe_Tools:WaitForChild("Stone"),
     },
     ["Ruby"] = {
         Rarity = "Common",
-        Price = 1_500,
+        Price = 1_000,
         Rebirth = 0,
         Power = 6,
         Image = "rbxassetid://123344566248684",
@@ -57,7 +57,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     },
     ["Gold"] = {
         Rarity = "Rare",
-        Price = 12_000,
+        Price = 10_000,
         Rebirth = 0,
         Power = 12,
         Image = "rbxassetid://85995206766563",
@@ -66,7 +66,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     },
     ["Yin Yang"] = {
         Rarity = "Rare",
-        Price = 20_000,
+        Price = 15_000,
         Rebirth = 0,
         Power = 15,
         Image = "rbxassetid://72067973931657",
@@ -77,7 +77,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     -- Epic
     ["Candy"] = {
         Rarity = "Epic",
-        Price = 35_000,
+        Price = 25_000,
         Rebirth = 0,
         Power = 20,
         Image = "rbxassetid://126085895816695",
@@ -86,7 +86,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     },
     ["Shark"] = {
         Rarity = "Epic",
-        Price = 55_000,
+        Price = 40_000,
         Rebirth = 0,
         Power = 25,
         Image = "rbxassetid://133332192468677",
