@@ -46,11 +46,20 @@ local Pickaxes: { [string]: Pickaxe } = {
     },
 
     -- Rare
+    ["Diamond"] = {
+        Rarity = "Rare",
+        Price = 3_000,
+        Rebirth = 0,
+        Power = 8,
+        Image = "rbxassetid://84725117549730",
+        Developer_Product = 3554745982,
+        Tool = Pickaxe_Tools:WaitForChild("Diamond"),
+    },
     ["Iron"] = {
         Rarity = "Rare",
         Price = 5_000,
         Rebirth = 0,
-        Power = 9,
+        Power = 10,
         Image = "rbxassetid://81526194453089",
         Developer_Product = 3529456216,
         Tool = Pickaxe_Tools:WaitForChild("Iron"),
