@@ -135,7 +135,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     -- Mythical
     ["67"] = {
         Rarity = "Mythical",
-        Price = 1_500_000,
+        Price = 1_000_000,
         Rebirth = 0,
         Power = 67,
         Image = "rbxassetid://77223024075900",
@@ -144,7 +144,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     },
     ["UFO"] = {
         Rarity = "Mythical",
-        Price = 3_000_000,
+        Price = 2_000_000,
         Rebirth = 0,
         Power = 85,
         Image = "rbxassetid://77362587488589",
@@ -153,7 +153,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     },
     ["Electro"] = {
         Rarity = "Mythical",
-        Price = 6_000_000,
+        Price = 4_000_000,
         Rebirth = 0,
         Power = 105,
         Image = "rbxassetid://81403123319089",
@@ -164,7 +164,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     -- Secret
     ["Angel"] = {
         Rarity = "Secret",
-        Price = 12_000_000,
+        Price = 8_000_000,
         Rebirth = 0,
         Power = 120,
         Image = "rbxassetid://103777101628861",
@@ -174,7 +174,7 @@ local Pickaxes: { [string]: Pickaxe } = {
 
     ["Dragon"] = {
         Rarity = "Secret",
-        Price = 25_000_000,
+        Price = 15_000_000,
         Rebirth = 0,
         Power = 135,
         Image = "rbxassetid://131641452173182",
@@ -184,7 +184,7 @@ local Pickaxes: { [string]: Pickaxe } = {
 
     ["Hacker"] = {
         Rarity = "Secret",
-        Price = 40_000_000,
+        Price = 20_000_000,
         Rebirth = 0,
         Power = 155,
         Image = "rbxassetid://112078578632696",
