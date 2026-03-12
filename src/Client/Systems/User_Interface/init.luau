@@ -299,6 +299,7 @@ local function Setup_HUD_Visibility(PlayerGui: PlayerGui)
     local Left = Main:WaitForChild("Left") :: Frame
     local Offers = Main:WaitForChild("Offers") :: Frame
     local Plot_Income_Per_Sec = Main:WaitForChild("Plot_Income_Per_Sec") :: Frame
+    local EquipBest = Main:WaitForChild("EquipBest")
     local Tutorial = PlayerGui:WaitForChild("Visuals"):WaitForChild("Tutorial") :: ImageLabel
 
     local Visible_Computed = Scope:Computed(function(Use)
@@ -324,6 +325,12 @@ local function Setup_HUD_Visibility(PlayerGui: PlayerGui)
     })
 
     Scope:Hydrate(Plot_Income_Per_Sec)({
+        Visible = Scope:Computed(function(Use)
+            return (Use(Visible_Computed) and Use(Tutorial_Text_Computed) == nil)
+        end),
+    })
+
+    Scope:Hydrate(EquipBest)({
         Visible = Scope:Computed(function(Use)
             return (Use(Visible_Computed) and Use(Tutorial_Text_Computed) == nil)
         end),
@@ -723,7 +730,7 @@ local function Setup_HUD_Plot_Income_Per_Sec(PlayerGui: PlayerGui)
     })
 end
 
-local function Setup_Hold_To_Swing_Disclaimer(PlayerGui: PlayerGui)
+--[[local function Setup_Hold_To_Swing_Disclaimer(PlayerGui: PlayerGui)
     local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
     local Hold_To_Swing_Disclaimer = Main:WaitForChild("Hold_To_Swing_Disclaimer")
 
@@ -739,6 +746,35 @@ local function Setup_Hold_To_Swing_Disclaimer(PlayerGui: PlayerGui)
             end
         end),
     })
+end]]
+
+local function Setup_Equip_Best(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local EquipBest = Main:WaitForChild("EquipBest")
+
+    Scope:Hydrate(EquipBest)({
+        Position = Scope:Computed(function(Use)
+            if Use(DeviceType) ~= "Mobile" then
+                return UDim2.fromScale(0.5, 0.77)
+            else
+                return UDim2.fromScale(0.5, 0.67)
+            end
+        end),
+    })
+
+    Hydrate_Button(EquipBest, function()
+        if not Ratelimits.Equip_Best_Brainrots() then
+            local Entity = World:entity()
+
+            World:set(Entity, Components.Text, "You must wait a moment")
+            World:set(Entity, Components.NotificationType, "Warning")
+
+            World:add(Entity, Components.Tags.Notification)
+            return
+        end
+
+        Network.Requests.Equip_Best_Brainrots.Fire()
+    end)
 end
 
 local function Setup_HUD_Tutorial(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
@@ -828,7 +864,7 @@ local function Setup_HUD(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
 
     Setup_HUD_Plot_Income_Per_Sec(PlayerGui)
 
-    Setup_Hold_To_Swing_Disclaimer(PlayerGui)
+    Setup_Equip_Best(PlayerGui)
 
     Setup_HUD_Tutorial(LocalEntity, PlayerGui)
 end
