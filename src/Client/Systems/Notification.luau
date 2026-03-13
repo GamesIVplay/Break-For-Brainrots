@@ -157,7 +157,9 @@ local function Create_Notifications()
         local TextLabel = Notification:FindFirstChildOfClass("TextLabel")
         TextLabel.Text = Text
 
-        local Gradient = Notification_UI_Gradients:FindFirstChild(Type)
+        local Forced_Gradient_Name = World:get(Entity, Components.Gradient)
+        local Gradient = Forced_Gradient_Name and UIGradients:FindFirstChild(Forced_Gradient_Name)
+            or Notification_UI_Gradients:FindFirstChild(Type)
 
         if Gradient then
             Gradient:Clone().Parent = TextLabel

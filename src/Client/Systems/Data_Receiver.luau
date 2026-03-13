@@ -477,6 +477,16 @@ local function Handle_Friend_Boost(Local_Entity: Types.Entity)
     end
 end
 
+local function Handle_Confetti()
+    for _, Data in Network.VFX.Confetti.Iter() do
+        if not Data:IsDescendantOf(workspace) then
+            continue
+        end
+
+        task.spawn(require(VFX.Confetti), Data)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.First,
@@ -544,6 +554,8 @@ return {
         Handle_Bought_Starter_Pack(Local_Entity)
 
         Handle_Friend_Boost(Local_Entity)
+
+        Handle_Confetti()
     end,
     runConditions = {},
 }

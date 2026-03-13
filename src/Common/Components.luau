@@ -38,6 +38,7 @@ local Components: {
     Duration: Types.Id<number>,
 
     NotificationType: Types.Id<Types.NotificationType>,
+    Gradient: Types.Id<string>,
 
     Health: Types.Id<number>,
 
@@ -111,6 +112,7 @@ local Components: {
         Duration = World:component(),
 
         NotificationType = World:component(),
+        Gradient = World:component(),
 
         Health = World:component(),
 

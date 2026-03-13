@@ -114,6 +114,7 @@ local function Handle_Pickaxe_Purchase_Requests()
                 AnalyticsService:LogFunnelStepEvent(Player, Name, tostring(Player.UserId), Level, `Level {Level}`)
             end
 
+            Network.VFX.Confetti.FireAll(Character)
             Network.VFX.Tutorial_Complete.FireAll(Character)
 
             AnalyticsService:LogFunnelStepEvent(Player, "Rebirth", tostring(Player.UserId), 1, `Rebirth 0`)

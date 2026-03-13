@@ -62,7 +62,7 @@ local function Handle_Swing_Requests()
 
         local Block_Health = World:get(Block_Entity, Components.Health)
 
-        if not Block_Health then
+        if not Block_Health or Block_Health == 0 then
             continue
         end
 
@@ -112,6 +112,11 @@ local function Handle_Swing_Requests()
         end
 
         local New_Health = math.max(Block_Health - Damage, 0)
+
+        if New_Health == 0 then
+            Network.VFX.Confetti.FireAll(Character)
+        end
+
         World:set(Block_Entity, Components.Health, New_Health)
 
         Network.VFX.Block_Hit.FireExcept(Player, Block_Model)

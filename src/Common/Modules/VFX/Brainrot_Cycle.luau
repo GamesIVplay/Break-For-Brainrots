@@ -1,4 +1,5 @@
 local Debris = game:GetService("Debris")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
@@ -13,7 +14,11 @@ local VFX = Assets:WaitForChild("VFX")
 local Result = VFX:WaitForChild("Result") :: Attachment
 local Spin = VFX:WaitForChild("Spin") :: Attachment
 
+local Components = require(ReplicatedStorage.Common.Components)
+local World = require(ReplicatedStorage.Common.World)
+
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
+local Brainrots = require(ReplicatedStorage.Common.Modules.Brainrots)
 local Generate_Brainrot_Model = require(ReplicatedStorage.Common.Modules.Generate_Brainrot_Model)
 local Roll_Primary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Primary_Mutation)
 local Roll_Secondary_Mutation = require(ReplicatedStorage.Common.Modules.Roll_Secondary_Mutation)
@@ -207,6 +212,12 @@ local function Spawn_Cycle_Brainrot(
     end
 end
 
+local RARE_BRAINROTS = {
+    "Mythical",
+    "Legendary",
+    "Secret",
+}
+
 return function(Data: {
     Block: string,
     Mutation_Luck: number,
@@ -219,6 +230,18 @@ return function(Data: {
 
     for i = 1, CYCLE_COUNT do
         Spawn_Cycle_Brainrot(Data.Block, Data.Mutation_Luck, Data.Brainrot_CF)
+    end
+
+    local Brainrot_Rarity = Brainrots[Data.Rolled_Brainrot.Name].Rarity
+
+    if Data.Owner == Players.LocalPlayer.UserId and table.find(RARE_BRAINROTS, Brainrot_Rarity) then
+        local Notification = World:entity()
+        World:set(Notification, Components.Text, `You rolled a {Brainrot_Rarity}!`)
+        World:set(Notification, Components.Duration, 3)
+        World:set(Notification, Components.Gradient, Brainrot_Rarity)
+        World:set(Notification, Components.NotificationType, "Announcement")
+
+        World:add(Notification, Components.Tags.Notification)
     end
 
     Spawn_Cycle_Brainrot(Data.Block, Data.Mutation_Luck, Data.Brainrot_CF, {

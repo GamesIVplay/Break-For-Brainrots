@@ -45,6 +45,14 @@ event Setup_Sell_Prompt {
 }
 
 scope VFX { 
+	event Confetti {
+        From: Server,
+        Type: Reliable,
+        Call: SingleSync,
+		Poll: true,
+        Data: Instance(Model) 
+    }
+
 	event Buy {
         From: Server,
         Type: Reliable,
