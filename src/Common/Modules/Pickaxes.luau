@@ -124,7 +124,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     },
     ["Ice"] = {
         Rarity = "Legendary",
-        Price = 300_000,
+        Price = 250_000,
         Rebirth = 0,
         Power = 44,
         Image = "rbxassetid://91474283800298",
@@ -133,7 +133,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     },
     ["Glitch"] = {
         Rarity = "Legendary",
-        Price = 700_000,
+        Price = 500_000,
         Rebirth = 0,
         Power = 52,
         Image = "rbxassetid://112421977124033",
@@ -144,7 +144,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     -- Mythical
     ["67"] = {
         Rarity = "Mythical",
-        Price = 1_000_000,
+        Price = 700_000,
         Rebirth = 0,
         Power = 67,
         Image = "rbxassetid://77223024075900",
@@ -153,7 +153,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     },
     ["UFO"] = {
         Rarity = "Mythical",
-        Price = 2_000_000,
+        Price = 1_500_000,
         Rebirth = 0,
         Power = 85,
         Image = "rbxassetid://77362587488589",
@@ -162,7 +162,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     },
     ["Electro"] = {
         Rarity = "Mythical",
-        Price = 4_000_000,
+        Price = 3_000_000,
         Rebirth = 0,
         Power = 105,
         Image = "rbxassetid://81403123319089",
@@ -173,7 +173,7 @@ local Pickaxes: { [string]: Pickaxe } = {
     -- Secret
     ["Angel"] = {
         Rarity = "Secret",
-        Price = 8_000_000,
+        Price = 6_000_000,
         Rebirth = 0,
         Power = 120,
         Image = "rbxassetid://103777101628861",
@@ -183,7 +183,7 @@ local Pickaxes: { [string]: Pickaxe } = {
 
     ["Dragon"] = {
         Rarity = "Secret",
-        Price = 15_000_000,
+        Price = 10_000_000,
         Rebirth = 0,
         Power = 135,
         Image = "rbxassetid://131641452173182",
@@ -193,7 +193,7 @@ local Pickaxes: { [string]: Pickaxe } = {
 
     ["Hacker"] = {
         Rarity = "Secret",
-        Price = 20_000_000,
+        Price = 15_000_000,
         Rebirth = 0,
         Power = 155,
         Image = "rbxassetid://112078578632696",
