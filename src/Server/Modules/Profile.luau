@@ -26,7 +26,9 @@ export type ProfileData = {
     Daily_Reward_Id: number,
     Last_Daily_Reward_Claim: number,
     Claimed_Daily_Rewards: { string },
+    Fusion_Machine: { Types.Brainrot_Item },
     Tutorial_Step: number,
+    Next_Fusion_Time: number,
 }
 
 local ProfileStore = require(ReplicatedStorage.Packages.ProfileStore)
@@ -54,6 +56,8 @@ local PLAYER_DATA_TEMPLATE: ProfileData = {
     Last_Daily_Reward_Claim = 0,
     Claimed_Daily_Rewards = {},
     Tutorial_Step = 1,
+    Fusion_Machine = {},
+    Next_Fusion_Time = 0,
 }
 
 local PlayerProfileStore = ProfileStore.New(not _G.IN_DEV and "Main" or "Dev", PLAYER_DATA_TEMPLATE)

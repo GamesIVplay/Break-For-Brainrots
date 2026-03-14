@@ -34,7 +34,7 @@ return {
             end
 
             for Block_Name, Block_Data in Blocks do
-                if Stock[Block_Name] then
+                if not Block_Data.Restock_Chance or Stock[Block_Name] then
                     continue
                 end
 

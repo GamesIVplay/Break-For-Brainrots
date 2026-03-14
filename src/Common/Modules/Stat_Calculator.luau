@@ -147,4 +147,35 @@ function Stat_Calculator.Get_Brainrot_Offset()
     return BRAINROT_OFFSET
 end
 
+function Stat_Calculator.Get_Fusion_Results(Brainrot_Names: { string })
+    local TotalIncome = 0
+
+    for _, Name in Brainrot_Names do
+        local Data = Brainrots[Name]
+
+        TotalIncome += Data.IncomePerSec
+    end
+
+    local Candidates = {}
+
+    for Name, Data in Brainrots do
+        table.insert(Candidates, {
+            Name = Name,
+            Diff = math.abs(Data.IncomePerSec - TotalIncome),
+        })
+    end
+
+    table.sort(Candidates, function(a, b)
+        return a.Diff < b.Diff
+    end)
+
+    local Results = {}
+
+    for i = 1, math.min(4, #Candidates) do
+        table.insert(Results, Candidates[i].Name)
+    end
+
+    return Results
+end
+
 return table.freeze(Stat_Calculator)

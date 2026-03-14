@@ -6,6 +6,7 @@ local Max_Weight_Per_Rarity = {
     Common = 0.45,
     Rare = 0.35,
     Epic = 0.15,
+    Mutation = 0.13,
     Legendary = 0.08,
     Mythical = 0.04,
     Secret = 0.02,
@@ -28,6 +29,8 @@ return function(Luck: number, Excluded: { string }): (string, Blocks.Block)
 
             if Rarity == "Rare" then
                 Weight *= 1 + 0.20 * ScaledBonus
+            elseif Rarity == "Mutation" then
+                Weight *= 1 + 0.35 * ScaledBonus
             elseif Rarity == "Epic" then
                 Weight *= 1 + 0.30 * ScaledBonus
             elseif Rarity == "Legendary" then
@@ -39,6 +42,7 @@ return function(Luck: number, Excluded: { string }): (string, Blocks.Block)
             end
 
             -- Clamp to rarity cap
+
             if Max_Weight_Per_Rarity[Rarity] then
                 Weight = math.min(Weight, Max_Weight_Per_Rarity[Rarity])
             end

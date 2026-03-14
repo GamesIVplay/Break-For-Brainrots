@@ -553,6 +553,38 @@ local function Replicate_Friend_Boost(Player: Player, Entity: Types.Entity)
     end
 end
 
+local function Replicate_Fusion_Machine(Player: Player, Entity: Types.Entity)
+    local Fusion_Machine = World:get(Entity, Components.Fusion_Machine)
+    local Previous_Fusion_Machine =
+        World:get(Entity, Pair(Components.Relationships.Previous, Components.Fusion_Machine))
+
+    if not Util.TablesAreEqual(Fusion_Machine, Previous_Fusion_Machine) then
+        Network.DataChanged.Fusion_Machine.Fire(Player, Fusion_Machine)
+
+        World:set(
+            Entity,
+            Pair(Components.Relationships.Previous, Components.Fusion_Machine),
+            Util.CopyTable(Fusion_Machine, true)
+        )
+
+        Log.Info(`{Player.Name}'s Fusion Machine changed`)
+    end
+end
+
+local function Replicate_Next_Fusion_Time(Player: Player, Entity: Types.Entity)
+    local Next_Fusion_Time = World:get(Entity, Components.Next_Fusion_Time)
+    local Previous_Next_Fusion_Time =
+        World:get(Entity, Pair(Components.Relationships.Previous, Components.Next_Fusion_Time))
+
+    if Next_Fusion_Time ~= Previous_Next_Fusion_Time then
+        Network.DataChanged.Next_Fusion_Time.Fire(Player, Next_Fusion_Time)
+
+        World:set(Entity, Pair(Components.Relationships.Previous, Components.Next_Fusion_Time), Next_Fusion_Time)
+
+        Log.Info(`{Player.Name}'s Next Fusion Time changed`)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.PostUpdate,
@@ -595,6 +627,10 @@ return {
             Replicate_Bought_Starter_Pack(Player, Entity)
 
             Replicate_Friend_Boost(Player, Entity)
+
+            Replicate_Fusion_Machine(Player, Entity)
+
+            Replicate_Next_Fusion_Time(Player, Entity)
         end
     end,
     runConditions = {},

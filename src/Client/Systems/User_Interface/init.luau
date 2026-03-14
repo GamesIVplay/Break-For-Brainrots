@@ -299,7 +299,6 @@ local function Setup_HUD_Visibility(PlayerGui: PlayerGui)
     local Left = Main:WaitForChild("Left") :: Frame
     local Offers = Main:WaitForChild("Offers") :: Frame
     local Plot_Income_Per_Sec = Main:WaitForChild("Plot_Income_Per_Sec") :: Frame
-    local EquipBest = Main:WaitForChild("EquipBest")
     local Tutorial = PlayerGui:WaitForChild("Visuals"):WaitForChild("Tutorial") :: ImageLabel
 
     local Visible_Computed = Scope:Computed(function(Use)
@@ -325,12 +324,6 @@ local function Setup_HUD_Visibility(PlayerGui: PlayerGui)
     })
 
     Scope:Hydrate(Plot_Income_Per_Sec)({
-        Visible = Scope:Computed(function(Use)
-            return (Use(Visible_Computed) and Use(Tutorial_Text_Computed) == nil)
-        end),
-    })
-
-    Scope:Hydrate(EquipBest)({
         Visible = Scope:Computed(function(Use)
             return (Use(Visible_Computed) and Use(Tutorial_Text_Computed) == nil)
         end),
@@ -750,17 +743,9 @@ end]]
 
 local function Setup_Equip_Best(PlayerGui: PlayerGui)
     local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
-    local EquipBest = Main:WaitForChild("EquipBest")
 
-    Scope:Hydrate(EquipBest)({
-        Position = Scope:Computed(function(Use)
-            if Use(DeviceType) ~= "Mobile" then
-                return UDim2.fromScale(0.5, 0.77)
-            else
-                return UDim2.fromScale(0.5, 0.67)
-            end
-        end),
-    })
+    local Top = Main:WaitForChild("Top")
+    local EquipBest = Top:WaitForChild("Sell"):WaitForChild("EquipBest") :: ImageButton
 
     Hydrate_Button(EquipBest, function()
         if not Ratelimits.Equip_Best_Brainrots() then
@@ -2433,6 +2418,241 @@ local function Setup_Sell(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Sell_Contents(PlayerGui)
 end
 
+local function Setup_Fusion_Machine_Visibility(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Fusion_Machine = Frames:WaitForChild("FusionMachine") :: ImageLabel
+
+    Hydrate_Frame_Visibility(Fusion_Machine, "FusionMachine")
+
+    Setup_Close_Button(Fusion_Machine:WaitForChild("Close"))
+end
+
+local function Setup_Fusion_Machine_Content(PlayerGui: PlayerGui)
+    local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
+    local Frames = Main:WaitForChild("Frames") :: Frame
+
+    local Fusion_Machine = Frames:WaitForChild("FusionMachine") :: ImageLabel
+    local Start = Fusion_Machine:WaitForChild("Start") :: ImageLabel
+    local PossibleFusions = Fusion_Machine:WaitForChild("PossibleFusions") :: ImageLabel
+    local Possible_Template = PossibleFusions:WaitForChild("Template") :: ImageLabel
+    Possible_Template.Visible = false
+
+    local Time = Fusion_Machine:WaitForChild("Time") :: TextLabel
+
+    Clock(1, function()
+        local Next = Peek(Fusion_Values.Next_Fusion_Time) or os.time() + Config.FUSE_TIME
+
+        local Remaining = math.max(0, Next - os.time())
+
+        local T = Util.BreakdownTime(Remaining)
+
+        Time.Text = `Fusion Time: {T.Minutes}m {T.Seconds}s`
+    end)
+
+    for Index = 1, 4 do
+        local Image_Button = Fusion_Machine:WaitForChild(tostring(Index)) :: ImageButton
+
+        local Brainrot_Item = Scope:Computed(function(Use, Processor: Fusion.Scope<Fusion.Fusion>)
+            local Fusion_Machine = Use(Fusion_Values.Fusion_Machine)
+            local Brainrot_Item = Fusion_Machine[Index] :: Types.Brainrot_Item?
+
+            if Brainrot_Item then
+                Image_Button.Image = "rbxassetid://110969725874642"
+                local ViewportFrame = Image_Button:FindFirstChildOfClass("ViewportFrame")
+
+                local ViewportCamera = Processor:New("Camera")({
+                    FieldOfView = 70,
+                    Parent = ViewportFrame,
+                })
+
+                local Rarity_Gradient = UIGradients:FindFirstChild(Brainrots[Brainrot_Item.Name].Rarity):Clone()
+                Rarity_Gradient.Parent = Image_Button
+
+                table.insert(Processor, Rarity_Gradient)
+
+                ViewportFrame.CurrentCamera = ViewportCamera
+
+                local WorldModel = Processor:New("WorldModel")({
+                    Parent = ViewportFrame,
+                })
+
+                local Model = Generate_Brainrot_Model(
+                    Brainrot_Item.Name,
+                    Brainrot_Item.Primary_Mutation,
+                    Brainrot_Item.Secondary_Mutations,
+                    10
+                )
+                Model.Parent = workspace.Debris
+                Model:PivotTo(CFrame.new(Vector3.zero))
+                Model.Parent = WorldModel
+
+                local Cf, Size = Model:GetBoundingBox()
+                local MaxSize = math.max(Size.X, Size.Y, Size.Z)
+
+                local Distance = MaxSize * 1
+
+                ViewportCamera.CFrame = Cf
+                    * CFrame.new(0, MaxSize * 0.1, -Distance)
+                    * CFrame.fromOrientation(0, math.rad(180), 0)
+            else
+                Image_Button.Image = "rbxassetid://105326211970117"
+            end
+
+            return Brainrot_Item
+        end)
+
+        local Income_Per_Sec = Image_Button:WaitForChild("Income_Per_Sec")
+        local Empty = Image_Button:WaitForChild("Empty")
+        local Plus = Image_Button:WaitForChild("Plus")
+
+        Scope:Hydrate(Income_Per_Sec)({
+            Visible = Scope:Computed(function(Use)
+                return Use(Brainrot_Item) ~= nil
+            end),
+            Text = Scope:Computed(function(Use)
+                local Brainrot_Item = Use(Brainrot_Item) :: Types.Brainrot_Item?
+
+                if not Brainrot_Item then
+                    return ""
+                end
+
+                local Value = Stat_Calculator.Calculate_Income_Per_Sec({
+                    Brainrot_Name = Brainrot_Item.Name,
+                    Primary_Mutation = Brainrot_Item.Primary_Mutation,
+                    Secondary_Mutations = Brainrot_Item.Secondary_Mutations,
+                    Weight = Brainrot_Item.Weight,
+                })
+
+                return `${Util.Abbreviate_Number(Value, 2)}/s`
+            end),
+        })
+
+        Scope:Hydrate(Empty)({
+            Visible = Scope:Computed(function(Use)
+                return Use(Brainrot_Item) == nil
+            end),
+        })
+
+        Scope:Hydrate(Plus)({
+            Visible = Scope:Computed(function(Use)
+                return Use(Brainrot_Item) == nil
+            end),
+        })
+
+        Hydrate_Button(Image_Button, function()
+            if not Ratelimits.Fusion_Machine_Swap() then
+                return
+            end
+
+            Network.Requests.Fusion_Machine_Swap.Fire(Index)
+        end)
+    end
+
+    Scope:Hydrate(Start)({
+        Visible = Scope:Computed(function(Use)
+            local Brainrot_Names = {}
+
+            for _, Data in Use(Fusion_Values.Fusion_Machine) :: { Types.Brainrot_Item } do
+                table.insert(Brainrot_Names, Data.Name)
+            end
+
+            if #Brainrot_Names ~= 4 or Use(Fusion_Values.Next_Fusion_Time) then
+                return false
+            end
+
+            return true
+        end),
+    })
+
+    Hydrate_Button(Start, function()
+        if not Ratelimits.Fusion_Start() then
+            return
+        end
+
+        Network.Requests.Start_Fusion.Fire()
+    end)
+
+    Scope:Hydrate(PossibleFusions)({
+        [Children] = Scope:Computed(function(Use, Processor: Fusion.Scope<Fusion.Fusion>)
+            local Brainrot_Names = {}
+
+            for _, Data in Use(Fusion_Values.Fusion_Machine) :: { Types.Brainrot_Item } do
+                table.insert(Brainrot_Names, Data.Name)
+            end
+
+            local T = {}
+
+            if #Brainrot_Names ~= 4 then
+                return T
+            end
+
+            for _, Name in Stat_Calculator.Get_Fusion_Results(Brainrot_Names) do
+                local ImageLabel = Possible_Template:Clone()
+                ImageLabel.Visible = true
+                ImageLabel.Parent = Possible_Template.Parent
+
+                local Value = Stat_Calculator.Calculate_Income_Per_Sec({
+                    Brainrot_Name = Name,
+                    Primary_Mutation = nil,
+                    Secondary_Mutations = {},
+                    Weight = 10,
+                })
+
+                local Title = ImageLabel:FindFirstChild("Income_Per_Sec") :: TextLabel
+                Title.Text = `+${Util.Abbreviate_Number(Value, 2)}/s`
+
+                local Rarity_Gradient = UIGradients:FindFirstChild(Brainrots[Name].Rarity):Clone()
+                Rarity_Gradient.Parent = ImageLabel
+
+                local ViewportFrame = ImageLabel:FindFirstChildOfClass("ViewportFrame")
+
+                local ViewportCamera = Processor:New("Camera")({
+                    FieldOfView = 70,
+                    Parent = ViewportFrame,
+                })
+
+                UIGradients:FindFirstChild(Brainrots[Name].Rarity):Clone().Parent = ImageLabel
+
+                table.insert(Processor, Rarity_Gradient)
+
+                ViewportFrame.CurrentCamera = ViewportCamera
+
+                local WorldModel = Processor:New("WorldModel")({
+                    Parent = ViewportFrame,
+                })
+
+                local Model = Generate_Brainrot_Model(Name, nil, {}, 10)
+
+                Model.Parent = workspace.Debris
+                Model:PivotTo(CFrame.new(Vector3.zero))
+                Model.Parent = WorldModel
+
+                local Cf, Size = Model:GetBoundingBox()
+                local MaxSize = math.max(Size.X, Size.Y, Size.Z)
+
+                local Distance = MaxSize * 1
+
+                ViewportCamera.CFrame = Cf
+                    * CFrame.new(0, MaxSize * 0.1, -Distance)
+                    * CFrame.fromOrientation(0, math.rad(180), 0)
+
+                table.insert(T, ImageLabel)
+                table.insert(Processor, ImageLabel)
+            end
+
+            return T
+        end),
+    })
+end
+
+local function Setup_Fusion_Machine(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+    Setup_Fusion_Machine_Visibility(PlayerGui)
+
+    Setup_Fusion_Machine_Content(PlayerGui)
+end
+
 local function Setup_Free_Reward(PlayerGui: PlayerGui)
     local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
     local Frames = Main:WaitForChild("Frames") :: Frame
@@ -2480,13 +2700,16 @@ local function Setup_Topbar_Daily_Rewards()
         Toggle_Screen("DailyRewards")
     end)
 
-    Scope:Observer(Tutorial_Completed_Computed):onBind(function()
-        if Peek(Tutorial_Completed_Computed) == true then
+    local function Update()
+        if Peek(Fusion_Values.Screen) == "HUD" and Peek(Tutorial_Completed_Computed) == true then
             Icon:setEnabled(true)
         else
             Icon:setEnabled(false)
         end
-    end)
+    end
+
+    Scope:Observer(Tutorial_Completed_Computed):onBind(Update)
+    Scope:Observer(Fusion_Values.Screen):onBind(Update)
 end
 
 local function Setup_Topbar_Toggle_Music()
@@ -2516,13 +2739,16 @@ local function Setup_Topbar_Toggle_Music()
         end
     end)
 
-    Scope:Observer(Tutorial_Completed_Computed):onBind(function()
-        if Peek(Tutorial_Completed_Computed) == true then
+    local function Update()
+        if Peek(Fusion_Values.Screen) == "HUD" and Peek(Tutorial_Completed_Computed) == true then
             Icon:setEnabled(true)
         else
             Icon:setEnabled(false)
         end
-    end)
+    end
+
+    Scope:Observer(Tutorial_Completed_Computed):onBind(Update)
+    Scope:Observer(Fusion_Values.Screen):onBind(Update)
 end
 
 local function Setup_Topbar_Invite_Friends(Local_Player: Player)
@@ -2554,13 +2780,16 @@ local function Setup_Topbar_Invite_Friends(Local_Player: Player)
         end
     end)
 
-    Scope:Observer(Tutorial_Completed_Computed):onBind(function()
-        if Peek(Tutorial_Completed_Computed) == true then
+    local function Update()
+        if Peek(Fusion_Values.Screen) == "HUD" and Peek(Tutorial_Completed_Computed) == true then
             Icon:setEnabled(true)
         else
             Icon:setEnabled(false)
         end
-    end)
+    end
+
+    Scope:Observer(Tutorial_Completed_Computed):onBind(Update)
+    Scope:Observer(Fusion_Values.Screen):onBind(Update)
 end
 
 local function Setup_Topbar(LocalEntity: Types.Entity)
@@ -2633,6 +2862,7 @@ return {
             Setup_Upgrades(Local_Entity, PlayerGui)
             Setup_Daily_Rewards(Local_Entity, PlayerGui)
             Setup_Playtime_Rewards(Local_Entity, PlayerGui)
+            Setup_Fusion_Machine(Local_Entity, PlayerGui)
             Setup_Sell(Local_Entity, PlayerGui)
             Setup_Free_Reward(PlayerGui)
 
@@ -2641,9 +2871,17 @@ return {
             Setup_Stroke_Fixer(PlayerGui)
 
             Scope:Observer(Fusion_Values.Screen):onBind(function()
-                if Peek(Fusion_Values.Screen) == "HUD" then
+                local Screen = Peek(Fusion_Values.Screen)
+
+                if Screen == "HUD" then
                     TweenFov(0.15, 70)
                     Remove_Blur()
+                    Satchel:SetBackpackEnabled(true)
+                elseif Screen == "FusionMachine" then
+                    Frame_Open:Play()
+
+                    TweenFov(0.15, 50)
+                    Add_Blur(30)
                     Satchel:SetBackpackEnabled(true)
                 else
                     Frame_Open:Play()

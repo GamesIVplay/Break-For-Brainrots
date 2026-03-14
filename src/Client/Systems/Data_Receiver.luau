@@ -244,7 +244,7 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
             end)
         )
 
-        table.insert(
+        --[[table.insert(
             Connnections,
             UserInputService.TouchLongPress:Connect(function(_, State, GPE)
                 if GPE then
@@ -258,7 +258,7 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
                     Holding_Input = false
                 end
             end)
-        )
+        )]]
 
         table.insert(
             Connnections,
@@ -487,6 +487,26 @@ local function Handle_Confetti()
     end
 end
 
+local function Handle_Fusion_Machine_Changes(Local_Entity: Types.Entity)
+    for _, Data in Network.DataChanged.Fusion_Machine.Iter() do
+        World:set(Local_Entity, Components.Fusion_Machine, Data)
+
+        Fusion_Values.Fusion_Machine:set(Data)
+    end
+end
+
+local function Handle_Next_Fusion_Time(Local_Entity: Types.Entity)
+    for _, Data in Network.DataChanged.Next_Fusion_Time.Iter() do
+        if Data ~= nil then
+            World:set(Local_Entity, Components.Next_Fusion_Time, Data)
+        else
+            World:remove(Local_Entity, Components.Next_Fusion_Time)
+        end
+
+        Fusion_Values.Next_Fusion_Time:set(Data)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.Runservice.First,
@@ -556,6 +576,10 @@ return {
         Handle_Friend_Boost(Local_Entity)
 
         Handle_Confetti()
+
+        Handle_Fusion_Machine_Changes(Local_Entity)
+
+        Handle_Next_Fusion_Time(Local_Entity)
     end,
     runConditions = {},
 }

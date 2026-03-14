@@ -15,4 +15,6 @@ return table.freeze({
     Rebirth = Ratelimit(1, 0.5),
     Claim_Group_Reward = Ratelimit(1, 0.5),
     Claim_Daily_Reward = Ratelimit(1, 0.5),
+    Fusion_Machine_Swap = Ratelimit(1, 0.01),
+    Fusion_Start = Ratelimit(1, 0.5),
 })

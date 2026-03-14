@@ -59,9 +59,31 @@ local function New_Rarity_Brainrot_Roll(Rarity: Types.Rarity, Exclusions: { stri
     end
 end
 
+local function New_Multi_Rarity_Brainrot_Roll(
+    RaritiesList: { Types.Rarity },
+    Exclusions: { string }?,
+    Additions: { string }?
+)
+    return function()
+        local Choices = {}
+
+        for Name, Data in Brainrots do
+            local IsExcluded = Exclusions and table.find(Exclusions, Name)
+            local IsAdded = Additions and table.find(Additions, Name)
+
+            if not IsExcluded and (table.find(RaritiesList, Data.Rarity) or IsAdded) then
+                table.insert(Choices, Name)
+            end
+        end
+
+        return Choices[math.random(#Choices)]
+    end
+end
+
 export type Block = {
     Health: number,
     Rarity: Types.Rarity,
+    Guranteed_Mutation: string?,
     Chance: number,
     Price: number?,
     Restock_Chance: number,
@@ -77,7 +99,7 @@ export type Block = {
 
 local Blocks: { [string]: Block } = {
     ["Common"] = {
-        Health = 6,
+        Health = 5,
         Rarity = "Common",
         Chance = 0.484,
         Price = 500,
@@ -91,9 +113,9 @@ local Blocks: { [string]: Block } = {
         Part_Color = Color3.fromRGB(128, 129, 138),
     },
     ["Rare"] = {
-        Health = 20,
+        Health = 25,
         Rarity = "Rare",
-        Chance = 0.323,
+        Chance = 0.263,
         Price = 10_000,
         Restock_Chance = 1,
         Minimum_Stock = 5,
@@ -107,7 +129,7 @@ local Blocks: { [string]: Block } = {
     ["Epic"] = {
         Health = 100,
         Rarity = "Epic",
-        Chance = 0.108,
+        Chance = 0.068,
         Price = 500_000,
         Restock_Chance = 1,
         Minimum_Stock = 3,
@@ -119,6 +141,7 @@ local Blocks: { [string]: Block } = {
         Roll_Brainrot = New_Rarity_Brainrot_Roll("Epic"),
         Part_Color = Color3.fromRGB(255, 176, 0),
     },
+
     ["Legendary"] = {
         Health = 250,
         Rarity = "Legendary",
@@ -162,6 +185,68 @@ local Blocks: { [string]: Block } = {
         Floats = true,
         Roll_Brainrot = New_Rarity_Brainrot_Roll("Secret", { "Los Tralaleritos" }),
         Part_Color = Color3.fromRGB(0, 0, 0),
+    },
+
+    -- Mutated Blocks
+    ["Hacker"] = {
+        Health = 150,
+        Rarity = "Mutation",
+        Guranteed_Mutation = "Hacker",
+        Chance = 0.025,
+        Model = Block_Models:WaitForChild("Hacker"),
+        Roll_Brainrot = New_Multi_Rarity_Brainrot_Roll({
+            "Common",
+            "Rare",
+            "Epic",
+            "Legendary",
+            "Mythical",
+        }),
+        Part_Color = Color3.fromRGB(74, 150, 62),
+    },
+    ["Volcanic"] = {
+        Health = 150,
+        Rarity = "Mutation",
+        Guranteed_Mutation = "Volcanic",
+        Chance = 0.025,
+        Model = Block_Models:WaitForChild("Volcanic"),
+        Roll_Brainrot = New_Multi_Rarity_Brainrot_Roll({
+            "Common",
+            "Rare",
+            "Epic",
+            "Legendary",
+            "Mythical",
+        }),
+        Part_Color = Color3.fromRGB(220, 121, 50),
+    },
+    ["Candy"] = {
+        Health = 150,
+        Rarity = "Mutation",
+        Guranteed_Mutation = "Candy",
+        Chance = 0.025,
+        Model = Block_Models:WaitForChild("Candy"),
+        Roll_Brainrot = New_Multi_Rarity_Brainrot_Roll({
+            "Common",
+            "Rare",
+            "Epic",
+            "Legendary",
+            "Mythical",
+        }),
+        Part_Color = Color3.fromRGB(230, 143, 241),
+    },
+    ["Electro"] = {
+        Health = 150,
+        Rarity = "Mutation",
+        Guranteed_Mutation = "Electro",
+        Chance = 0.025,
+        Model = Block_Models:WaitForChild("Electro"),
+        Roll_Brainrot = New_Multi_Rarity_Brainrot_Roll({
+            "Common",
+            "Rare",
+            "Epic",
+            "Legendary",
+            "Mythical",
+        }),
+        Part_Color = Color3.fromRGB(90, 181, 189),
     },
 }
 

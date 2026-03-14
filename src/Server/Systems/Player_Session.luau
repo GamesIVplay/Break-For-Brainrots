@@ -186,6 +186,7 @@ local function Handle_New_Player(Player: Player)
     World:set(Player_Entity, Components.PlayTime, Profile_Data.PlayTime)
     World:set(Player_Entity, Components.LastPlayed, Profile_Data.LastPlayed)
     World:set(Player_Entity, Components.Friend_Boost, 0)
+    World:set(Player_Entity, Components.Fusion_Machine, Profile_Data.Fusion_Machine)
 
     if Profile_Data.Tutorial_Step == 5 then
         World:set(Player_Entity, Components.Tutorial_Step, 6)
@@ -203,6 +204,10 @@ local function Handle_New_Player(Player: Player)
         World:set(Player_Entity, Components.Daily_Reward_Id, Config.DAILY_REWARD_ID)
         World:set(Player_Entity, Components.Last_Daily_Reward_Claim, 0)
         World:set(Player_Entity, Components.Claimed_Daily_Rewards, {})
+    end
+
+    if Profile_Data.Next_Fusion_Time ~= 0 then
+        World:set(Player_Entity, Components.Next_Fusion_Time, Profile_Data.Next_Fusion_Time)
     end
 
     World:set(Player_Entity, Components.Player, Player)
@@ -229,6 +234,14 @@ local function Handle_New_Player(Player: Player)
             Profile_Data.Bought_Starter_Pack = true
         end
 
+        local Next_Fusion_Time = World:get(Player_Entity, Components.Next_Fusion_Time)
+
+        if Next_Fusion_Time then
+            Profile_Data.Next_Fusion_Time = Next_Fusion_Time
+        else
+            Profile_Data.Next_Fusion_Time = 0
+        end
+
         Profile_Data.Cash = World:get(Player_Entity, Components.Cash)
         Profile_Data.Rebirth = World:get(Player_Entity, Components.Rebirth)
         Profile_Data.Pickaxe = World:get(Player_Entity, Components.Pickaxe)
@@ -246,6 +259,7 @@ local function Handle_New_Player(Player: Player)
         Profile_Data.Daily_Reward_Id = World:get(Player_Entity, Components.Daily_Reward_Id)
         Profile_Data.Last_Daily_Reward_Claim = World:get(Player_Entity, Components.Last_Daily_Reward_Claim)
         Profile_Data.Claimed_Daily_Rewards = World:get(Player_Entity, Components.Claimed_Daily_Rewards)
+        Profile_Data.Fusion_Machine = World:get(Player_Entity, Components.Fusion_Machine)
         Profile_Data.Tutorial_Step = World:get(Player_Entity, Components.Tutorial_Step)
 
         local Serialized_Brainrots: { [number]: Types.Serialized_Brainrot } = {}

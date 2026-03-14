@@ -42,6 +42,7 @@ return {
         World:set(Local_Entity, Components.Owned_Pickaxes, {})
         World:set(Local_Entity, Components.Plot_Income_Per_Sec, 0)
         World:set(Local_Entity, Components.Friend_Boost, 0)
+        World:set(Local_Entity, Components.Fusion_Machine, {})
 
         if Local_Player.Character then
             task.spawn(function()

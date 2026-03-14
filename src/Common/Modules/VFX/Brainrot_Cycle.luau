@@ -15,6 +15,7 @@ local Result = VFX:WaitForChild("Result") :: Attachment
 local Spin = VFX:WaitForChild("Spin") :: Attachment
 
 local Components = require(ReplicatedStorage.Common.Components)
+local Registry = require(ReplicatedStorage.Common.Registry)
 local World = require(ReplicatedStorage.Common.World)
 
 local Blocks = require(ReplicatedStorage.Common.Modules.Blocks)
@@ -242,6 +243,14 @@ return function(Data: {
         World:set(Notification, Components.NotificationType, "Announcement")
 
         World:add(Notification, Components.Tags.Notification)
+
+        local Local_Entity = Registry.Get("Players", "Local")
+
+        local Character = Local_Entity and World:get(Local_Entity, Components.Renderable)
+
+        if Character then
+            require(ReplicatedStorage.Common.Modules.VFX.Confetti)(Character)
+        end
     end
 
     Spawn_Cycle_Brainrot(Data.Block, Data.Mutation_Luck, Data.Brainrot_CF, {

@@ -28,6 +28,8 @@ local Components: {
     Daily_Reward_Id: Types.Id<number>,
     Last_Daily_Reward_Claim: Types.Id<number>,
     Claimed_Daily_Rewards: Types.Id<{ string }>,
+    Fusion_Machine: Types.Id<{ Types.Brainrot_Item }>,
+    Next_Fusion_Time: Types.Id<number>,
     Tutorial_Step: Types.Id<number>,
 
     Friend_Boost: Types.Id<number>,
@@ -102,6 +104,8 @@ local Components: {
         Daily_Reward_Id = World:component(),
         Last_Daily_Reward_Claim = World:component(),
         Claimed_Daily_Rewards = World:component(),
+        Fusion_Machine = World:component(),
+        Next_Fusion_Time = World:component(),
         Tutorial_Step = World:component(),
 
         Friend_Boost = World:component(),

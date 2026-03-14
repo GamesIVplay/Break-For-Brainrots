@@ -71,6 +71,14 @@ local function Open_Blocks()
 
         local Brainrot_CF = Block_Model:GetPivot()
 
+        local Block_Data = Blocks[Block_Name]
+
+        if
+            Block_Data.Guranteed_Mutation and not table.find(Rolled_Secondary_Mutations, Block_Data.Guranteed_Mutation)
+        then
+            table.insert(Rolled_Secondary_Mutations, Block_Data.Guranteed_Mutation)
+        end
+
         Network.VFX.Brainrot_Cycle.FireAll({
             Block = Block_Name,
             Mutation_Luck = Mutation_Luck,

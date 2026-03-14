@@ -581,6 +581,10 @@ end
 
 local function Add_Block_Purchases()
     for Block_Name, Data in Blocks do
+        if not Data.Developer_Product then
+            continue
+        end
+
         Grant_Purchase_By_Product_Id[Data.Developer_Product] = function(PlayerEntity: Types.Entity)
             local Player = World:get(PlayerEntity, Components.Player)
             local Block_Queue = World:get(PlayerEntity, Components.Block_Queue)

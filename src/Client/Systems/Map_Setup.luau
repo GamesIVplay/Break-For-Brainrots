@@ -741,6 +741,22 @@ local function Setup_Starter_Pack(Local_Player: Player)
     end
 end
 
+local function Setup_Fusion_Machine()
+    for _, Inst: Attachment in CollectionService:GetTagged("Fusion Machine Attachment") do
+        if not Inst:IsA("Attachment") then
+            continue
+        end
+
+        Proximity(Inst, {
+            ActionText = "Open",
+            ObjectText = "Fusion Machine",
+            MaxActivationDistance = 8,
+        }, function()
+            Fusion_Values.Screen:set("FusionMachine")
+        end)
+    end
+end
+
 return {
     name = script.Name,
     phase = Phases.InitPhases.Init,
@@ -775,6 +791,8 @@ return {
         Setup_Pro_Pack(Local_Player)
 
         Setup_Starter_Pack(Local_Player)
+
+        Setup_Fusion_Machine()
     end,
     runConditions = {},
 }

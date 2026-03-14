@@ -25,4 +25,6 @@ return table.freeze({
     Bought_Starter_Pack = Scope:Value(false),
     Friend_Boost = Scope:Value(0),
     Hold_To_Swing_Disclaimer = Scope:Value(false),
+    Fusion_Machine = Scope:Value({}),
+    Next_Fusion_Time = Scope:Value(nil),
 })
