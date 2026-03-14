@@ -244,7 +244,7 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
             end)
         )
 
-        --[[table.insert(
+        table.insert(
             Connnections,
             UserInputService.TouchLongPress:Connect(function(_, State, GPE)
                 if GPE then
@@ -258,7 +258,7 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
                     Holding_Input = false
                 end
             end)
-        )]]
+        )
 
         table.insert(
             Connnections,
