@@ -31,7 +31,7 @@ for Name in Events do
     table.insert(Event_Names, Name)
 end
 
-local Block_Names = { "Rare", "Epic", "Legendary", "Mythical" }
+local Block_Names = { "Legendary", "Mythical", "Secret" }
 
 MessagingService:SubscribeAsync("Start_Global_Event", function(Message)
     local Data = Message.Data :: Types.Start_Global_Event_Data
