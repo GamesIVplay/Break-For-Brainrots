@@ -129,7 +129,7 @@ local function On_Plot_Assigned(Local_Entity: Types.Entity, Plot_Model: Model)
         local Place_Prompt = Proximity(Brainrot_Spawn_Attachment, {
             ActionText = "Place Brainrot",
             MaxActivationDistance = 6,
-            HoldDuration = 0.5,
+            HoldDuration = 0.8,
         }, function()
             local ServerEntity = Stand_Model:GetAttribute("ServerEntity")
 

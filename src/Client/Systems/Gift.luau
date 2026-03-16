@@ -45,7 +45,7 @@ local function Setup_Gifting_Prompts()
         if not Prompt then
             Prompt = Proximity(RootPart, {
                 ActionText = "Gift",
-                HoldDuration = 0.5,
+                HoldDuration = 1,
                 MaxActivationDistance = 6,
             }, function()
                 if not Ratelimits.Gift() then

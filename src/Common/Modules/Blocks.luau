@@ -30,18 +30,23 @@ end
 
 local DowngradeChance = {
     Rare = 0.05,
-    Epic = 0.15,
-    Legendary = 0.30,
-    Mythical = 0.40,
-    Secret = 0.40,
+    Epic = 0.2,
+    Legendary = 0.6,
+    Mythical = 0.8,
+    Secret = 0.9,
 }
 
 local function New_Rarity_Brainrot_Roll(Rarity: Types.Rarity, Exclusions: { string }?, Additions: { string }?)
     return function()
         local RolledRarity = Rarity
 
-        if DowngradeChance[RolledRarity] and math.random() <= DowngradeChance[RolledRarity] then
-            RolledRarity = GetLowerRarity(RolledRarity)
+        while DowngradeChance[RolledRarity] and math.random() <= DowngradeChance[RolledRarity] do
+            local Lower = GetLowerRarity(RolledRarity)
+            if not Lower then
+                break
+            end
+
+            RolledRarity = Lower
         end
 
         local Choices = {}
@@ -65,13 +70,24 @@ local function New_Multi_Rarity_Brainrot_Roll(
     Additions: { string }?
 )
     return function()
+        local RolledRarity = RaritiesList[math.random(#RaritiesList)]
+
+        while DowngradeChance[RolledRarity] and math.random() <= DowngradeChance[RolledRarity] do
+            local Lower = GetLowerRarity(RolledRarity)
+            if not Lower then
+                break
+            end
+
+            RolledRarity = Lower
+        end
+
         local Choices = {}
 
         for Name, Data in Brainrots do
             local IsExcluded = Exclusions and table.find(Exclusions, Name)
             local IsAdded = Additions and table.find(Additions, Name)
 
-            if not IsExcluded and (table.find(RaritiesList, Data.Rarity) or IsAdded) then
+            if not IsExcluded and (Data.Rarity == RolledRarity or IsAdded) then
                 table.insert(Choices, Name)
             end
         end
@@ -200,6 +216,7 @@ local Blocks: { [string]: Block } = {
             "Epic",
             "Legendary",
             "Mythical",
+            "Secret",
         }),
         Part_Color = Color3.fromRGB(74, 150, 62),
     },
@@ -215,6 +232,7 @@ local Blocks: { [string]: Block } = {
             "Epic",
             "Legendary",
             "Mythical",
+            "Secret",
         }),
         Part_Color = Color3.fromRGB(220, 121, 50),
     },
@@ -230,6 +248,7 @@ local Blocks: { [string]: Block } = {
             "Epic",
             "Legendary",
             "Mythical",
+            "Secret",
         }),
         Part_Color = Color3.fromRGB(230, 143, 241),
     },
@@ -245,6 +264,7 @@ local Blocks: { [string]: Block } = {
             "Epic",
             "Legendary",
             "Mythical",
+            "Secret",
         }),
         Part_Color = Color3.fromRGB(90, 181, 189),
     },

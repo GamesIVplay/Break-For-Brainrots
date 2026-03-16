@@ -10,7 +10,7 @@ local World = require(ReplicatedStorage.Common.World)
 
 local Last_Skipped: { [Player]: number } = {}
 
-local COOLDOWN = 3
+local COOLDOWN = 1
 
 return {
     name = script.Name,
