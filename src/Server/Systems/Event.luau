@@ -86,7 +86,7 @@ local function Choose_Next_Event()
     Next_Event = {
         Name = Chosen_Name,
         Block_Name = Block_Names[math.random(1, #Block_Names)],
-        Block_Amount = math.random(1, 2),
+        Block_Amount = math.random(2, 3),
         Luck_Bonus = math.random(25, 100),
     }
 end

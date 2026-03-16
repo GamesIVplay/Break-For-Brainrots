@@ -17,7 +17,7 @@ local Gave_Mythical = false
 local Gave_Legendary = false
 
 local function Calculate_Time_Till_Mythical_Reward()
-    return Util.Get_Seconds_Until_Next_Interval_Est(30)
+    return Util.Get_Seconds_Until_Next_Interval_Est(15)
 end
 
 local function Calculate_Time_Till_Legendary_Reward()

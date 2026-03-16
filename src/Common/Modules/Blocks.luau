@@ -30,7 +30,7 @@ end
 
 local DowngradeChance = {
     Rare = 0.05,
-    Epic = 0.2,
+    Epic = 0.1,
     Legendary = 0.6,
     Mythical = 0.8,
     Secret = 0.9,
@@ -117,7 +117,7 @@ local Blocks: { [string]: Block } = {
     ["Common"] = {
         Health = 5,
         Rarity = "Common",
-        Chance = 0.484,
+        Chance = 0.384,
         Price = 500,
         Restock_Chance = 1,
         Minimum_Stock = 6,
@@ -145,7 +145,7 @@ local Blocks: { [string]: Block } = {
     ["Epic"] = {
         Health = 100,
         Rarity = "Epic",
-        Chance = 0.068,
+        Chance = 0.168,
         Price = 500_000,
         Restock_Chance = 1,
         Minimum_Stock = 3,
@@ -227,7 +227,6 @@ local Blocks: { [string]: Block } = {
         Chance = 0.025,
         Model = Block_Models:WaitForChild("Volcanic"),
         Roll_Brainrot = New_Multi_Rarity_Brainrot_Roll({
-            "Common",
             "Rare",
             "Epic",
             "Legendary",
@@ -243,7 +242,6 @@ local Blocks: { [string]: Block } = {
         Chance = 0.025,
         Model = Block_Models:WaitForChild("Candy"),
         Roll_Brainrot = New_Multi_Rarity_Brainrot_Roll({
-            "Common",
             "Rare",
             "Epic",
             "Legendary",
@@ -259,7 +257,6 @@ local Blocks: { [string]: Block } = {
         Chance = 0.025,
         Model = Block_Models:WaitForChild("Electro"),
         Roll_Brainrot = New_Multi_Rarity_Brainrot_Roll({
-            "Common",
             "Rare",
             "Epic",
             "Legendary",
