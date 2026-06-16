@@ -6,4 +6,4 @@ Don't Break This Block is a Roblox experience about smashing lucky blocks, colle
 
 Entire game scripted by **Dale**.
 
-https://www.daledevs.com
+https://daledevs.com
