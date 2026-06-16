@@ -5,4 +5,5 @@
 Don't Break This Block is a Roblox experience about smashing lucky blocks, collecting Brainrots, upgrading your pickaxe, and growing your earnings over time. Brainrots continue earning while you are offline, with limited-time events and weekly updates adding new rewards.
 
 Entire game scripted by **Dale**.
-https://www.daledevs.com
+
+Website: https://www.daledevs.com
