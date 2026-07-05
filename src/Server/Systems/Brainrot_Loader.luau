@@ -30,8 +30,8 @@ local function Load_Brainrots()
     for
         Player_Entity: Types.Entity,
         Player: Player,
-        Rebirth: number,
-        Gamepasses: { string },
+        _Rebirth: number,
+        _Gamepasses: { string },
         LastPlayed: number,
         Pending_Brainrots: { [number]: Types.Serialized_Brainrot }
     in Pending_Brainrot_Query:iter() do

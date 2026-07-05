@@ -21,7 +21,7 @@ local VFX_CLASSES = {
     Sound = true,
 }
 
-local function ProcessModel(Brainrot_Model: Model, Local_UserId: number)
+local function ProcessModel(Brainrot_Model: Model, _Local_UserId: number)
     if
         not Brainrot_Model:IsDescendantOf(workspace:FindFirstChild("Brainrots"))
         or not Brainrot_Model:IsDescendantOf(ReplicatedStorage:WaitForChild("Culled_Brainrots"))

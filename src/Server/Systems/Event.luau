@@ -148,8 +148,8 @@ local function Start_Event()
         Duration = 8,
     })
 
-    for Player_Entity: Types.Entity, Player: Player, Block_Queue: { string } in Player_Block_Queue_Query:iter() do
-        for i = 1, Next_Event.Block_Amount do
+    for _Player_Entity: Types.Entity, Player: Player, Block_Queue: { string } in Player_Block_Queue_Query:iter() do
+        for _ = 1, Next_Event.Block_Amount do
             table.insert(Block_Queue, Next_Event.Block_Name)
         end
 

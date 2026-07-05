@@ -278,7 +278,7 @@ local function Handle_Tool_Setup(Local_Entity: Types.Entity)
 
         table.insert(
             Connnections,
-            UserInputService.InputEnded:Connect(function(InputObject, GPE)
+            UserInputService.InputEnded:Connect(function(InputObject, _GPE)
                 if not Is_Swing_Input(InputObject) then
                     return
                 end

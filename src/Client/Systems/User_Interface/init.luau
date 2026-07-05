@@ -398,14 +398,14 @@ local function Setup_HUD_Top_Buttons(LocalEntity: Types.Entity, PlayerGui: Playe
     end)
 end
 
-local function Setup_HUD_Left_Buttons(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+local function Setup_HUD_Left_Buttons(_LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     local Main = PlayerGui:WaitForChild("Main") :: ScreenGui
     local Left = Main:WaitForChild("Left") :: Frame
 
     local RobuxShop = Left:WaitForChild("RobuxShop") :: ImageButton
     local Index = Left:WaitForChild("Index") :: ImageButton
     local Rebirth = Left:WaitForChild("Rebirth") :: ImageButton
-    local Upgrades = Left:WaitForChild("Upgrades") :: ImageButton
+    local Upgrades_Button = Left:WaitForChild("Upgrades") :: ImageButton
     local FreeReward = Left:WaitForChild("FreeReward") :: ImageButton
 
     Hydrate_Button(RobuxShop, function()
@@ -420,7 +420,7 @@ local function Setup_HUD_Left_Buttons(LocalEntity: Types.Entity, PlayerGui: Play
         Toggle_Screen("Rebirth")
     end)
 
-    Hydrate_Button(Upgrades, function()
+    Hydrate_Button(Upgrades_Button, function()
         Toggle_Screen("Upgrades")
     end)
 
@@ -511,7 +511,7 @@ local function Setup_HUD_Offers(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Clock(1, function()
         local Current_Time_Left = Peek(Time_Left)
 
-        Time_Left:set(math.max(Current_Time_Left - 1), 0)
+        Time_Left:set(math.max(Current_Time_Left - 1, 0))
     end)
 
     Scope:Hydrate(Starter_Pack)({
@@ -610,20 +610,20 @@ local function Setup_HUD_Right_Corner(LocalEntity: Types.Entity, PlayerGui: Play
     for _, Inst in { Cash, Luck, Mutation } do
         Hydrate_Button(Inst, function() end)
 
-        local Hover = Inst:FindFirstChild("Hover") :: TextLabel
+        local Hover_Label = Inst:FindFirstChild("Hover") :: TextLabel
 
-        if not Hover then
+        if not Hover_Label then
             continue
         end
 
-        Hover.Visible = false
+        Hover_Label.Visible = false
 
         Scope:Hydrate(Inst)({
             [OnEvent("MouseEnter")] = function()
-                Hover.Visible = true
+                Hover_Label.Visible = true
             end,
             [OnEvent("MouseLeave")] = function()
-                Hover.Visible = false
+                Hover_Label.Visible = false
             end,
         })
     end
@@ -652,7 +652,7 @@ local function Setup_HUD_Right_Corner(LocalEntity: Types.Entity, PlayerGui: Play
         [Children] = Scope:Computed(function(Use: Fusion.Use, Processor: Fusion.Scope<Fusion.Fusion>)
             local Active_Events = Use(Fusion_Values.Active_Events)
 
-            local Children = {}
+            local Event_Children = {}
 
             for Event_Name, Data in Active_Events do
                 local ImageButton = Event_Template:Clone() :: ImageButton
@@ -660,21 +660,21 @@ local function Setup_HUD_Right_Corner(LocalEntity: Types.Entity, PlayerGui: Play
                 ImageButton.Name = Event_Name
                 ImageButton.Visible = true
 
-                local Hover = ImageButton:FindFirstChild("Hover") :: TextLabel
+                local Hover_Label = ImageButton:FindFirstChild("Hover") :: TextLabel
                 local Time_Remaining = ImageButton:FindFirstChild("Time_Remaining") :: TextLabel
                 local Image = ImageButton:FindFirstChildOfClass("ImageLabel")
 
-                Hover.Text = `{Event_Name} Event`
-                Hover.Visible = false
+                Hover_Label.Text = `{Event_Name} Event`
+                Hover_Label.Visible = false
 
                 Hydrate_Button(ImageButton, function() end)
 
                 Processor:Hydrate(ImageButton)({
                     [OnEvent("MouseEnter")] = function()
-                        Hover.Visible = true
+                        Hover_Label.Visible = true
                     end,
                     [OnEvent("MouseLeave")] = function()
-                        Hover.Visible = false
+                        Hover_Label.Visible = false
                     end,
                 })
 
@@ -694,10 +694,10 @@ local function Setup_HUD_Right_Corner(LocalEntity: Types.Entity, PlayerGui: Play
                 Image.Image = Events[Event_Name].Image
 
                 table.insert(Processor, ImageButton)
-                table.insert(Children, ImageButton)
+                table.insert(Event_Children, ImageButton)
             end
 
-            return Children
+            return Event_Children
         end),
     })
 end
@@ -928,8 +928,8 @@ local function Setup_Robux_Shop_Brainrot_Offer_One(Local_Player: Player, PlayerG
     local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
     local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
 
-    local Brainrots = Contents:WaitForChild("Brainrots")
-    local Offer_One = Brainrots:WaitForChild("One") :: ImageLabel
+    local Brainrot_Offers = Contents:WaitForChild("Brainrots")
+    local Offer_One = Brainrot_Offers:WaitForChild("One") :: ImageLabel
     local Buy = Offer_One:WaitForChild("Buy") :: ImageButton
     local Price = Buy:FindFirstChildOfClass("TextLabel")
 
@@ -955,8 +955,8 @@ local function Setup_Robux_Shop_Brainrot_Offer_Two(Local_Player: Player, PlayerG
     local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
     local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
 
-    local Brainrots = Contents:WaitForChild("Brainrots")
-    local Offer_Two = Brainrots:WaitForChild("Two") :: ImageLabel
+    local Brainrot_Offers = Contents:WaitForChild("Brainrots")
+    local Offer_Two = Brainrot_Offers:WaitForChild("Two") :: ImageLabel
     local Buy = Offer_Two:WaitForChild("Buy") :: ImageButton
     local Price = Buy:FindFirstChildOfClass("TextLabel")
 
@@ -982,8 +982,8 @@ local function Setup_Robux_Shop_Brainrot_Offer_Three(Local_Player: Player, Playe
     local RobuxShop = Frames:WaitForChild("RobuxShop") :: ImageLabel
     local Contents = RobuxShop:WaitForChild("Contents") :: ScrollingFrame
 
-    local Brainrots = Contents:WaitForChild("Brainrots")
-    local Offer_Three = Brainrots:WaitForChild("Three") :: ImageLabel
+    local Brainrot_Offers = Contents:WaitForChild("Brainrots")
+    local Offer_Three = Brainrot_Offers:WaitForChild("Three") :: ImageLabel
     local Buy = Offer_Three:WaitForChild("Buy") :: ImageButton
     local Price = Buy:FindFirstChildOfClass("TextLabel")
 
@@ -1348,11 +1348,11 @@ local function Setup_Index_Contents(PlayerGui: PlayerGui)
         [Children] = Scope:Computed(function(Use, Processor: Fusion.Scope<Fusion.Fusion>)
             local Mutation = Use(Mutation_Category)
 
-            local Children = {}
+            local Index_Children = {}
 
             for Brainrot_Name, Data in Brainrots do
-                local Owned_Computed = Processor:Computed(function(Use)
-                    local Index_Data = Use(Fusion_Values.Index)
+                local Owned_Computed = Processor:Computed(function(Inner_Use)
+                    local Index_Data = Inner_Use(Fusion_Values.Index)
 
                     if Index_Data[Mutation] and table.find(Index_Data[Mutation], Brainrot_Name) then
                         return true
@@ -1384,8 +1384,8 @@ local function Setup_Index_Contents(PlayerGui: PlayerGui)
                 local ViewportFrame = ImageLabel:FindFirstChildOfClass("ViewportFrame")
 
                 Processor:Hydrate(ViewportFrame)({
-                    ImageColor3 = Processor:Computed(function(Use)
-                        if Use(Owned_Computed) then
+                    ImageColor3 = Processor:Computed(function(Inner_Use)
+                        if Inner_Use(Owned_Computed) then
                             return Color3.fromRGB(255, 255, 255)
                         end
 
@@ -1423,10 +1423,10 @@ local function Setup_Index_Contents(PlayerGui: PlayerGui)
 
                 table.insert(Processor, ImageLabel)
 
-                table.insert(Children, ImageLabel)
+                table.insert(Index_Children, ImageLabel)
             end
 
-            return Children
+            return Index_Children
         end),
     })
 
@@ -1442,7 +1442,7 @@ local function Setup_Index_Contents(PlayerGui: PlayerGui)
     end
 end
 
-local function Setup_Index(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+local function Setup_Index(_LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Index_Visibility(PlayerGui)
 
     Setup_Index_Contents(PlayerGui)
@@ -1547,7 +1547,7 @@ local function Setup_Rebirth_Contents(PlayerGui: PlayerGui)
     })
 end
 
-local function Setup_Rebirth(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+local function Setup_Rebirth(_LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Rebirth_Visibility(PlayerGui)
 
     Setup_Rebirth_Contents(PlayerGui)
@@ -2233,7 +2233,7 @@ local function Setup_Daily_Rewards_Content(PlayerGui: PlayerGui)
     Clock(1, Update)
 end
 
-local function Setup_Daily_Rewards(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+local function Setup_Daily_Rewards(_LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Daily_Rewards_Visibility(PlayerGui)
 
     Setup_Daily_Rewards_Content(PlayerGui)
@@ -2250,7 +2250,7 @@ local function Setup_Playtime_Rewards_Visibility(PlayerGui: PlayerGui)
     Setup_Close_Button(Playtime_Rewards_Frame:WaitForChild("Close"))
 end
 
-local function Setup_Playtime_Rewards(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+local function Setup_Playtime_Rewards(_LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Playtime_Rewards_Visibility(PlayerGui)
 end
 
@@ -2279,7 +2279,7 @@ local function Setup_Sell_Total_Value(PlayerGui: PlayerGui)
         Text = Scope:Computed(function(Use)
             local Brainrot_Inventory = Use(Fusion_Values.Brainrot_Inventory)
 
-            local Total_Value = 0
+            local Total_Inventory_Value = 0
 
             for _, Brainrot_Item: Types.Brainrot_Item in Brainrot_Inventory do
                 local Sell_Price = Stat_Calculator.Calculate_Sell_Price({
@@ -2289,10 +2289,10 @@ local function Setup_Sell_Total_Value(PlayerGui: PlayerGui)
                     Weight = Brainrot_Item.Weight,
                 })
 
-                Total_Value += Sell_Price
+                Total_Inventory_Value += Sell_Price
             end
 
-            return `Total Value: ${Util.Format_Number_With_Commas(Total_Value)}`
+            return `Total Value: ${Util.Format_Number_With_Commas(Total_Inventory_Value)}`
         end),
     })
 end
@@ -2328,7 +2328,7 @@ local function Setup_Sell_Contents(PlayerGui: PlayerGui)
             local Brainrot_Inventory = Use(Fusion_Values.Brainrot_Inventory)
             local Groups = Make_Sell_Group(Brainrot_Inventory)
 
-            local Children = {}
+            local Sell_Children = {}
 
             for _, Data in Groups do
                 local Brainrot_Data = Brainrots[Data.Name]
@@ -2400,15 +2400,15 @@ local function Setup_Sell_Contents(PlayerGui: PlayerGui)
                     })
                 end)
 
-                table.insert(Children, ImageButton)
+                table.insert(Sell_Children, ImageButton)
             end
 
-            return Children
+            return Sell_Children
         end),
     })
 end
 
-local function Setup_Sell(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+local function Setup_Sell(_LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Sell_Visibility(PlayerGui)
 
     Setup_Sell_Total_Value(PlayerGui)
@@ -2454,11 +2454,11 @@ local function Setup_Fusion_Machine_Content(PlayerGui: PlayerGui)
     for Index = 1, 4 do
         local Image_Button = Fusion_Machine:WaitForChild(tostring(Index)) :: ImageButton
 
-        local Brainrot_Item = Scope:Computed(function(Use, Processor: Fusion.Scope<Fusion.Fusion>)
-            local Fusion_Machine = Use(Fusion_Values.Fusion_Machine)
-            local Brainrot_Item = Fusion_Machine[Index] :: Types.Brainrot_Item?
+        local Fusion_Brainrot_Item = Scope:Computed(function(Use, Processor: Fusion.Scope<Fusion.Fusion>)
+            local Fusion_Machine_Data = Use(Fusion_Values.Fusion_Machine)
+            local Slot_Brainrot_Item = Fusion_Machine_Data[Index] :: Types.Brainrot_Item?
 
-            if Brainrot_Item then
+            if Slot_Brainrot_Item then
                 Image_Button.Image = "rbxassetid://110969725874642"
                 local ViewportFrame = Image_Button:FindFirstChildOfClass("ViewportFrame")
 
@@ -2467,7 +2467,7 @@ local function Setup_Fusion_Machine_Content(PlayerGui: PlayerGui)
                     Parent = ViewportFrame,
                 })
 
-                local Rarity_Gradient = UIGradients:FindFirstChild(Brainrots[Brainrot_Item.Name].Rarity):Clone()
+                local Rarity_Gradient = UIGradients:FindFirstChild(Brainrots[Slot_Brainrot_Item.Name].Rarity):Clone()
                 Rarity_Gradient.Parent = Image_Button
 
                 table.insert(Processor, Rarity_Gradient)
@@ -2479,9 +2479,9 @@ local function Setup_Fusion_Machine_Content(PlayerGui: PlayerGui)
                 })
 
                 local Model = Generate_Brainrot_Model(
-                    Brainrot_Item.Name,
-                    Brainrot_Item.Primary_Mutation,
-                    Brainrot_Item.Secondary_Mutations,
+                    Slot_Brainrot_Item.Name,
+                    Slot_Brainrot_Item.Primary_Mutation,
+                    Slot_Brainrot_Item.Secondary_Mutations,
                     10
                 )
                 Model.Parent = workspace.Debris
@@ -2500,7 +2500,7 @@ local function Setup_Fusion_Machine_Content(PlayerGui: PlayerGui)
                 Image_Button.Image = "rbxassetid://105326211970117"
             end
 
-            return Brainrot_Item
+            return Slot_Brainrot_Item
         end)
 
         local Income_Per_Sec = Image_Button:WaitForChild("Income_Per_Sec")
@@ -2509,20 +2509,20 @@ local function Setup_Fusion_Machine_Content(PlayerGui: PlayerGui)
 
         Scope:Hydrate(Income_Per_Sec)({
             Visible = Scope:Computed(function(Use)
-                return Use(Brainrot_Item) ~= nil
+                return Use(Fusion_Brainrot_Item) ~= nil
             end),
             Text = Scope:Computed(function(Use)
-                local Brainrot_Item = Use(Brainrot_Item) :: Types.Brainrot_Item?
+                local Slot_Brainrot_Item = Use(Fusion_Brainrot_Item) :: Types.Brainrot_Item?
 
-                if not Brainrot_Item then
+                if not Slot_Brainrot_Item then
                     return ""
                 end
 
                 local Value = Stat_Calculator.Calculate_Income_Per_Sec({
-                    Brainrot_Name = Brainrot_Item.Name,
-                    Primary_Mutation = Brainrot_Item.Primary_Mutation,
-                    Secondary_Mutations = Brainrot_Item.Secondary_Mutations,
-                    Weight = Brainrot_Item.Weight,
+                    Brainrot_Name = Slot_Brainrot_Item.Name,
+                    Primary_Mutation = Slot_Brainrot_Item.Primary_Mutation,
+                    Secondary_Mutations = Slot_Brainrot_Item.Secondary_Mutations,
+                    Weight = Slot_Brainrot_Item.Weight,
                 })
 
                 return `${Util.Abbreviate_Number(Value, 2)}/s`
@@ -2531,13 +2531,13 @@ local function Setup_Fusion_Machine_Content(PlayerGui: PlayerGui)
 
         Scope:Hydrate(Empty)({
             Visible = Scope:Computed(function(Use)
-                return Use(Brainrot_Item) == nil
+                return Use(Fusion_Brainrot_Item) == nil
             end),
         })
 
         Scope:Hydrate(Plus)({
             Visible = Scope:Computed(function(Use)
-                return Use(Brainrot_Item) == nil
+                return Use(Fusion_Brainrot_Item) == nil
             end),
         })
 
@@ -2647,7 +2647,7 @@ local function Setup_Fusion_Machine_Content(PlayerGui: PlayerGui)
     })
 end
 
-local function Setup_Fusion_Machine(LocalEntity: Types.Entity, PlayerGui: PlayerGui)
+local function Setup_Fusion_Machine(_LocalEntity: Types.Entity, PlayerGui: PlayerGui)
     Setup_Fusion_Machine_Visibility(PlayerGui)
 
     Setup_Fusion_Machine_Content(PlayerGui)
@@ -2768,7 +2768,7 @@ local function Setup_Topbar_Invite_Friends(Local_Player: Player)
         end)
     end
 
-    Icon.toggled:Connect(function(IsSelected)
+    Icon.toggled:Connect(function(_IsSelected)
         Activate:Play()
 
         local Success, CanInvite = pcall(function()

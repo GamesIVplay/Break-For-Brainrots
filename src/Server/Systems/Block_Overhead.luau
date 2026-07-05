@@ -15,7 +15,7 @@ local Block_Overhead_Query =
     World:query(Components.Name, Components.Health, Components.Renderable):with(Components.Tags.Block):cached()
 
 local function Update_Block_Overheads()
-    for Block_Entity, Block_Name: string, Block_Health: number, Block_Model: Model in Block_Overhead_Query:iter() do
+    for _Block_Entity, Block_Name: string, Block_Health: number, Block_Model: Model in Block_Overhead_Query:iter() do
         local Max_Health = Blocks[Block_Name].Health
 
         local Overhead_Attachment = Block_Model:FindFirstChild("Overhead_Attachment", true)

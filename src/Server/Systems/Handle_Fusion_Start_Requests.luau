@@ -3,20 +3,16 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local Network = require(ServerScriptService.Network)
 
-local Slot_Util = require(ServerScriptService.Server.Modules.Slot_Util)
-
 local Components = require(ReplicatedStorage.Common.Components)
 local Config = require(ReplicatedStorage.Common.Config)
 local Phases = require(ReplicatedStorage.Common.Phases)
 local Registry = require(ReplicatedStorage.Common.Registry)
-local Types = require(ReplicatedStorage.Common.Types)
 local World = require(ReplicatedStorage.Common.World)
 
 local Ratelimits = require(ReplicatedStorage.Common.Modules.Ratelimits)
-local Stat_Calculator = require(ReplicatedStorage.Common.Modules.Stat_Calculator)
 
 local function Handle_Start_Requests()
-    for _, Player: Player, Index: number in Network.Requests.Start_Fusion.Iter() do
+    for _, Player: Player in Network.Requests.Start_Fusion.Iter() do
         if not Ratelimits.Fusion_Start(Player) then
             continue
         end

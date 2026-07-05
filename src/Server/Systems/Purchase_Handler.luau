@@ -64,9 +64,9 @@ local function Simulate_Time(PlayerEntity: Types.Entity, Amount: number)
         Brainrot_Entity,
         Brainrot_Name: string,
         Secondary_Mutations: { string },
-        Weight: number,
-        Cash: number,
-        Offline_Cash: number
+        Brainrot_Weight: number,
+        _Cash: number,
+        _Offline_Cash: number
     in
         World:query(
             Components.Name,
@@ -82,7 +82,7 @@ local function Simulate_Time(PlayerEntity: Types.Entity, Amount: number)
             Brainrot_Name = Brainrot_Name,
             Primary_Mutation = Primary_Mutation,
             Secondary_Mutations = Secondary_Mutations,
-            Weight = Weight,
+            Weight = Brainrot_Weight,
         }) * Stat_Calculator.Get_Cash_Multiplier(PlayerEntity)
 
         Gained_Cash += Income_Per_Sec * Amount

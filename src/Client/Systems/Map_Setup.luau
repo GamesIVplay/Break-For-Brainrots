@@ -299,7 +299,7 @@ local function Setup_x2_Luck_Parts(Local_Player: Player)
     end
 end
 
-local function Setup_Update_Signs(Local_Player: Player)
+local function Setup_Update_Signs(_Local_Player: Player)
     local Event_Info = SocialService:GetExperienceEventAsync(Config.UPDATE_EVENT_ID)
 
     if not Event_Info then
@@ -382,7 +382,7 @@ local function Setup_Update_Signs(Local_Player: Player)
     end)
 end
 
-local function Setup_Admin_Abuse_Signs(Local_Player: Player)
+local function Setup_Admin_Abuse_Signs(_Local_Player: Player)
     local Event_Info = SocialService:GetExperienceEventAsync(Config.ADMIN_ABUSE_EVENT_ID)
 
     if not Event_Info then

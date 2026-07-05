@@ -18,10 +18,10 @@ return function(Part: Part)
     Sound.Parent = Part
     Sound:Destroy()
 
-    local VFX = Collect_VFX:Clone()
-    VFX.Parent = Part
+    local Collect_Attachment = Collect_VFX:Clone()
+    Collect_Attachment.Parent = Part
 
-    for _, Inst: ParticleEmitter in VFX:GetDescendants() do
+    for _, Inst: ParticleEmitter in Collect_Attachment:GetDescendants() do
         if Inst:IsA("ParticleEmitter") then
             local EmitCount = Inst:GetAttribute("EmitCount") or 1
 
@@ -29,5 +29,5 @@ return function(Part: Part)
         end
     end
 
-    Debris:AddItem(VFX, 3)
+    Debris:AddItem(Collect_Attachment, 3)
 end

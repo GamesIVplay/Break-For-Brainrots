@@ -10,7 +10,7 @@ local Types = require(ReplicatedStorage.Common.Types)
 
 local RarityOrder = {}
 
-for Name, Index in pairs(Rarities) do
+for Name in pairs(Rarities) do
     table.insert(RarityOrder, Name)
 end
 
@@ -274,7 +274,7 @@ end
 local function Verify_Integrity()
     local Total_Block_Chances = 0
 
-    for Block_Name, Block_Data in Blocks do
+    for _, Block_Data in Blocks do
         Block_Data.Model:AddTag("Block")
         Total_Block_Chances += Block_Data.Chance
     end

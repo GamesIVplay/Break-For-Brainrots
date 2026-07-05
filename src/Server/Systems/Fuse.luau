@@ -59,7 +59,7 @@ return {
             local Result_Name = Fusion_Results[math.random(1, #Fusion_Results)]
             local Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck)
             local Secondary_Mutation = Roll_Secondary_Mutation(Mutation_Luck)
-            local Weight = Weight.Roll_Weight()
+            local Rolled_Weight = Weight.Roll_Weight()
 
             local Open_Slot = Slot_Util.Get_First_Open(Brainrot_Inventory, Brainrot_Capacity)
 
@@ -68,7 +68,7 @@ return {
                     Name = Result_Name,
                     Primary_Mutation = Primary_Mutation,
                     Secondary_Mutations = Secondary_Mutation,
-                    Weight = Weight,
+                    Weight = Rolled_Weight,
                     Cash = 0,
                     Offline_Cash = 0,
                 }

@@ -8,7 +8,7 @@ local Assets = ReplicatedStorage:WaitForChild("Assets")
 local Sounds = Assets:WaitForChild("Sounds")
 local World_Sounds = Sounds:WaitForChild("World")
 local Cycle = World_Sounds:WaitForChild("Cycle") :: Sound
-local Cycle_Result = World_Sounds:WaitForChild("Cycle_Result") :: Sound
+local Cycle_Result_Sound = World_Sounds:WaitForChild("Cycle_Result") :: Sound
 
 local VFX = Assets:WaitForChild("VFX")
 local Result = VFX:WaitForChild("Result") :: Attachment
@@ -116,7 +116,7 @@ local function Spawn_Cycle_Brainrot(
     Block_Name: string,
     Mutation_Luck: number,
     CF: CFrame,
-    Result: {
+    Final_Result: {
         Brainrot: string,
         Primary_Mutation: string?,
         Secondary_Mutations: { string },
@@ -128,11 +128,11 @@ local function Spawn_Cycle_Brainrot(
     local Rolled_Secondary_Mutations
     local Rolled_Weight
 
-    if Result then
-        Rolled_Brainrot = Result.Brainrot
-        Rolled_Primary_Mutation = Result.Primary_Mutation
-        Rolled_Secondary_Mutations = Result.Secondary_Mutations
-        Rolled_Weight = Result.Weight
+    if Final_Result then
+        Rolled_Brainrot = Final_Result.Brainrot
+        Rolled_Primary_Mutation = Final_Result.Primary_Mutation
+        Rolled_Secondary_Mutations = Final_Result.Secondary_Mutations
+        Rolled_Weight = Final_Result.Weight
     else
         Rolled_Brainrot = Blocks[Block_Name].Roll_Brainrot()
         Rolled_Primary_Mutation = Roll_Primary_Mutation(Mutation_Luck)
@@ -146,18 +146,18 @@ local function Spawn_Cycle_Brainrot(
 
     local Sound: Sound
 
-    if not Result then
+    if not Final_Result then
         Sound = Cycle:Clone()
         Sound.PlaybackSpeed = Get_Cycle_Pitch()
     else
-        Sound = Cycle_Result:Clone()
+        Sound = Cycle_Result_Sound:Clone()
     end
 
     Sound.Parent = Primary_Part
     Sound:Play()
 
     local Highlight = Instance.new("Highlight")
-    Highlight.FillColor = not Result and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)
+    Highlight.FillColor = not Final_Result and Color3.fromRGB(0, 0, 0) or Color3.fromRGB(255, 255, 255)
     Highlight.FillTransparency = 0
     Highlight.OutlineTransparency = 1
     Highlight.DepthMode = Enum.HighlightDepthMode.Occluded
@@ -171,24 +171,24 @@ local function Spawn_Cycle_Brainrot(
     Brainrot_Model:PivotTo(Brainrot_CF)
 
     local Original_Scale = Brainrot_Model:GetScale()
-    local Target_Scale = not Result and Original_Scale / 2 or 0.2
+    local Target_Scale = not Final_Result and Original_Scale / 2 or 0.2
 
     Brainrot_Model:ScaleTo(Target_Scale)
 
-    if Result then
+    if Final_Result then
         Spawn_Result_VFX(Brainrot_CF)
     end
 
     Util.Tween_Model_Scale(
         Target_Scale,
-        not Result and Original_Scale or Original_Scale * FINAL_BOUNCE_SCALE_MULTIPLIER,
-        not Result and Brainrot_Tween_Info or Final_Brainrot_Tween_Info,
+        not Final_Result and Original_Scale or Original_Scale * FINAL_BOUNCE_SCALE_MULTIPLIER,
+        not Final_Result and Brainrot_Tween_Info or Final_Brainrot_Tween_Info,
         Brainrot_Model
     )
 
-    task.wait(not Result and BOUNCE_TIME or FINAL_BOUNCE_TIME)
+    task.wait(not Final_Result and BOUNCE_TIME or FINAL_BOUNCE_TIME)
 
-    if Result then
+    if Final_Result then
         Debris:AddItem(Brainrot_Model, SHOWCASE_TIME)
 
         Util.Tween_Model_Scale(
@@ -229,7 +229,7 @@ return function(Data: {
 })
     Spawn_Spin_VFX(Data.Spin_VFX_CF)
 
-    for i = 1, CYCLE_COUNT do
+    for _ = 1, CYCLE_COUNT do
         Spawn_Cycle_Brainrot(Data.Block, Data.Mutation_Luck, Data.Brainrot_CF)
     end
 

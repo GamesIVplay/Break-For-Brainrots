@@ -363,9 +363,6 @@ local function createPrompt(prompt, inputType, gui)
             --    buttonText.Font = Enum.Font.FredokaOne
             buttonText.FontFace = MontserratBold
             buttonText.TextSize = 14
-            if string.len(buttonTextString) > 2 then
-                --buttonText.TextSize = 12
-            end
             buttonText.BackgroundTransparency = 1
             buttonText.TextTransparency = 1
             buttonText.TextColor3 = Color3.new(1, 1, 1)

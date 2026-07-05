@@ -33,10 +33,10 @@ return function(Character: Model)
 
     Debris:AddItem(Highlight, 0.15)
 
-    local VFX = Buy_VFX:Clone()
-    VFX.Parent = RootPart
+    local Buy_Attachment = Buy_VFX:Clone()
+    Buy_Attachment.Parent = RootPart
 
-    for _, Inst: ParticleEmitter in VFX:GetDescendants() do
+    for _, Inst: ParticleEmitter in Buy_Attachment:GetDescendants() do
         if Inst:IsA("ParticleEmitter") then
             local EmitCount = Inst:GetAttribute("EmitCount") or 1
 
@@ -44,5 +44,5 @@ return function(Character: Model)
         end
     end
 
-    Debris:AddItem(VFX, 5)
+    Debris:AddItem(Buy_Attachment, 5)
 end

@@ -113,7 +113,7 @@ local function Can_Rebirth(Local_Entity: Types.Entity)
     return true
 end
 
-local function Toggle_Pickaxe_Beam(Local_Entity: Types.Entity, Enabled: boolean)
+local function Toggle_Pickaxe_Beam(Local_Entity: Types.Entity, _Enabled: boolean)
     local Character = World:get(Local_Entity, Components.Renderable)
 
     if not Character then
@@ -133,20 +133,20 @@ local function Toggle_Pickaxe_Beam(Local_Entity: Types.Entity, Enabled: boolean)
     end
 
     local Affordable_Pickaxe = Get_Affordable_Pickaxe(Local_Entity)
-    local Can_Upgrade = Affordable_Pickaxe ~= nil
+    local Pickaxe_Can_Upgrade = Affordable_Pickaxe ~= nil
 
     local Pickaxe_Beam = CollectionService:GetTagged("Pickaxe_Beam")[1] :: Beam
 
-    if not Pickaxe_Beam and Can_Upgrade then
+    if not Pickaxe_Beam and Pickaxe_Can_Upgrade then
         Pickaxe_Beam = ArrowBeam:Clone()
         Pickaxe_Beam.Attachment0 = RootAttachment
         Pickaxe_Beam.Parent = RootPart
         Pickaxe_Beam:AddTag("Pickaxe_Beam")
-    elseif Pickaxe_Beam and not Can_Upgrade then
+    elseif Pickaxe_Beam and not Pickaxe_Can_Upgrade then
         Pickaxe_Beam:Destroy()
     end
 
-    if not Can_Upgrade then
+    if not Pickaxe_Can_Upgrade then
         return
     end
 

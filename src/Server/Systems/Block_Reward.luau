@@ -56,7 +56,7 @@ local function Give_Legendary_Reward()
 
     Gave_Legendary = true
 
-    for Player_Entity: Types.Entity, Player: Player, Block_Queue: { string } in Player_Block_Queue_Query:iter() do
+    for _Player_Entity: Types.Entity, Player: Player, Block_Queue: { string } in Player_Block_Queue_Query:iter() do
         table.insert(Block_Queue, "Legendary")
 
         Network.Notification.Fire(Player, {
@@ -81,7 +81,7 @@ local function Give_Mythical_Reward()
 
     Gave_Mythical = true
 
-    for Player_Entity: Types.Entity, Player: Player, Block_Queue: { string } in Player_Block_Queue_Query:iter() do
+    for _Player_Entity: Types.Entity, Player: Player, Block_Queue: { string } in Player_Block_Queue_Query:iter() do
         table.insert(Block_Queue, "Mythical")
 
         Network.Notification.Fire(Player, {

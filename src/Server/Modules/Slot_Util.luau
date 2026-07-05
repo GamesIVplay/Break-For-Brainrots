@@ -1,7 +1,7 @@
 local Slot_Util = {}
 
 function Slot_Util.Set_Slot(Slots, Index, Value, MaxSlots)
-    assert(Index >= 1 and Index <= MaxSlots)
+    assert(Index >= 1 and Index <= MaxSlots, "slot index out of range")
     Slots[Index] = Value
 end
 
@@ -29,7 +29,7 @@ function Slot_Util.Get_First_Open(Slots, MaxSlots)
 end
 
 function Slot_Util.Is_Occupied(Slots, Index, MaxSlots)
-    assert(Index >= 1 and Index <= MaxSlots)
+    assert(Index >= 1 and Index <= MaxSlots, "slot index out of range")
     return Slots[Index] ~= nil
 end
 

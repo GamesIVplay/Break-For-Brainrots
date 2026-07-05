@@ -142,9 +142,6 @@ function ScreenDarkener:UpdateLoop()
             local holeRight = math.floor(CX + R)
             local holeTop = math.ceil(CY - R)
             local holeBottom = math.floor(CY + R)
-            local holeW = holeRight - holeLeft
-            local holeH = holeBottom - holeTop
-
             Goals[self.TopFrame] = {
                 Position = UDim2.fromOffset(0, 0),
                 Size = UDim2.fromOffset(ScreenW, math.max(0, holeTop)),

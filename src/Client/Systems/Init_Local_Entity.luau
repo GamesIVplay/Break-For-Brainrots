@@ -52,7 +52,7 @@ return {
 
         Local_Player.CharacterAdded:Connect(function(Character)
             task.spawn(function()
-                Setup_Character(Local_Entity, Local_Player.Character)
+                Setup_Character(Local_Entity, Character)
             end)
         end)
 

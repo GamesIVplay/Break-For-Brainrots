@@ -25,10 +25,10 @@ return function(Character: Model)
     Sound.Parent = RootPart
     Sound:Destroy()
 
-    local VFX = Tutorial_Complete_VFX:Clone()
-    VFX.Parent = RootPart
+    local Tutorial_Complete_Attachment = Tutorial_Complete_VFX:Clone()
+    Tutorial_Complete_Attachment.Parent = RootPart
 
-    for _, Inst: ParticleEmitter in VFX:GetDescendants() do
+    for _, Inst: ParticleEmitter in Tutorial_Complete_Attachment:GetDescendants() do
         if Inst:IsA("ParticleEmitter") then
             local EmitCount = Inst:GetAttribute("EmitCount") or 1
 
@@ -36,5 +36,5 @@ return function(Character: Model)
         end
     end
 
-    Debris:AddItem(VFX, 5)
+    Debris:AddItem(Tutorial_Complete_Attachment, 5)
 end
