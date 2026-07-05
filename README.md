@@ -1,8 +1,38 @@
 # Don't Break This Block
 
-**Play on Roblox:** [Don't Break This Block](https://www.roblox.com/games/75406379949350/Don-t-Break-This-Block)
+Roblox/Luau game built with Rojo, Wally, Rokit, Blink, Selene, and StyLua.
 
-Don't Break This Block is a Roblox experience about smashing lucky blocks, collecting Brainrots, upgrading your pickaxe, and growing your earnings over time. Brainrots continue earning while you are offline, with limited-time events and weekly updates adding new rewards.
+**Play:** https://www.roblox.com/games/75406379949350/Don-t-Break-This-Block
+
+## Setup
+
+```sh
+sh scripts/setup.sh
+```
+
+## Common Commands
+
+```sh
+sh scripts/generate-network.sh
+sh scripts/install-packages.sh
+sh scripts/sourcemap.sh
+sh scripts/serve.sh
+sh scripts/check.sh
+```
+
+Legacy wrappers still work:
+
+```sh
+sh scripts/blink.sh
+sh scripts/installPackages.sh
+sh scripts/nvim-dev.sh
+```
+
+## Workflow
+
+- Edit Blink files in `.config/blink/`, then run `sh scripts/generate-network.sh`.
+- `network/`, `Packages/`, and `sourcemap.json` are generated.
+- Run `sh scripts/check.sh` before pushing.
 
 Entire game scripted by **Dale**.
 

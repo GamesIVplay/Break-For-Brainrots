@@ -6,13 +6,14 @@ PROJECT_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
 if [ ! -d "network" ]; then
-    echo "Network folder missing. Exiting."
+    echo "Network folder missing. Run: sh scripts/generate-network.sh"
     exit 1
 fi
 
 if [ ! -d "Packages" ]; then
-    echo "Packages folder missing. Exiting."
+    echo "Packages folder missing. Run: sh scripts/install-packages.sh"
     exit 1
 fi
 
 rojo sourcemap default.project.json -o sourcemap.json
+rojo serve default.project.json

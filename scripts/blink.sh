@@ -1,5 +1,8 @@
-#!/bin/sh#!/bin/sh
+#!/bin/sh
 
 set -e
 
-blink .config/blink/init.blink
+PROJECT_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+cd "$PROJECT_ROOT"
+
+sh scripts/generate-network.sh

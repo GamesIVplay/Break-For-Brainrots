@@ -2,13 +2,14 @@
 
 set -e
 
-# If network isn't compiled, exit
+PROJECT_ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+cd "$PROJECT_ROOT"
+
 if [ ! -d "network" ]; then
     echo "Network folder missing. Exiting."
     exit 1
 fi
 
-# If Packages aren't installed, exit
 if [ ! -d "Packages" ]; then
     echo "Packages folder missing. Exiting."
     exit 1
