@@ -14,9 +14,7 @@ local Open_Leaderboard_Data_Store = DataStoreService:GetOrderedDataStore("Open")
 
 local Types = require(ReplicatedStorage.Common.Types)
 
--- Character and debris collision groups are configured once on server start.
--- Characters cannot collide with each other or loose debris, which prevents players
--- from blocking each other while still allowing normal map/world collisions.
+-- I keep player collisions off so people do not body-block or get stuck on debris.
 PhysicsService:RegisterCollisionGroup("Character")
 PhysicsService:RegisterCollisionGroup("Debris")
 
@@ -45,8 +43,6 @@ local Upgrades = require(ReplicatedStorage.Common.Modules.Upgrades)
 local PlayersRemoving = Collect(Players.PlayerRemoving)
 
 local function Update_Character_Collision_Groups(Character: Model)
-    -- Roblox characters can contain many object types. Only BasePart instances have
-    -- CollisionGroup, so non-physical descendants are skipped before assignment.
     for _, Part in Character:GetDescendants() do
         if not Part:IsA("BasePart") then
             continue
@@ -57,8 +53,6 @@ local function Update_Character_Collision_Groups(Character: Model)
 end
 
 local function Load_Animations(Character: Model)
-    -- Animations are loaded from the server-side Animator so every replicated
-    -- character has the same custom animation set after appearance loading.
     local Animator = Character:FindFirstChild("Animator", true) :: Animator?
 
     if Animator then
@@ -67,8 +61,7 @@ local function Load_Animations(Character: Model)
 end
 
 local function Character_Appearance_Loaded(Player_Entity: Types.Entity, Character: Model)
-    -- This bridges Roblox character lifecycle into the ECS world. The physical
-    -- Model is stored as Renderable so other systems can find the server entity.
+    -- Once Roblox finishes the avatar, I store the Model on the ECS entity.
     Update_Character_Collision_Groups(Character)
     Load_Animations(Character)
 
@@ -81,8 +74,7 @@ local Updating_Friend_Boosts = false
 local Pending_Friend_Boost_Update = false
 
 local function Update_Friend_Boosts()
-    -- Friend checks yield because they call Roblox web-backed APIs. This lock keeps
-    -- multiple joins/leaves from running overlapping scans against the same players.
+    -- Friend checks can yield, so I queue one more pass instead of stacking scans.
     if Updating_Friend_Boosts then
         Pending_Friend_Boost_Update = true
         return
@@ -101,8 +93,7 @@ local function Update_Friend_Boosts()
                 continue
             end
 
-            -- Each in-server friend adds a flat percentage boost. The boost is stored
-            -- as an ECS component so stat and replication systems can consume it.
+            -- Friends in this server give +5% each.
             local Friends = 0
 
             for _, TargetPlayer in PlayersList do
@@ -126,13 +117,12 @@ local function Update_Friend_Boosts()
 end
 
 local function Handle_New_Player(Player: Player)
-    -- Prevent duplicate sessions if the client sends its loaded signal twice.
+    -- ClientLoaded can fire twice, so I block duplicate sessions here.
     if Registry.Get("Players", Player) ~= nil then
         return
     end
 
-    -- Profile.Load owns DataStore session locking and reconciliation. If it returns
-    -- nil, the player already left or the profile could not be safely loaded.
+    -- Profile.Load gives me saved data after ProfileStore locks the session.
     local Player_Profile = Profile.Load(Player)
 
     if not Player_Profile then
@@ -144,8 +134,7 @@ local function Handle_New_Player(Player: Player)
     local Player_Entity = World:entity()
     Registry.Define("Players", Player, Player_Entity)
 
-    -- Existing saves may not contain recently purchased gamepasses if the purchase
-    -- happened outside this server, so ownership is verified at session start.
+    -- I recheck passes on join because purchases can happen outside this server.
     for Name, Id in Gamepasses do
         if
             not table.find(Profile_Data.Gamepasses, Name)
@@ -155,8 +144,7 @@ local function Handle_New_Player(Player: Player)
         end
     end
 
-    -- Upgrade names changed over time. This migration preserves player progress
-    -- while removing retired keys that no longer exist in the current upgrade table.
+    -- Old upgrade names get moved forward so old saves still work.
     for Name, Level in Profile_Data.Upgrades do
         if Name == "Luck Multiplier" then
             Profile_Data.Upgrades["Luck Boost"] = Level
@@ -169,8 +157,7 @@ local function Handle_New_Player(Player: Player)
         end
     end
 
-    -- Every current upgrade must have a valid level. Clamping protects later math
-    -- from indexing past the configured Levels array after balance changes.
+    -- Upgrade levels stay inside the current config, even after balance changes.
     for Name, Data in Upgrades do
         local Current_Upgrades = Profile_Data.Upgrades
 
@@ -193,8 +180,7 @@ local function Handle_New_Player(Player: Player)
         World:add(Player_Entity, Components.Tags.Bought_Starter_Pack)
     end
 
-    -- Persistent profile fields are copied into ECS components. Runtime systems read
-    -- and mutate components, then the OnSave callback writes them back to the profile.
+    -- ECS holds the live session state; OnSave writes these values back later.
     World:set(Player_Entity, Components.Name, Player.Name)
     World:set(Player_Entity, Components.Cash, Profile_Data.Cash)
     World:set(Player_Entity, Components.Rebirth, Profile_Data.Rebirth)
@@ -214,8 +200,6 @@ local function Handle_New_Player(Player: Player)
     World:set(Player_Entity, Components.Friend_Boost, 0)
     World:set(Player_Entity, Components.Fusion_Machine, Profile_Data.Fusion_Machine)
 
-    -- Tutorial step remaps handle old saves from earlier onboarding versions.
-    -- Players stuck on removed steps are moved to the nearest valid current step.
     if Profile_Data.Tutorial_Step == 5 then
         World:set(Player_Entity, Components.Tutorial_Step, 6)
     elseif Profile_Data.Tutorial_Step == 2 then
@@ -224,8 +208,6 @@ local function Handle_New_Player(Player: Player)
         World:set(Player_Entity, Components.Tutorial_Step, Profile_Data.Tutorial_Step)
     end
 
-    -- Daily rewards are versioned by Config.DAILY_REWARD_ID. When the id changes,
-    -- old claim history is reset so a new reward calendar can start cleanly.
     if Profile_Data.Daily_Reward_Id == Config.DAILY_REWARD_ID then
         World:set(Player_Entity, Components.Daily_Reward_Id, Profile_Data.Daily_Reward_Id)
         World:set(Player_Entity, Components.Last_Daily_Reward_Claim, Profile_Data.Last_Daily_Reward_Claim)
@@ -242,8 +224,6 @@ local function Handle_New_Player(Player: Player)
 
     World:set(Player_Entity, Components.Player, Player)
     World:set(Player_Entity, Components.Cleanup, function()
-        -- Cleanup is attached to the ECS entity so Registry.Delete can end the
-        -- profile session and remove registry state from one ownership point.
         Profile.Unload(Player)
 
         Registry.Undefine("Players", Player)
@@ -254,8 +234,7 @@ local function Handle_New_Player(Player: Player)
     World:add(Player_Entity, Components.Tags.Networked)
 
     Player_Profile.OnSave:Connect(function()
-        -- Brainrot_Loader removes Pending_Brainrots after rebuilding saved entities.
-        -- Saving before that would replace the saved collection with an incomplete one.
+        -- Do not save while old brainrots are still being rebuilt into live entities.
         if World:has(Player_Entity, Components.Pending_Brainrots) then
             return
         end
@@ -298,8 +277,7 @@ local function Handle_New_Player(Player: Player)
 
         local Serialized_Brainrots: { [number]: Types.Serialized_Brainrot } = {}
 
-        -- Owned brainrot entities are serialized back into plain Lua tables because
-        -- DataStores cannot save Instances or ECS entities directly.
+        -- Live brainrot entities become plain tables because DataStores cannot save Instances.
         for
             Brainrot_Entity,
             Brainrot_Name: string,
@@ -332,8 +310,6 @@ local function Handle_New_Player(Player: Player)
     end)
 
     if Player.Character then
-        -- Existing characters are handled immediately so fast-loading players do not
-        -- wait for another respawn before collision and renderable setup happens.
         Character_Appearance_Loaded(Player_Entity, Player.Character)
     end
 
@@ -342,8 +318,6 @@ local function Handle_New_Player(Player: Player)
     end)
 
     Player.CharacterRemoving:Connect(function()
-        -- Previous relationship components are invalid once the character leaves,
-        -- so replication can resend fresh inventory/pickaxe visuals on the next spawn.
         World:remove(Player_Entity, Components.Renderable)
         World:remove(Player_Entity, Pair(Components.Relationships.Previous, Components.Brainrot_Inventory))
         World:remove(Player_Entity, Pair(Components.Relationships.Previous, Components.Pickaxe))
@@ -355,8 +329,7 @@ local function Handle_New_Player(Player: Player)
 end
 
 local function Update_Leaderboard_Data(Player_Entity: Types.Entity)
-    -- OrderedDataStores are updated on leave so global leaderboards can sort by
-    -- lifetime playtime, cash, and block opens without scanning player profiles.
+    -- Leaderboards get saved from ECS before the player entity is deleted.
     local Player = World:get(Player_Entity, Components.Player)
 
     local PlayTime = World:get(Player_Entity, Components.PlayTime)
@@ -377,8 +350,6 @@ local function Update_Leaderboard_Data(Player_Entity: Types.Entity)
 end
 
 local function Handle_Leaving_Player(Player: Player)
-    -- The entity is looked up before deletion so leaderboard data can be read from
-    -- ECS components while the player's session state still exists.
     local Player_Entity = Registry.Get("Players", Player)
 
     if Player_Entity then
@@ -396,8 +367,6 @@ return {
     name = script.Name,
     phase = Phases.Runservice.First,
     system = function()
-        -- Network.ClientLoaded means the client has finished its initial boot path,
-        -- so the server can create the profile-backed entity and begin replication.
         for _, Player: Player in Network.ClientLoaded.Iter() do
             AnalyticsService:LogOnboardingFunnelStepEvent(Player, 1, "Player Joined")
 
